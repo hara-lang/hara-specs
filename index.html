@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hara Specs</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1117;
+      --fg: #c9d1d9;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --border: #30363d;
+    }
+    body {
+      max-width: 720px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+    }
+    h1 { font-weight: 600; margin-bottom: 0.25rem; }
+    p.lead { color: var(--muted); margin-top: 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    ul { padding-left: 1.25rem; }
+    li { margin: 0.5rem 0; }
+    section { margin-top: 2.5rem; }
+    h2 { font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    footer { margin-top: 4rem; color: var(--muted); font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <h1>Hara Specs</h1>
+  <p class="lead">Normative specifications and conformance corpora for the Hara language.</p>
+
+  <section>
+    <h2>Language &amp; runtime specs</h2>
+    <ul>
+      <li><a href="hara/l0-language.md">L0 language</a></li>
+      <li><a href="hara/hir.md">HIR</a></li>
+      <li><a href="hara/repl.md">REPL UX</a></li>
+      <li><a href="hara/runtime-libraries.md">Runtime libraries</a></li>
+      <li><a href="hara/native-flavors.md">Native flavors</a></li>
+      <li><a href="hara/jvm-flavor.md">JVM flavor</a></li>
+      <li><a href="hara/rust-runtime.md">Rust/WASM runtime</a></li>
+      <li><a href="hara/xtalk-equivalence.md">Xtalk equivalence</a></li>
+      <li><a href="hara/extensions.md">Extensions overview</a></li>
+      <li><a href="hara/extensions-contract.md">Extensions contract</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Conformance corpora</h2>
+    <ul>
+      <li><a href="hara/corpora/l0-conformance.edn">L0 conformance</a></li>
+      <li><a href="hara/corpora/reader-parity.edn">Reader parity</a></li>
+      <li><a href="hara/corpora/jvm-truffle-parity.edn">JVM/Truffle parity</a></li>
+      <li><a href="hara/corpora/wasm-truffle-parity.edn">WASM/Truffle parity</a></li>
+      <li><a href="hara/corpora/rust-mapping.edn">Rust mapping</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Data</h2>
+    <ul>
+      <li><a href="hara/data/foundation.edn">foundation.edn</a></li>
+      <li><a href="hara/data/typed.edn">typed.edn</a></li>
+      <li><a href="hara/data/clojure-core-symbols.json">Clojure core symbols</a></li>
+      <li><a href="hara/data/hara-core-symbols.json">Hara core symbols</a></li>
+      <li><a href="hara/data/clojure-core-compatibility.json">Clojure core compatibility</a></li>
+      <li><a href="hara/data/clojure-core-compatibility-overrides.json">Clojure core compatibility overrides</a></li>
+    </ul>
+  </section>
+
+  <footer>
+    <a href="https://github.com/hara-lang/hara-specs">hara-lang/hara-specs</a>
+    &middot;
+    <a href="https://www.hara-lang.org">www.hara-lang.org</a>
+  </footer>
+</body>
+</html>
