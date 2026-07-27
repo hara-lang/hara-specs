@@ -24,6 +24,7 @@
     :errors
     :protocols-and-structs
     :namespaces-and-modules
+    :standard-libraries
     :host-boundary}
   :excludes
   #{:backend-storage-layout
@@ -82,6 +83,7 @@
   :hal/errors
   :hal/protocols-structs
   :hal/namespaces-modules
+  :hal/standard-libraries
   :hal/host-boundary]
 
  :spec/sections
@@ -287,6 +289,20 @@
     :hal.form/ns
     :hal.form/require]}
 
+  {:section/id :hal/standard-libraries
+   :section/title "Standard libraries"
+   :section/summary
+   "Portable source libraries extend HAL without exposing host objects or ambient authority."
+   :section/requirements
+   [{:requirement/id :std.foundation.json/api
+     :requirement/level :must
+     :requirement/text
+     "The std.foundation.json namespace is available in every Foundation runtime and provides one-argument read, write, and write-pp functions. JSON null maps to nil; booleans and strings retain their values; signed 64-bit integer literals map to HAL integers; arrays map to vectors; and objects map to insertion-ordered HAL maps with string keys. read accepts only strict JSON: duplicate keys, trailing content, malformed or incomplete escapes, fractional or exponent numbers, and integers outside the signed 64-bit range are errors. write and write-pp accept exactly those HAL values, reject every other value and non-string map key, preserve map iteration order, and emit no trailing newline. write is compact; write-pp uses two spaces per indentation level."}
+    {:requirement/id :std.pretty/api
+     :requirement/level :must
+     :requirement/text
+     "The std.pretty namespace provides pprint-str. It accepts one HAL value and returns its canonical readable representation."}]}
+
   {:section/id :hal/host-boundary
    :section/title "Host boundary"
    :section/summary
@@ -479,7 +495,8 @@
   :covered
   #{:reader :values :evaluation :functions-and-bindings :collections-and-iteration}
   :awaiting-explicit-cases
-  #{:host-authority :module-rollback :numeric-promotion :iterator-close :error-source}}
+  #{:host-authority :module-rollback :numeric-promotion :iterator-close :error-source
+    :standard-libraries}}
 
  :spec/provenance
  [:hal.ref/legacy-language :hal.ref/legacy-foundation]}

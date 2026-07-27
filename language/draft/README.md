@@ -15,7 +15,7 @@ This specification defines portable Hara Lisp (HAL) behaviour independently
 of evaluator, compiler, storage representation, host language, and target
 runtime. It covers the reader, values, evaluation, functions and bindings,
 collections and iteration, numbers, errors, protocols and structs, namespaces
-and modules, and the explicit host boundary.
+and modules, portable standard libraries, and the explicit host boundary.
 
 Backend storage, compiler implementation, host reflection, target emission,
 editor UX, and extension packaging are outside this language document.
@@ -53,7 +53,9 @@ editor UX, and extension packaging are outside this language document.
    immutable domain values.
 9. **Vars, namespaces, macros, and modules** — live Var identity, compile-time
    expansion, and transactional loading.
-10. **Host boundary** — explicit adapters and portable runtime parity.
+10. **Standard libraries** — automatically loaded `std.foundation.json` provides JSON read/write formatting;
+    `std.pretty` provides canonical readable formatting through `pprint-str`.
+11. **Host boundary** — explicit adapters and portable runtime parity.
 
 The authoritative EDN also contains indexed declarations for the core special
 forms. Form and requirement identifiers are stable references for conformance
@@ -71,5 +73,5 @@ cases and future tooling.
   Rust WebAssembly/Truffle parity.
 
 Coverage is currently partial. Host authority, module rollback, numeric
-promotion, iterator closure, and error-source behaviour still need explicitly
-linked cases before candidate promotion.
+promotion, iterator closure, error-source behaviour, and standard-library
+behaviour still need explicitly linked cases before candidate promotion.
