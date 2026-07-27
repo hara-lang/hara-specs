@@ -1,0 +1,214 @@
+{:document/id :hal/metaspec
+ :document/type :language-metaspec
+ :document/version "0.1.0-draft"
+ :document/status :draft
+ :document/title "HAL language specification meta-spec"
+ :document/summary
+ "Defines the machine-readable shape, authority rules, and validation contract for a HAL language specification."
+
+ :metaspec/vocabulary
+ {:scalar-types
+  #{:any :nil :boolean :integer :number :string :keyword :symbol}
+
+  :collection-types
+  #{:map :vector :set}
+
+  :schema-forms
+  {:enum
+   {:shape [:enum value & values]
+    :meaning "A value equal to one of the listed values."}
+   :or
+   {:shape [:or schema & schemas]
+    :meaning "A value accepted by at least one child schema."}
+   :vector-of
+   {:shape [:vector-of schema]
+    :meaning "A vector whose members all satisfy schema."}
+   :set-of
+   {:shape [:set-of schema]
+    :meaning "A set whose members all satisfy schema."}
+   :map-of
+   {:shape [:map-of key-schema value-schema]
+    :meaning "A map whose keys and values satisfy their respective schemas."}
+   :tuple
+   {:shape [:tuple schema & schemas]
+    :meaning "A vector with exactly the declared positional schemas."}
+   :ref
+   {:shape [:ref qualified-keyword]
+    :meaning "A reference to a named schema in :metaspec/schemas."}
+   :optional
+   {:shape [:optional schema]
+    :meaning "A map field which may be absent; a present value must satisfy schema."}}
+
+  :cardinality
+  #{:one :zero-or-one :one-or-more :zero-or-more}}
+
+ :metaspec/schemas
+ {:document-id
+  {:type :keyword
+   :qualified true}
+
+  :version
+  {:type :string
+   :pattern "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$"}
+
+  :status
+  {:type [:enum :draft :candidate :stable :deprecated :retired]}
+
+  :path
+  {:type :string
+   :relative true
+   :repository-local true}
+
+  :requirement
+  {:type :map
+   :closed true
+   :required [:requirement/id :requirement/level :requirement/text]
+   :keys
+   {:requirement/id {:type :keyword :qualified true}
+    :requirement/level {:type [:enum :must :must-not :should :should-not :may]}
+    :requirement/text {:type :string :non-empty true}
+    :requirement/rationale {:type [:optional :string]}
+    :requirement/evidence {:type [:optional [:vector-of [:ref :conformance-ref]]]}
+    :requirement/introduced {:type [:optional [:ref :version]]}
+    :requirement/deprecated {:type [:optional [:ref :version]]}}}
+
+  :section
+  {:type :map
+   :closed true
+   :required [:section/id :section/title :section/summary :section/requirements]
+   :keys
+   {:section/id {:type :keyword :qualified true}
+    :section/title {:type :string :non-empty true}
+    :section/summary {:type :string :non-empty true}
+    :section/requirements {:type [:vector-of [:ref :requirement]]}
+    :section/forms {:type [:optional [:vector-of :keyword]]}
+    :section/references {:type [:optional [:vector-of [:ref :reference]]]}}}
+
+  :form
+  {:type :map
+   :closed true
+   :required [:form/id :form/symbol :form/class :form/shape :form/semantics]
+   :keys
+   {:form/id {:type :keyword :qualified true}
+    :form/symbol {:type :symbol}
+    :form/class {:type [:enum :special-form :macro :function :reader-form]}
+    :form/shape {:type :any}
+    :form/semantics {:type :string :non-empty true}
+    :form/evaluation {:type [:optional [:enum :special :eager :lazy :macroexpand :reader]]}
+    :form/arity {:type [:optional :any]}
+    :form/tail-position {:type [:optional :boolean]}
+    :form/requirements {:type [:optional [:vector-of :keyword]]}}}
+
+  :reference
+  {:type :map
+   :closed true
+   :required [:reference/id :reference/kind :reference/path]
+   :keys
+   {:reference/id {:type :keyword :qualified true}
+    :reference/kind
+    {:type [:enum :conformance :parity :provenance :implementation-profile :generated]}
+    :reference/path {:type [:ref :path]}
+    :reference/authority
+    {:type [:enum :normative :evidence :informative :historical]}
+    :reference/description {:type [:optional :string]}}}
+
+  :conformance-ref
+  {:type :map
+   :closed true
+   :required [:suite :cases]
+   :keys
+   {:suite {:type :keyword :qualified true}
+    :cases {:type [:vector-of :keyword]}}}}
+
+ :metaspec/language-document
+ {:type :map
+  :closed false
+  :required
+  [:document/id
+   :document/type
+   :document/version
+   :document/status
+   :document/title
+   :document/summary
+   :spec/conforms-to
+   :spec/scope
+   :spec/invariants
+   :spec/section-order
+   :spec/sections
+   :spec/forms
+   :spec/references
+   :spec/conformance]
+  :keys
+  {:document/id {:type [:ref :document-id]}
+   :document/type {:type [:enum :language-spec]}
+   :document/version {:type [:ref :version]}
+   :document/status {:type [:ref :status]}
+   :document/title {:type :string :non-empty true}
+   :document/summary {:type :string :non-empty true}
+   :spec/conforms-to
+   {:type :map
+    :closed true
+    :required [:document :version]
+    :keys
+    {:document {:type [:ref :path]}
+     :version {:type [:ref :version]}}}
+   :spec/scope {:type :map}
+   :spec/invariants {:type [:vector-of [:ref :requirement]]}
+   :spec/section-order {:type [:vector-of :keyword] :unique true}
+   :spec/sections {:type [:vector-of [:ref :section]]}
+   :spec/forms {:type [:vector-of [:ref :form]]}
+   :spec/references {:type [:vector-of [:ref :reference]]}
+   :spec/conformance {:type [:vector-of :keyword]}
+   :spec/coverage {:type [:optional :map]}
+   :spec/provenance {:type [:optional [:vector-of :keyword]]}}}
+
+ :metaspec/validation
+ {:identity
+  ["Every :document/id, :section/id, :requirement/id, :form/id, and :reference/id is unique within its category."
+   "Identifiers are stable across wording changes and file moves."
+   "A renamed or removed requirement retains a traceable deprecated entry."]
+
+  :structure
+  ["Every id in :spec/section-order resolves to exactly one entry in :spec/sections."
+   "Every form id named by a section resolves to exactly one entry in :spec/forms."
+   "Every reference named by a section or provenance entry resolves in :spec/references."
+   "Unknown top-level extension keys must be qualified."]
+
+  :authority
+  ["The EDN language document is normative."
+   "A companion README is a rendered, informative view and must not add requirements."
+   "Conformance corpora are executable evidence; they do not silently create semantics absent from the language document."
+   "Historical planning documents are non-normative even when they contain stronger wording."]
+
+  :requirements
+  ["Normative statements use explicit requirement levels."
+   "Every :must and :must-not requirement names evidence or is marked as awaiting conformance in :spec/coverage."
+   "Implementation-specific constraints belong in implementation profiles, not portable language requirements."]
+
+  :paths
+  ["Repository-local references resolve relative to the containing document."
+   "Active normative documents must not depend on files below archive/planning."
+   "Archive references may be listed only as :historical provenance."]}
+
+ :metaspec/rendering
+ {:target "README.md"
+  :authority :informative
+  :order
+  [:identity :summary :status :scope :invariants :sections :forms :conformance :references]
+  :requirements
+  ["Render sections in :spec/section-order."
+   "Preserve requirement identifiers beside normative text."
+   "Render relative links from :reference/path."
+   "State visibly that the EDN document is authoritative."
+   "A rendering check fails when README content is stale."]}
+
+ :metaspec/promotion
+ {:draft-to-candidate
+  ["The document validates against this meta-spec."
+   "All :must and :must-not requirements have executable evidence or an approved explicit waiver."
+   "The README rendering is current."
+   "Every active runtime reports conformance results."]
+  :candidate-to-stable
+  ["No unresolved semantic ambiguity is recorded."
+   "Required conformance and parity suites pass."
+   "The final version and immutable release path are assigned."]}}
