@@ -22,7 +22,7 @@
  :theme/primitives
  #{:system-bar :frame :panel :strip :tabs :section :code-block :data-table
    :form-control :node :port :cable :inspector :console :documentation-callout
-   :workspace :menu-bar :toolbar :status-bar :code-visual-actions}
+   :workspace :activity-rail :dock :popout :patch-canvas :menu-bar :toolbar :status-bar :code-visual-actions}
 
  :theme/chrome
  {:wordmark {:text "HARA" :mark :hara-favicon}
