@@ -1,0 +1,174 @@
+{:document/id :hal/studio-runtime
+ :document/type :runtime-spec
+ :document/version "1.0.0-draft"
+ :document/status :draft
+ :document/title "HAL programmable Studio and node runtime"
+ :document/summary
+ "Normative project, workspace, anonymous-module, node, and substrate-compatible wire contract."
+
+ :runtime/builtins
+ {:co {:qualified-prefix "co/"
+       :availability :all-runtime-contexts}
+  :node {:qualified-prefix "node/"
+         :availability :node-bound-document-contexts
+         :operations
+         [{:symbol node/start :arguments [function] :returns :node/task-handle}
+          {:symbol node/in :arguments [signal] :returns :promise/value}
+          {:symbol node/in-frame :arguments [signal] :returns :promise/substrate-frame}
+          {:symbol node/emit :arguments [signal value & [meta]] :returns :promise/acceptance}
+          {:symbol node/call :arguments [target action args & [opts]] :returns :promise/response-value}
+          {:symbol node/handle :arguments [action function & [meta]] :returns :node/handler-handle}
+          {:symbol node/stop :arguments [task] :returns :boolean}
+          {:symbol node/info :arguments [] :returns :node/public-info}]}}
+
+ :runtime/anonymous-module
+ {:form ns+
+  :position :first-effective-top-level-form
+  :grammar "(ns+ clause*)"
+  :clauses :same-as-ns-except-name
+  :identity [:kernel/id :document/id :generation]
+  :public-registry false
+  :qualified-access false
+  :require-target false
+  :project-main false
+  :lifecycle
+  {:whole-file-run
+   [:allocate-candidate-generation
+    :evaluate-source
+    :prepare-node-scope
+    :atomically-activate-on-success
+    :cancel-and-release-previous-generation]
+   :failed-run
+   [:cancel-candidate-tasks
+    :release-candidate-module
+    :retain-previous-active-generation]
+   :form-run :reuse-active-generation
+   :document-close
+   [:cancel-pending-node-tasks
+    :unsubscribe-inputs
+    :reject-pending-calls
+    :remove-handlers
+    :release-private-module]}}
+
+ :runtime/node-module-ownership
+ {:public-identity :workspace/node-id
+  :binding
+  {:workspace-node :one-active-document-generation
+   :document-generation :one-private-ns+-module
+   :private-module :one-node-execution-scope}
+  :scope-owns
+  [:public-node-id
+   :workspace-space-id
+   :declared-ports
+   :capabilities
+   :task-supervisor
+   :input-subscriptions
+   :request-handlers
+   :pending-calls
+   :transport-context]
+  :invariants
+  [{:id :node/public-frame-identity
+    :text "Frames expose the workspace node ID, never the private module ID."}
+   {:id :node/atomic-generation
+    :text "Handlers, subscriptions, tasks, and module bindings activate as one generation."}
+   {:id :node/no-shared-anonymous-module
+    :text "Two node instances never share an ns+ module even when they use identical source."}
+   {:id :node/explicit-concurrency
+    :text "A node processes sequentially unless source starts additional node tasks."}]}
+
+ :runtime/document-protocol
+ [{:operation evalDocument
+   :arguments [:kernel/id :document/id :source :node/id]
+   :effect :candidate-generation
+   :returns [:value :generation :module/id]}
+  {:operation evalForm
+   :arguments [:kernel/id :document/id :source]
+   :effect :active-generation
+   :returns :value}
+  {:operation releaseDocument
+   :arguments [:kernel/id :document/id]
+   :effect :release-generation
+   :returns :released-count}]
+
+ :runtime/project
+ {:file "project.edn"
+  :required true
+  :loads-before "workspace.edn"
+  :required-keys
+  [:hara/type :hara/version :project/id :project/version
+   :project/source-paths :project/test-paths :project/extension-paths
+   :project/capabilities]
+  :optional-keys [:project/main]
+  :legacy-read-only ["project.hal" "project.hara"]}
+
+ :runtime/workspace
+ {:file "workspace.edn"
+  :required true
+  :directly-loadable true
+  :root :containing-directory
+  :required-keys
+  [:hara/type :hara/version :workspace/id :workspace/layout
+   :workspace/documents :workspace/areas :workspace/nodes
+   :workspace/connections :workspace/links :workspace/customizations]
+  :persistent
+  [:layout :areas :documents :nodes :ports :connections :links
+   :playlist-metadata :permitted-file-handle-keys]
+  :ephemeral
+  [:pixels :audio-buffers :kernel-values :anonymous-module-handles
+   :absolute-machine-paths]
+  :mutation
+  {:undo-redo true
+   :dirty-state true
+   :explicit-save true
+   :recovery-journal :automatic-local
+   :external-change-detection :content-hash
+   :conflict-policy :never-overwrite-silently
+   :serialization :canonical-edn}}
+
+ :runtime/wire
+ {:logical-model :xt.substrate
+  :implementation :hara-native
+  :compatibility :existing-json-frames-remain-valid
+  :version "substrate.v1"
+  :json
+  {:required true
+   :role :portable-control-and-ordinary-data
+   :binary-descriptor
+   {:$hara/type "hara.bytes.v1"
+    :encoding "base64"
+    :optional-array-type true}}
+  :frame-fields
+  [:version :kind :id :source :target :space :signal :action :args
+   :reply_to :status :data :error :cause :meta]
+  :workflows
+  {:request-response [:node/call :node/handle]
+   :streams [:node/emit :node/in :node/in-frame]
+   :subscriptions :workspace-connections
+   :fan-out :router
+   :correlation [:id :reply_to :cause]
+   :pending-promises :runtime-owned}
+  :transport-negotiation
+  {:metadata-handler "@/node-info"
+   :transports
+   [{:id :direct :frame :logical}
+    {:id :hta1 :frame :binary}
+    {:id :structured-clone :frame :logical}
+    {:id :transferable :frame :logical :payload :array-buffer}
+    {:id :websocket :frame :json-text}
+    {:id :shared-audio-ring :payload :shared-array-buffer
+     :constraint :cross-origin-isolated}
+    {:id :audio-block-batch :payload :transferable-array-buffer
+     :fallback-for :shared-audio-ring}]}
+  :realtime-audio
+  {:uses-json false
+   :waits-for-visualizer false
+   :visualizer-delivery :latest
+   :emit-acknowledgement :downstream-queue-accepted}}
+
+ :runtime/security
+ {:capability-source "project.edn"
+  :local-media
+  {:requires-user-gesture true
+   :audio-data-persisted false
+   :machine-path-persisted false
+   :file-handle-permission :local-browser-store}}}

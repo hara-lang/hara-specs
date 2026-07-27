@@ -106,6 +106,10 @@
       "kind": "edn"
     },
     {
+      "path": "language/draft/conformance/studio-node.edn",
+      "kind": "edn"
+    },
+    {
       "path": "language/draft/hal-langspec.edn",
       "kind": "edn"
     },
@@ -115,6 +119,10 @@
     },
     {
       "path": "metaspec/draft/hal-metaspec.edn",
+      "kind": "edn"
+    },
+    {
+      "path": "runtime/draft/hal-studio-runtime.edn",
       "kind": "edn"
     }
   ]
