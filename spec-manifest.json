@@ -78,6 +78,14 @@
       "kind": "markdown"
     },
     {
+      "path": "design/draft/hal-design-language.edn",
+      "kind": "edn"
+    },
+    {
+      "path": "design/draft/hal-theme.edn",
+      "kind": "edn"
+    },
+    {
       "path": "language/draft/README.md",
       "kind": "markdown"
     },
