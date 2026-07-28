@@ -258,17 +258,20 @@
    std.foundation.promise
    {:alias promise
     :symbols
-    #{run
-      new
+    #{new
+      from
       all
       then
       catch
       finally
-      state
-      value
       cancel
       native?
       delay}}
+
+   std.foundation.socket
+   {:alias socket
+    :capability :socket
+    :symbols #{connect send close}}
 
    std.foundation.file
    {:alias file
