@@ -14,15 +14,18 @@
   <meta name="twitter:title" content="Hara Specifications">
   <meta name="twitter:description" content="The portable language contract.">
   <meta name="twitter:image" content="https://specs.hara-lang.org/assets/og-hara-specs.png">
-  <link rel="icon" href="vendor/hara-ui/favicon-48.svg" sizes="48x48" type="image/svg+xml">
-  <link rel="icon" href="vendor/hara-ui/favicon-128.svg" sizes="128x128" type="image/svg+xml">
-  <link rel="icon" href="vendor/hara-ui/favicon-256.svg" sizes="256x256" type="image/svg+xml">
+  <link rel="icon" href="vendor/hara-ui/logo-white.svg" type="image/svg+xml">
   <title>Hara Specs</title>
   <link rel="stylesheet" href="vendor/hara-ui/tokens.css">
   <link rel="stylesheet" href="vendor/hara-ui/components.css">
   <link rel="stylesheet" href="vendor/hara-ui/spec-explorer.css">
+  <link rel="stylesheet" href="specs.css?v=docs-grid-theme-1">
 </head>
 <body>
+  <button class="specs-theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+    <span aria-hidden="true">◐</span>
+    <span data-theme-label>LIGHT MODE</span>
+  </button>
   <main id="spec-explorer">
     <section class="hara-explorer-welcome">
       <h1>Hara specifications</h1>
@@ -33,10 +36,44 @@
   <script type="module">
     import { createSpecExplorer } from "./vendor/hara-ui/spec-explorer.js";
 
+    const nativeFetch = window.fetch.bind(window);
+    window.fetch = async (...args) => {
+      const response = await nativeFetch(...args);
+      const requestUrl = String(args[0]?.url || args[0] || "");
+      if (!response.ok || !requestUrl.match(/\.md(?:$|[?#])/i)) return response;
+      const source = await response.text();
+      const compactSource = source
+        .split(/\n\s*\n/)
+        .map((block) => block.split(/\r?\n/).join(" "))
+        .join("\n\n");
+      return new Response(compactSource, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers
+      });
+    };
+
     createSpecExplorer(document.querySelector("#spec-explorer"), {
       manifestUrl: "spec-manifest.json",
       repositoryUrl: "https://github.com/hara-lang/hara-specs/blob/main"
     });
+
+    const root = document.documentElement;
+    const toggle = document.querySelector("[data-theme-toggle]");
+    const label = document.querySelector("[data-theme-label]");
+    const storedTheme = localStorage.getItem("hara-specs-theme");
+    const preferredTheme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+
+    const setTheme = (theme) => {
+      const isLight = theme === "light";
+      root.dataset.theme = theme;
+      toggle.setAttribute("aria-pressed", String(isLight));
+      label.textContent = isLight ? "DARK MODE" : "LIGHT MODE";
+      localStorage.setItem("hara-specs-theme", theme);
+    };
+
+    setTheme(storedTheme || preferredTheme);
+    toggle.addEventListener("click", () => setTheme(root.dataset.theme === "light" ? "dark" : "light"));
   </script>
 </body>
 </html>

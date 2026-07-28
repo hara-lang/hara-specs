@@ -1,0 +1,204 @@
+:root {
+  color-scheme: dark;
+  --spec-bg: #06090d;
+  --spec-panel: rgba(11, 17, 24, .9);
+  --spec-panel-2: #0f1720;
+  --spec-text: #edf7f5;
+  --spec-muted: #8fa2a8;
+  --spec-cyan: #63f5e5;
+  --spec-violet: #9c7bff;
+  --spec-line: rgba(99, 245, 229, .16);
+  --spec-grid: rgba(99, 245, 229, .07);
+  --spec-shadow: rgba(0, 0, 0, .38);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --hara-abyss: #f7faf9;
+  --hara-bg: #edf5f3;
+  --hara-panel: rgba(248, 252, 251, .92);
+  --hara-raised: #e6efed;
+  --hara-overlay: #ffffff;
+  --hara-cyan: #ff2e88;
+  --hara-cyan-bright: #9b164f;
+  --hara-green: #008a5a;
+  --hara-violet: #5d43ae;
+  --hara-amber: #a46600;
+  --hara-text: #16252c;
+  --hara-muted: #536770;
+  --hara-faint: #71828a;
+  --hara-line: rgba(255, 46, 136, .2);
+  --hara-line-strong: rgba(255, 46, 136, .42);
+  --spec-bg: #edf5f3;
+  --spec-panel: rgba(248, 252, 251, .9);
+  --spec-panel-2: #ffffff;
+  --spec-text: #102027;
+  --spec-muted: #5d7078;
+  /* Docs use Hara's magenta/red accent on light surfaces. */
+  --spec-cyan: #ff2e88;
+  --spec-violet: #6b52c8;
+  --spec-line: rgba(255, 46, 136, .2);
+  --spec-grid: rgba(255, 46, 136, .1);
+  --spec-shadow: rgba(80, 30, 56, .16);
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--spec-bg);
+}
+
+body {
+  background-image:
+    linear-gradient(var(--spec-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--spec-grid) 1px, transparent 1px),
+    radial-gradient(circle at 80% 0, color-mix(in srgb, var(--spec-cyan) 12%, transparent), transparent 34rem);
+  background-size: 36px 36px, 36px 36px, auto;
+  color: var(--spec-text);
+  transition: background-color .2s ease, color .2s ease;
+}
+
+#spec-explorer {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding-top: 58px;
+  background: linear-gradient(rgba(6, 9, 13, .34), rgba(6, 9, 13, .64));
+}
+
+:root[data-theme="light"] #spec-explorer {
+  background: linear-gradient(rgba(237, 245, 243, .36), rgba(237, 245, 243, .64));
+}
+
+.hara-spec-explorer {
+  grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr);
+  color: var(--spec-text);
+  background: transparent;
+  font-family: var(--hara-mono);
+}
+
+.hara-explorer-sidebar {
+  padding: 1.2rem;
+  background: var(--spec-panel);
+  border-right: 1px solid var(--spec-line);
+  box-shadow: 18px 0 60px var(--spec-shadow);
+  backdrop-filter: blur(18px) saturate(1.15);
+  font-size: .72rem;
+}
+
+.hara-spec-brand {
+  min-height: 42px;
+  margin: 0 0 1.1rem;
+  padding-bottom: 1.1rem;
+  color: var(--spec-text);
+  border-bottom-color: var(--spec-line);
+}
+
+.hara-spec-brand b { color: var(--spec-text); }
+.hara-spec-brand small { color: var(--spec-violet); }
+
+.hara-explorer-sidebar-title,
+.hara-explorer-sidebar-header { color: var(--spec-muted); }
+.hara-explorer-sidebar-title { font-size: .65rem; letter-spacing: .18em; text-transform: uppercase; }
+.hara-explorer-count { color: var(--spec-cyan); font-size: .62rem; letter-spacing: .08em; }
+
+.hara-input {
+  color: var(--spec-text) !important;
+  background: color-mix(in srgb, var(--spec-panel-2) 78%, transparent) !important;
+  border-color: var(--spec-line) !important;
+  border-radius: 5px !important;
+}
+
+.hara-input::placeholder { color: var(--spec-muted); }
+
+.hara-explorer-tree { font-size: .72rem; }
+.hara-tree-directory { border-left-color: var(--spec-line); }
+.hara-tree-directory > summary,
+.hara-explorer-empty { color: var(--spec-muted); }
+.hara-tree-directory > summary { font-size: .72rem; }
+.hara-tree-file { color: var(--spec-text); }
+.hara-tree-file { font-size: .72rem; }
+.hara-tree-file:hover,
+.hara-tree-file[aria-current="true"] {
+  color: var(--spec-cyan);
+  background: color-mix(in srgb, var(--spec-cyan) 12%, transparent);
+}
+
+.hara-explorer-viewer {
+  background: color-mix(in srgb, var(--spec-bg) 46%, transparent);
+}
+
+.hara-explorer-header {
+  min-height: 72px;
+  padding: .8rem clamp(1rem, 3vw, 2.4rem) .75rem;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--spec-panel-2) 76%, transparent), transparent),
+    linear-gradient(90deg, color-mix(in srgb, var(--spec-cyan) 9%, transparent), color-mix(in srgb, var(--spec-violet) 9%, transparent));
+  border-bottom-color: var(--spec-line);
+}
+
+.hara-explorer-crumb { color: var(--spec-muted); font-size: .7rem; }
+.hara-explorer-file-title { color: var(--spec-text); letter-spacing: -.04em; font-size: 1rem; }
+.hara-explorer-document { padding: clamp(1rem, 3vw, 2.2rem); }
+.hara-markdown { max-width: 64rem; color: var(--spec-text); font-size: .78rem; line-height: 1.55; }
+.hara-markdown p,
+.hara-markdown li { color: var(--spec-muted); }
+.hara-markdown h1,
+.hara-markdown h2,
+.hara-markdown h3 { color: var(--spec-text); }
+.hara-markdown h1 { font-size: 1.55rem; }
+.hara-markdown h2 { font-size: 1.1rem; }
+.hara-markdown h3 { font-size: .92rem; }
+.hara-markdown h2 { border-bottom-color: var(--spec-line); }
+.hara-markdown a { color: var(--spec-cyan); }
+.hara-markdown code { font-size: .72rem; }
+.hara-markdown pre,
+.hara-source {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: .85rem 1rem !important;
+  background: color-mix(in srgb, var(--spec-panel-2) 82%, transparent) !important;
+  border-color: var(--spec-line) !important;
+  box-shadow: 0 18px 50px var(--spec-shadow);
+  font-size: .68rem !important;
+  line-height: 1.4 !important;
+  white-space: pre !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+.hara-markdown pre code,
+.hara-source code { font-size: inherit !important; line-height: inherit !important; white-space: inherit !important; }
+
+.hara-explorer-actions .hara-button,
+.hara-explorer-actions .hara-icon-button { font-size: .68rem; }
+
+.specs-theme-toggle {
+  position: fixed;
+  z-index: 10;
+  top: 14px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  min-height: 30px;
+  padding: .4rem .65rem;
+  color: var(--spec-muted);
+  background: var(--spec-panel);
+  border: 1px solid var(--spec-line);
+  border-radius: 5px;
+  font: .58rem var(--hara-mono);
+  letter-spacing: .1em;
+  cursor: pointer;
+  box-shadow: 0 10px 26px var(--spec-shadow);
+  backdrop-filter: blur(16px);
+}
+
+.specs-theme-toggle:hover,
+.specs-theme-toggle:focus-visible { color: var(--spec-cyan); border-color: var(--spec-cyan); outline: none; }
+
+@media (max-width: 760px) {
+  #spec-explorer { padding-top: 52px; }
+  .specs-theme-toggle { top: 10px; right: 10px; }
+  .hara-explorer-sidebar { max-height: 42vh; }
+}
