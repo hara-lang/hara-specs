@@ -1,0 +1,5 @@
+# Local desktop metadata
+.DS_Store
+
+# Nested vendor checkout metadata
+vendor/.DS_Store
