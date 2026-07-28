@@ -278,7 +278,7 @@ adapter is explicit and contains no shell interpolation:
 {:adapter :command
  :command ["npm" "run" "build:noir"]
  :working-directory "../../web"
- :output "../../web/dist/extensions/ledger/noir"}
+ :output "target/package/ledger/noir"}
 ```
 
 The packaging commands are:

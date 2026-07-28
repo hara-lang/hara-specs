@@ -50,7 +50,7 @@
      :requirement/text "The nearest ancestor project.edn establishes the project root."}
     {:requirement/id :project/package-fields
      :requirement/level :must
-     :requirement/text "Package-aware projects use :project/dependencies, :project/repositories, :project/hara-version, :project/hir-formats, and :project/package without changing required existing project keys."}]
+     :requirement/text "Package-aware projects use :project/dependencies, :project/repositories, :project/hara-version, :project/hir-formats, :project/artifact-paths, :project/archive-root, and :project/package without changing required existing project keys."}]
    :section/forms []}
   {:section/id :package/lock
    :section/title "Locked resolution"
@@ -179,6 +179,8 @@
   :project/repositories ["hara"]
   :project/hara-version ">=0.3.0"
   :project/hir-formats [1]
+  :project/artifact-paths ["target/package"]
+  :project/archive-root "target/package"
   :project/package {:include-source true :entry-points ["visual-lab.main"] :license "MIT"}}
 
  :package/lock-example
