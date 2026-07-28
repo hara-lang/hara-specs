@@ -122,6 +122,18 @@
       "kind": "edn"
     },
     {
+      "path": "package/draft/README.md",
+      "kind": "markdown"
+    },
+    {
+      "path": "package/draft/architecture.md",
+      "kind": "markdown"
+    },
+    {
+      "path": "package/draft/hal-packagespec.edn",
+      "kind": "edn"
+    },
+    {
       "path": "runtime/draft/hal-studio-runtime.edn",
       "kind": "edn"
     }

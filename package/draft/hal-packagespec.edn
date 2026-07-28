@@ -1,0 +1,197 @@
+{:document/id :hara/package
+ :document/type :package-spec
+ :document/version "0.1.0-draft"
+ :document/status :draft
+ :document/title "Hara package and registry specification"
+ :document/summary
+ "Normative contract for Hara project dependencies, deterministic archives, GitHub publication, and verified package loading."
+
+ :package/scope
+ {:includes #{:project-manifests :lockfiles :semver-resolution :harp-archives
+              :github-registry :github-release-assets :identity-policy
+              :publisher-signatures :registry-ci-attestations :wasm-package-loading}
+  :excludes #{:ir-to-machine-code :native-executable-compilation :package-lifecycle-scripts
+              :private-key-storage :ambient-network-require}}
+
+ :package/invariants
+ [{:requirement/id :package/flat-project-manifest
+   :requirement/level :must
+   :requirement/text "Package declarations extend the existing flat project.edn :hara/* and :project/* map; they do not replace it with a nested manifest."}
+  {:requirement/id :package/git-control-plane
+   :requirement/level :must
+   :requirement/text "Reviewed Git content is authoritative for registry records and identity policy."}
+  {:requirement/id :package/github-release-data-plane
+   :requirement/level :must
+   :requirement/text "An official package archive is retrieved from the declared GitHub Release asset and is identified by its archive digest, not its URL."}
+  {:requirement/id :package/no-install-execution
+   :requirement/level :must-not
+   :requirement/text "Resolving, downloading, inspecting, or mounting a package must not execute package lifecycle code."}
+  {:requirement/id :package/local-require
+   :requirement/level :must
+   :requirement/text "require resolves only against already verified mounted roots and must not perform network access."}
+  {:requirement/id :package/two-stage-verification
+   :requirement/level :must
+   :requirement/text "A verified package requires both an authorized publisher release-intent signature and an authorized registry-CI archive attestation."}]
+
+ :package/section-order
+ [:package/project :package/lock :package/archive :package/resolution
+  :package/identity :package/registry :package/publication :package/wasm :package/commands]
+
+ :package/sections
+ [{:section/id :package/project
+   :section/title "Project manifest"
+   :section/summary "project.edn remains editable project intent and extends the current Studio project schema."
+   :section/requirements
+   [{:requirement/id :project/data-only
+     :requirement/level :must
+     :requirement/text "project.edn is EDN data and is never evaluated as HAL."}
+    {:requirement/id :project/root
+     :requirement/level :must
+     :requirement/text "The nearest ancestor project.edn establishes the project root."}
+    {:requirement/id :project/package-fields
+     :requirement/level :must
+     :requirement/text "Package-aware projects use :project/dependencies, :project/repositories, :project/hara-version, :project/hir-formats, and :project/package without changing required existing project keys."}]
+   :section/forms []}
+  {:section/id :package/lock
+   :section/title "Locked resolution"
+   :section/summary "The resolver turns SemVer intent into an exact, reproducible graph."
+   :section/requirements
+   [{:requirement/id :lock/semver
+     :requirement/level :must
+     :requirement/text "Dependency requests use Semantic Versioning exact versions, ^, ~, and comparison ranges; a version-one graph selects one exact version per coordinate."}
+    {:requirement/id :lock/pins
+     :requirement/level :must
+     :requirement/text "project.lock.edn records the exact registry commit, hara-identity commit, source repository ID, source commit, archive digest, release asset, signature metadata, and every transitive dependency."}
+    {:requirement/id :lock/frozen
+     :requirement/level :must
+     :requirement/text "Frozen mode fails when project.edn and project.lock.edn disagree or required locked bytes are unavailable."}]
+   :section/forms []}
+  {:section/id :package/archive
+   :section/title "HARP archives"
+   :section/summary "A .harp archive is the deterministic runtime package unit."
+   :section/requirements
+   [{:requirement/id :harp/container
+     :requirement/level :must
+     :requirement/text "A .harp archive is a ZIP-compatible container with generated package.edn at its root."}
+    {:requirement/id :harp/reproducible
+     :requirement/level :must
+     :requirement/text "Entries use normalized relative UTF-8 paths, lexical ordering, fixed timestamps, format-defined compression, canonical package.edn bytes, and a tree SHA-256 digest."}
+    {:requirement/id :harp/safe-paths
+     :requirement/level :must-not
+     :requirement/text "Archives must not contain absolute paths, parent traversal, device paths, symbolic links, hard links, duplicate paths, or undeclared executable artifacts."}
+    {:requirement/id :harp/read-only
+     :requirement/level :must
+     :requirement/text "A successfully verified archive is mounted as a read-only package root."}]
+   :section/forms []}
+  {:section/id :package/resolution
+   :section/title "Resolution and mounting"
+   :section/summary "Resolution is explicit and atomic before a runtime evaluates project code."
+   :section/requirements
+   [{:requirement/id :resolution/modes
+     :requirement/level :must
+     :requirement/text "Implementations provide default, offline, locked, and frozen resolution modes; offline mode reads only local caches."}
+    {:requirement/id :resolution/integrity
+     :requirement/level :must
+     :requirement/text "Archives and thin artifacts are verified by exact SHA-256 digest and expected size before mounting."}
+    {:requirement/id :resolution/atomic
+     :requirement/level :must
+     :requirement/text "A dependency graph becomes active only after every archive, artifact, manifest, and signature has validated."}]
+   :section/forms []}
+  {:section/id :package/identity
+   :section/title "Identity and signatures"
+   :section/summary "hara-lang/hara-identity supplies public trust policy; signing material never enters Git."
+   :section/requirements
+   [{:requirement/id :identity/public-only
+     :requirement/level :must
+     :requirement/text "hara-lang/hara-identity contains Ed25519 public keys, key IDs, delegations, validity windows, revocations, and CODEOWNERS-governed policy, but no private keys."}
+    {:requirement/id :identity/publisher-intent
+     :requirement/level :must
+     :requirement/text "A publisher signs a canonical release-intent statement binding coordinate, version, source repository numeric ID, tag, and resolved commit."}
+    {:requirement/id :identity/ci-attestation
+     :requirement/level :must
+     :requirement/text "Registry CI signs a canonical attestation binding the publisher statement fields and the final .harp SHA-256 digest."}
+    {:requirement/id :identity/ed25519
+     :requirement/level :must
+     :requirement/text "Version one uses detached Ed25519 signatures; clients reject unknown, unauthorized, expired, or revoked keys."}]
+   :section/forms []}
+  {:section/id :package/registry
+   :section/title "Registry and release records"
+   :section/summary "hara-lang/hara-packages records reviewed immutable release metadata."
+   :section/requirements
+   [{:requirement/id :registry/coordinate
+     :requirement/level :must
+     :requirement/text "Package coordinates use owner/name and do not imply HAL namespace identity."}
+    {:requirement/id :registry/provenance
+     :requirement/level :must
+     :requirement/text "A release record includes source repository numeric ID and display name, immutable tag and commit, GitHub Release asset name and URL, archive digest, identity-policy revision, and both signature records."}
+    {:requirement/id :registry/immutable
+     :requirement/level :must
+     :requirement/text "A released coordinate and version maps to one digest forever; yanking may prevent new selection but must preserve historical lockfile verification."}]
+   :section/forms []}
+  {:section/id :package/publication
+   :section/title "Publication"
+   :section/summary "Registry CI builds the trusted archive from an immutable source tag."
+   :section/requirements
+   [{:requirement/id :publication/ci-build
+     :requirement/level :must
+     :requirement/text "Registry CI checks out the recorded source commit, validates the manifest and inputs, builds the deterministic archive, uploads release assets through narrowly scoped GitHub App authority, and records the final digest before registry merge."}
+    {:requirement/id :publication/untrusted-build
+     :requirement/level :must-not
+     :requirement/text "Untrusted package build jobs must not receive registry, release-upload, or CI signing credentials."}
+    {:requirement/id :publication/assets
+     :requirement/level :must
+     :requirement/text "The GitHub Release contains the .harp archive, publisher release-intent statement and signature, registry-CI attestation and signature, and a digest manifest."}]
+   :section/forms []}
+  {:section/id :package/wasm
+   :section/title "WASM package loading"
+   :section/summary "Browser hosts reconcile and cache verified package bytes before starting the WASM runtime."
+   :section/requirements
+   [{:requirement/id :wasm/host-resolution
+     :requirement/level :must
+     :requirement/text "The JavaScript host performs package retrieval, signature verification, and digest-addressed caching; the WASM evaluator does not fetch network content."}
+    {:requirement/id :wasm/extension-validation
+     :requirement/level :must
+     :requirement/text "WASM modules and HTA assets are declared in package.edn and hara.extension.edn, validated before startup, and receive no authority from declaration alone."}]
+   :section/forms []}
+  {:section/id :package/commands
+   :section/title "Command interface"
+   :section/summary "Package operations are subcommands of the bundled hara CLI."
+   :section/requirements
+   [{:requirement/id :commands/v1
+     :requirement/level :must
+     :requirement/text "Version one defines hara package add, remove, sync, update, check, build, inspect, publish, tap, search, and info."}
+    {:requirement/id :commands/no-compiler
+     :requirement/level :must-not
+     :requirement/text "Version one does not define hara-compiler or project IR-to-machine-code compilation; those belong to a later compiler specification."}]
+   :section/forms []}]
+
+ :package/project-example
+ {:hara/type :project
+  :hara/version "1.0.0"
+  :project/id visual-lab
+  :project/version "0.1.0"
+  :project/source-paths ["src"]
+  :project/test-paths ["test"]
+  :project/extension-paths ["extensions"]
+  :project/capabilities #{}
+  :project/main visual-lab.main
+  :project/dependencies {"hara/graph" {:version "^1.2.0"}}
+  :project/repositories ["hara"]
+  :project/hara-version ">=0.3.0"
+  :project/hir-formats [1]
+  :project/package {:include-source true :entry-points ["visual-lab.main"] :license "MIT"}}
+
+ :package/lock-example
+ {:lock/format 1
+  :registries {"hara" {:repository "github:hara-lang/hara-packages" :commit "registry-commit"}}
+  :identity {:repository "github:hara-lang/hara-identity" :commit "identity-commit"}
+  :packages {"hara/graph" {:version "1.2.3" :repository-id 123456789
+                             :source-commit "source-commit" :release-asset "graph-1.2.3.harp"
+                             :harp-sha256 "sha256:..." :dependencies {}}}}
+
+ :package/commands
+ ["hara package add COORDINATE@RANGE" "hara package remove COORDINATE"
+  "hara package sync [--offline|--locked|--frozen]" "hara package update [COORDINATE]"
+  "hara package check [PATH]" "hara package build" "hara package inspect ARCHIVE.harp"
+  "hara package publish" "hara package tap add NAME REPOSITORY"
+  "hara package tap remove NAME" "hara package search QUERY" "hara package info COORDINATE"]}
