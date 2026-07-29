@@ -39,6 +39,16 @@
     window.fetch = async (...args) => {
       const response = await nativeFetch(...args);
       const requestUrl = String(args[0]?.url || args[0] || "");
+      if (response.ok && requestUrl.match(/spec-manifest\.json(?:$|[?#])/i)) {
+        const manifest = await response.json();
+        const visibleFiles = (manifest.files || []).filter(({ path }) => path !== "archive" && !path.startsWith("archive/"));
+        const visibleDirectories = (manifest.directories || []).filter((path) => path !== "archive" && !path.startsWith("archive/"));
+        return new Response(JSON.stringify({ ...manifest, files: visibleFiles, directories: visibleDirectories }), {
+          status: response.status,
+          statusText: response.statusText,
+          headers: { "Content-Type": "application/json" }
+        });
+      }
       if (!response.ok || !requestUrl.match(/\.md(?:$|[?#])/i)) return response;
       const source = await response.text();
       const compactSource = source
