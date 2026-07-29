@@ -4,7 +4,7 @@
  :document/status :draft
  :document/title "HAL language specification"
  :document/summary
- "Portable language contract for HAL (Hara Lisp), an EDN-compatible, host-neutral notation and data format independent of evaluator, compiler, host, and storage representation."
+ "Portable language contract for HAL (Hara Lisp), whose shared reader uses a restricted, host-neutral EDN profile with signed 64-bit integers and binary64 floating-point numbers."
 
  :spec/conforms-to
  {:document "../../metaspec/draft/hal-metaspec.edn"
@@ -13,6 +13,11 @@
  :spec/scope
  {:language "HAL"
   :source-extension ".hal"
+  :data-notation
+  {:name "EDN"
+   :extension ".edn"
+   :profile :hara
+   :unsupported-number-forms #{:ratio :arbitrary-precision-integer :exact-decimal}}
   :profile :portable-core
   :includes
   #{:reader
@@ -90,15 +95,37 @@
  [{:section/id :hal/source-reader
    :section/title "Source and reader"
    :section/summary
-   "HAL source is UTF-8 text read into immutable forms with source locations retained as diagnostic metadata."
+   "HAL source and EDN data are UTF-8 text read by the shared HAL reader into immutable forms, with source locations retained as diagnostic metadata."
    :section/requirements
-   [{:requirement/id :reader/forms
+   [{:requirement/id :reader/edn-profile
      :requirement/level :must
      :requirement/text
-     "The reader accepts nil, booleans, strings, characters, symbols, keywords, numeric literals, lists, vectors, maps, sets, metadata, discard, and the quote-family prefixes."
+     "The Hara EDN profile retains the core EDN data forms, limits integers to signed 64-bit values and floating-point numbers to binary64 values, and rejects ratios, arbitrary-precision N suffixes, and exact-decimal M suffixes."
      :requirement/evidence
      [{:suite :hal/reader
-       :cases [:nil :booleans :collections :reader-prefixes :metadata :discard]}]}
+       :cases [:numbers
+               :integer-boundaries
+               :positive-integer-overflow
+               :negative-integer-overflow
+               :explicit-bigint-unsupported
+               :big-decimal-unsupported]}]}
+    {:requirement/id :reader/forms
+     :requirement/level :must
+     :requirement/text
+     "For HAL source, the shared reader accepts the Hara EDN profile plus the program-reader extensions metadata, regular expressions, symbolic floating-point values, extended-radix integers, and the quote, syntax-quote, unquote, unquote-splicing, deref, and var prefixes."
+     :requirement/evidence
+     [{:suite :hal/reader
+       :cases [:nil
+               :booleans
+               :collections
+               :reader-prefixes
+               :metadata
+               :discard
+               :regex
+               :symbolic-values
+               :hex-integers
+               :octal-integers
+               :radix-integers]}]}
     {:requirement/id :reader/delimiters
      :requirement/level :must
      :requirement/text
@@ -276,10 +303,30 @@
      :requirement/level :must
      :requirement/text
      "Aliases and referred symbols preserve the identity and current value of their source Var."}
+    {:requirement/id :namespace/facade-vars
+     :requirement/level :must
+     :requirement/text
+     "intern-var, intern-in, and intern-all create receiving-namespace façade Vars by copying the source Var's current root and metadata; they do not create aliases or referrals."}
     {:requirement/id :module/transactional
      :requirement/level :must
      :requirement/text
      "A failed module load rolls back partial namespace and macro changes."}
+    {:requirement/id :module/lazy-alias
+     :requirement/level :must
+     :requirement/text
+     "A require spec may declare (:lazy true) only with (:as alias). It records a non-forcing alias, loads its target on first qualified lookup, Var lookup, or resolve, and rejects :refer and :refer-macros in the same spec."}
+    {:requirement/id :module/loading-state
+     :requirement/level :must
+     :requirement/text
+     "ns-state, ns-loaded?, and ns-alias-state are non-forcing inspection operations. ns-state returns one of :unknown, :unloaded, :loading, :loaded, or :failed; alias state is local to the querying namespace."}
+    {:requirement/id :namespace/with-ns
+     :requirement/level :must
+     :requirement/text
+     "with-ns evaluates its quoted body forms in an existing loaded target namespace, returns the final value, and restores the caller namespace on success or failure. It neither creates nor loads namespaces and does not capture caller lexical locals."}
+    {:requirement/id :foundation/templates
+     :requirement/level :must
+     :requirement/text
+     "with:template-meta, template-meta, template-vars, template-entries, and template-ensure comprise the portable template surface. template-bulk is not part of HAL."}
     {:requirement/id :macro/compile-time
      :requirement/level :must
      :requirement/text
@@ -287,17 +334,30 @@
    :section/forms
    [:hal.form/def
     :hal.form/ns
-    :hal.form/require]}
+    :hal.form/require
+    :hal.macro/with-ns]}
 
   {:section/id :hal/standard-libraries
    :section/title "Standard libraries"
    :section/summary
    "Portable source libraries extend HAL without exposing host objects or ambient authority."
    :section/requirements
-   [{:requirement/id :std.foundation.json/api
+   [{:requirement/id :std.foundation.edn/api
      :requirement/level :must
      :requirement/text
-     "The std.foundation.json namespace is available in every Foundation runtime and provides one-argument read, write, and write-pp functions. JSON null maps to nil; booleans and strings retain their values; signed 64-bit integer literals map to HAL integers; arrays map to vectors; and objects map to insertion-ordered HAL maps with string keys. read accepts only strict JSON: duplicate keys, trailing content, malformed or incomplete escapes, fractional or exponent numbers, and integers outside the signed 64-bit range are errors. write and write-pp accept exactly those HAL values, reject every other value and non-string map key, preserve map iteration order, and emit no trailing newline. write is compact; write-pp uses two spaces per indentation level."}
+     "The std.foundation.edn namespace provides one-argument read and write functions plus the two-argument (pretty value opts) function. read accepts exactly one value using the Hara EDN profile and does not evaluate it; ratios, arbitrary-precision N suffixes, exact-decimal M suffixes, integer overflow, empty input, and multiple top-level values are errors. write and pretty return canonical readable text that round-trips through read. pretty requires opts to be a map; its option keys are reserved."}
+    {:requirement/id :std.foundation/ex-info
+     :requirement/level :must
+     :requirement/text
+     "ex-info constructs a structured exception from a string message, a data map, and an optional cause. ex-message returns its message, ex-data and IExInfo/data return its data map, and throw/catch preserve the structured exception value."}
+    {:requirement/id :std.foundation/startup-defaults
+     :requirement/level :must
+     :requirement/text
+     "Every non-blank startup namespace provides the edn alias for std.foundation.edn, global protocol aliases such as ICount, and simple native-type aliases such as Maths, Edn, and Json. Each native-type alias is the same Var visible through its canonical std.native/<Type> name and its std.foundation/<Type> referral; for example, (= Maths std.native/Maths std.foundation/Maths) is true."}
+    {:requirement/id :std.foundation.json/api
+     :requirement/level :must
+     :requirement/text
+     "The std.foundation.json namespace is available in every Foundation runtime and provides one-argument read and write functions plus the two-argument (pretty value opts) function. JSON null maps to nil; booleans and strings retain their values; signed 64-bit integer literals map to HAL integers; arrays map to vectors; and objects map to insertion-ordered HAL maps with string keys. read accepts only strict JSON: duplicate keys, trailing content, malformed or incomplete escapes, fractional or exponent numbers, and integers outside the signed 64-bit range are errors. write and pretty accept exactly those HAL values, reject every other value and non-string map key, preserve map iteration order, and emit no trailing newline. write is compact; pretty requires opts to be a map, reserves its option keys, and uses two spaces per indentation level."}
     {:requirement/id :std.pretty/api
      :requirement/level :must
      :requirement/text

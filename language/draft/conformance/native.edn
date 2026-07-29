@@ -1,0 +1,98 @@
+{:spec/version "0.1"
+ :spec/status :draft
+ :syntax :edn
+ :purpose :native-runtime-boundary
+
+ :naming
+ {:type-var "std.native/<Type>"
+  :method-var "std.native.<Type>/<method>"
+  :example {:type std.native/Maths
+            :method std.native.Maths/sin
+            :wrapper std.foundation/sin}
+  :constructor new
+  :predicate instance?
+  :interface-prefix false}
+
+ :descriptor
+ {:kind :native-type
+  :callable false
+  :constructs-structs false
+  :display "#<native-type <qualified-name>>"
+  :identity :canonical-per-runtime
+  :protocols [IDisplay INamespaced IObjType]
+  :metadata {:required true
+             :affects-equality false}
+  :inventory :inspectable}
+
+ :startup-visibility
+ {:status :accepted
+  :platforms [:rust :raw-rust :truffle]
+  :canonical-namespace std.native
+  :canonical-var "std.native/<Type>"
+  :global-alias "<Type>"
+  :global-aliases
+  [Maths Numbers Bits String Bytes File Socket Promise Coroutine Array Object
+   Runtime Printer Edn Json Regex UUID Error]
+  :identity :same-native-type-object
+  :identity-example "(= Maths std.native/Maths std.foundation/Maths)"
+  :installed-with :global-protocol-aliases}
+
+ :ownership
+ {:syntax :runtime-intrinsic
+  :protocol-methods :std.protocol
+  :portable-functions :hal
+  :host-operations :std.native
+  :foundation "Ordinary HAL wrappers over protocol or std.native calls."
+  :duplicate-protocol-methods false
+  :builtin-activation-clause false}
+
+ :types
+ [{:name Maths
+   :methods [abs acos acosh asin asinh atan atan2 atanh ceil cos cosh exp
+             floor pow sin sinh sqrt tan tanh]}
+  {:name Numbers
+   :methods [long double]}
+  {:name Bits
+   :methods [and or xor not shift-left shift-right]}
+  {:name String
+   :methods [length blank? includes? starts-with? ends-with? char-at slice
+             index-of last-index-of join split split-lines repeat replace
+             replace-first trim trim-left trim-right upper lower capitalize
+             decapitalize pad-left pad-right reverse encode-utf8 decode-utf8]}
+  {:name Bytes
+   :methods [new instance? count get set copy slice u8 s8]}
+  {:name File
+   :methods [resolve read write exists? list mkdir delete]}
+  {:name Socket
+   :methods [connect listen endpoint events next send close]}
+  {:name Promise
+   :methods [run new from all delay instance?]}
+  {:name Coroutine
+   :methods [create yield await instance?]}
+  {:name Array
+   :methods [new instance?]}
+  {:name Object
+   :methods [new instance?]}
+  {:name Runtime
+   :methods [load-string macroexpand-1 gensym var-sym]}
+  {:name Printer
+   :methods [str pr-str]}
+  {:name Edn
+   :methods [read]}
+  {:name Json
+   :methods [read write pretty]}
+  {:name Regex
+   :methods [instance?]}
+  {:name UUID
+   :methods [instance?]}
+  {:name Error
+   :methods [new message class]}]
+
+ :deferred
+ [{:type Random :reason :no-agreed-portable-surface}
+  {:type UUID :methods [new random] :reason :not-implemented-on-both-runtimes}
+  {:type Regex :reason :regexp-operation-names-not-yet-selected}
+  {:type OS :reason :runtime-parity-incomplete}
+  {:type Process :reason :runtime-parity-incomplete}
+  {:type Wrapped :reason :runtime-value-not-yet-implemented}
+  {:type Var :reason :var-operation-parity-incomplete}]}

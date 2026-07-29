@@ -243,9 +243,9 @@
       "write"
     ],
     "json": [
+      "pretty",
       "read",
-      "write",
-      "write-pp"
+      "write"
     ],
     "os": [
       "arch",

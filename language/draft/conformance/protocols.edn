@@ -1,4 +1,4 @@
-{:spec/version "0.3"
+{:spec/version "0.4"
  :spec/status :draft
  :syntax :edn
  :access
@@ -16,6 +16,21 @@
   :guest
   {:protocol-var "<current-namespace>/<Protocol>"
    :method-var "<current-namespace>/<method>"}}
+ :visibility
+ {:default :public
+  :hidden-protocols [IColl IMetadata]
+  :hidden-methods [IColl/start-string
+                   IColl/end-string
+                   IColl/sep-string
+                   IColl/iterator
+                   IMetadata/metatype]}
+ :inventory
+ {:protocol-count 52
+  :method-count 93
+  :public-protocol-count 50
+  :public-method-count 88
+  :hidden-protocol-count 2
+  :hidden-method-count 5}
  :runtime-modules
  {:rust
   {:directory "rust/src/lang/protocol"
@@ -25,10 +40,19 @@
  :conformance
  {:fixture "lib/test-fixtures/std/foundation/protocol_conformance.hal"
   :platforms [:rust :truffle]
-  :protocol-count 59
-  :method-count 106
+  :protocol-count 50
+  :method-count 88
   :invocation :direct-canonical-method-var
   :protocol-call false}
+ :functional-conformance
+ {:fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
+  :case-catalog "specs/language/draft/conformance/protocol-method-cases.edn"
+  :platforms [:rust :truffle]
+  :method-count 88
+  :checks-per-method [:actual-use-case :missing-receiver :unsupported-receiver]
+  :error-matching :category-prefix
+  :error-message-text :non-normative
+  :error-categories [:protocol/arity :protocol/unsupported-receiver]}
  :method-naming {:predicates-suffix "?"
                  :forbidden-suffix "!"}
  :protocols
@@ -42,11 +66,6 @@
    :methods {start-string 1 end-string 1 sep-string 1 iterator 1}}
   {:name IComponent
    :methods {props 1 status 1 started? 1 stopped? 1 start 1 stop 1 kill 1 remote? 1}}
-  {:name IComponentOptions :methods {options 1}}
-  {:name IComponentProps :methods {props 1}}
-  {:name IComponentQuery
-   :methods {started? 1 stopped? 1 info 2 remote? 1 health 1}}
-  {:name IComponentTrack :methods {track-path 1}}
   {:name IConj :methods {conj 2}}
   {:name ICons :methods {cons 2}}
   {:name IContext :methods {call -1}}
@@ -64,7 +83,6 @@
   {:name IExInfo :methods {data 1}}
   {:name IFind :methods {find 2}}
   {:name IFn :methods {invoke -1}}
-  {:name IHasRuntime :methods {runtime 1}}
   {:name IHash :methods {hash 1}}
   {:name IHashCached :extends [IHash] :methods {hash-current 1 hash-put 2}}
   {:name IIndexed :methods {index-of 2}}
@@ -91,7 +109,6 @@
   {:name IPopLast :methods {pop-last 1}}
   {:name IPushFirst :methods {push-first 2}}
   {:name IPushLast :methods {push-last 2}}
-  {:name IRanged :methods {range-max 1 range-min 1}}
   {:name IRealize :methods {realized? 1 realize 1}}
   {:name IReduce :methods {reduce -1}}
   {:name IReset :methods {reset 2}}
@@ -100,5 +117,4 @@
              rt-active 1 rt-get 2 rt-start 2 rt-started? 2 rt-stopped? 2 rt-stop 2}}
   {:name IToMutable :extends [IPersistent] :methods {to-mutable 1}}
   {:name IToPersistent :extends [IMutable] :methods {to-persistent 1}}
-  {:name IValidate :methods {validate 2 validator 1}}
   {:name IWatch :methods {watch-add 3 watch-remove 2 watch-list 1}}]}

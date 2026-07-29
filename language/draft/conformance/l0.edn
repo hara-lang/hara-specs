@@ -15,14 +15,22 @@
    :class :reader
    :source "nil"
    :expect {:value nil :type :nil}}
-  {:id :reader/bigint
+  {:id :reader/bigint-unsupported
    :class :reader
    :source "123N"
-   :expect {:value "123" :type :big-integer :readable "123N"}}
-  {:id :reader/bigdec
+   :expect {:error :invalid-number :message "Invalid number"}}
+  {:id :reader/zero-bigint-unsupported
+   :class :reader
+   :source "0N"
+   :expect {:error :invalid-number :message "Invalid number"}}
+  {:id :reader/bigdec-unsupported
    :class :reader
    :source "123.45M"
-   :expect {:value "123.45" :type :big-decimal :readable "123.45M"}}
+   :expect {:error :invalid-number :message "Invalid number"}}
+  {:id :reader/integer-overflow
+   :class :reader
+   :source "9223372036854775808"
+   :expect {:error :invalid-number :message "Invalid number"}}
   {:id :reader/quote
    :class :reader
    :source "'value"
@@ -219,7 +227,7 @@
    :expect {:value 42 :type :integer}}
   {:id :numeric/compare
    :class :numeric
-   :source "(< 1N 2N)"
+   :source "(< 1 2)"
    :expect {:value true :type :boolean}}
   {:id :numeric/mod
    :class :numeric
@@ -229,9 +237,9 @@
    :class :numeric
    :source "(= -0.0 0.0)"
    :expect {:value true :type :boolean}}
-  {:id :numeric/decimal-scale
+  {:id :numeric/double-equality
    :class :numeric
-   :source "(= 1.0M 1.00M)"
+   :source "(= 1.0 1.00)"
    :expect {:value true :type :boolean}}
   {:id :numeric/unary-division
    :class :numeric
@@ -271,11 +279,11 @@
             :message "Unbound symbol: host-call"}}
   {:id :namespace/config-intrinsics-all
    :class :namespace
-   :source "(ns app (:config {:intrinsics :all})) (bytes/count (str/encode \"x\"))"
+   :source "(ns app (:config {:intrinsics :all})) (bytes/count (str/encode-utf8 \"x\"))"
    :expect {:value 1 :type :integer}}
   {:id :namespace/config-exclude-and-alias
    :class :namespace
-   :source "(ns app (:config {:intrinsics {:exclude [bytes] :alias {string text}}})) (text/to-upper \"hara\")"
+   :source "(ns app (:config {:intrinsics {:exclude [bytes] :alias {string text}}})) (text/upper \"hara\")"
    :expect {:value "HARA" :type :string}}
   {:id :namespace/config-exclude-removes-alias
    :class :namespace
@@ -329,7 +337,7 @@
             :message "Unbound symbol: inc"}}
   {:id :namespace/blank-keeps-special-forms-and-aliases
    :class :namespace
-   :source "(ns app (:config {:blank true})) (if true (bytes/count (str/encode \"xy\")) 0)"
+   :source "(ns app (:config {:blank true})) (if true (bytes/count (str/encode-utf8 \"xy\")) 0)"
    :expect {:value 2 :type :integer}}
   {:id :namespace/builtins-require-registered-exports
    :class :namespace

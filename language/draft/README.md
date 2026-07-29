@@ -11,12 +11,22 @@ The document conforms to the draft
 
 ## Scope
 
-This specification defines the behaviour of HAL (Hara Lisp), an
-EDN-compatible, host-neutral notation and data format, independently of
-evaluator, compiler, storage representation, host language, and target
-runtime. It covers the reader, values, evaluation, functions and bindings,
-collections and iteration, numbers, errors, protocols and structs, namespaces
-and modules, portable standard libraries, and the explicit host boundary.
+This specification defines the behaviour of HAL (Hara Lisp), a host-neutral
+language whose shared reader uses a restricted EDN profile. Hara data continues
+to use `.edn`: integers are signed 64-bit values, floating-point numbers are
+binary64 values, and ratios plus the arbitrary-precision `N` and exact-decimal
+`M` suffixes are rejected. HAL and its EDN profile are defined independently of
+evaluator, compiler, storage representation, host language, and target runtime.
+
+The shared reader also accepts HAL program syntax beyond core EDN data:
+metadata, regular expressions, symbolic floating-point values, extended-radix
+integers, and the quote, syntax-quote, unquote, unquote-splicing, deref, and var
+prefixes. Executable HAL source uses `.hal`; data uses `.edn`.
+
+The specification covers the reader, values, evaluation, functions and
+bindings, collections and iteration, numbers, errors, protocols and structs,
+namespaces and modules, portable standard libraries, and the explicit host
+boundary.
 
 Backend storage, compiler implementation, host reflection, target emission,
 editor UX, and extension packaging are outside this language document.
@@ -54,8 +64,10 @@ editor UX, and extension packaging are outside this language document.
    immutable domain values.
 9. **Vars, namespaces, macros, and modules** — live Var identity, compile-time
    expansion, and transactional loading.
-10. **Standard libraries** — automatically loaded `std.foundation.json` provides JSON read/write formatting;
-    `std.pretty` provides canonical readable formatting through `pprint-str`.
+10. **Standard libraries** — `std.foundation.edn` provides restricted EDN
+    read/write formatting; automatically loaded `std.foundation.json` provides
+    JSON read/write formatting; `std.pretty` provides canonical readable
+    formatting through `pprint-str`.
 11. **Host boundary** — explicit adapters and portable runtime parity.
 
 The authoritative EDN also contains indexed declarations for the core special

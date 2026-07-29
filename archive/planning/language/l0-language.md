@@ -185,10 +185,10 @@ bytes as bytes.
 
 ## 6. Numbers
 
-The numeric categories are fixed-width integral values, floating-point values,
-`java.math.BigInteger`, and `java.math.BigDecimal`. Arithmetic promotes to a
-representation capable of preserving the operation result; primitive pairs
-use specialized Truffle paths and big-number cases use generic fallback.
+The numeric categories are signed 64-bit integral values (`long`) and
+IEEE-754 double-precision floating-point values (`double`). Integer arithmetic
+that exceeds the signed 64-bit range is an error; it does not promote to a
+host-specific arbitrary-precision representation.
 `+`, `-`, `*`, `/`, and `mod` are variadic with the documented identities and
 unary behavior and are also callable Vars, so they can be passed to functions
 such as `reduce`. Division is ratio-free: `(/ 2)` evaluates to integer `0`.
@@ -201,8 +201,9 @@ The comparison and equality operators `<`, `<=`, `>`, `>=`, `=`, and `not=` are
 also callable Vars. They require at least two arguments and apply pairwise from
 left to right, so they can be passed to iterator consumers such as `reduce`.
 
-Ratios, implicit complex numbers, and an implicit irrational-number tower are
-not L0 numeric categories. They may be explicit library or host values later.
+Ratios, arbitrary-precision integers or decimals, implicit complex numbers,
+and an implicit irrational-number tower are not L0 numeric categories. They
+may be explicit library or host values later.
 
 ## 7. Protocols, structs, and multimethods
 

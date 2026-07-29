@@ -90,7 +90,15 @@
       "kind": "markdown"
     },
     {
+      "path": "language/draft/conformance/foundation.edn",
+      "kind": "edn"
+    },
+    {
       "path": "language/draft/conformance/l0.edn",
+      "kind": "edn"
+    },
+    {
+      "path": "language/draft/conformance/native.edn",
       "kind": "edn"
     },
     {
@@ -99,6 +107,10 @@
     },
     {
       "path": "language/draft/conformance/parity/wasm-truffle.edn",
+      "kind": "edn"
+    },
+    {
+      "path": "language/draft/conformance/protocol-method-cases.edn",
       "kind": "edn"
     },
     {
