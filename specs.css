@@ -148,7 +148,9 @@ body {
   border-bottom-color: var(--spec-line);
 }
 
-.hara-explorer-crumb { color: var(--spec-muted); font-size: .7rem; }
+.hara-explorer-crumb {
+  display: none;
+}
 .hara-explorer-file-title { color: var(--spec-text); letter-spacing: -.04em; font-size: 1rem; }
 .hara-explorer-document { padding: clamp(1rem, 3vw, 2.2rem); }
 .hara-markdown { max-width: 64rem; color: var(--spec-text); font-size: .78rem; line-height: 1.55; }
