@@ -157,7 +157,7 @@ Although the development checkout needs `node_modules` to build these files, an 
 project contains only the built result:
 
 ```text
-project.hal
+project.edn
 extensions/
   ledger/noir/
     hara.extension.edn
@@ -266,7 +266,7 @@ call site.
 
 ## Project installation and build workflow
 
-The nearest `project.hal` fixes the project extension root at `extensions/`. A namespace maps to a
+The nearest `project.edn` fixes the project extension root at `extensions/`. A namespace maps to a
 package directory by replacing dots with path separators, so `ledger.noir` is discovered
 at `extensions/ledger/noir/hara.extension.edn`. `hara.extensions.path` and
 `HARA_EXTENSION_PATH` remain explicit additional roots for launchers and test harnesses.

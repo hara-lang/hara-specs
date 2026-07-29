@@ -14,5 +14,5 @@ matching. Providers must normalize failures into stable native-flavor errors whi
 original cause. Unsupported providers and denied capabilities must fail deterministically.
 
 Executable Hara source uses `.hal`. `.hara` is retained only for historical descriptors; current
-projects use executable `project.hal` descriptors. `.hrl` and `.hara` are not executable module
-extensions.
+projects use data manifests named `project.edn` and `workspace.edn`. `.hrl` and `.hara` are not
+executable module extensions.

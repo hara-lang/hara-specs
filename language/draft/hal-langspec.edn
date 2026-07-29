@@ -4,7 +4,7 @@
  :document/status :draft
  :document/title "HAL language specification"
  :document/summary
- "Portable language contract for Hara Lisp (HAL), independent of evaluator, compiler, host, and storage representation."
+ "Portable language contract for HAL (Hara Lisp), an EDN-compatible, host-neutral notation and data format independent of evaluator, compiler, host, and storage representation."
 
  :spec/conforms-to
  {:document "../../metaspec/draft/hal-metaspec.edn"

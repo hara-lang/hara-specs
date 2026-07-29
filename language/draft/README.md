@@ -11,8 +11,9 @@ The document conforms to the draft
 
 ## Scope
 
-This specification defines portable Hara Lisp (HAL) behaviour independently
-of evaluator, compiler, storage representation, host language, and target
+This specification defines the behaviour of HAL (Hara Lisp), an
+EDN-compatible, host-neutral notation and data format, independently of
+evaluator, compiler, storage representation, host language, and target
 runtime. It covers the reader, values, evaluation, functions and bindings,
 collections and iteration, numbers, errors, protocols and structs, namespaces
 and modules, portable standard libraries, and the explicit host boundary.

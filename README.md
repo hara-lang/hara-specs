@@ -18,7 +18,7 @@ EDN source remains authoritative.
 
 The HAL language spec allows portable Hara programs to:
 
-- read and evaluate Lisp forms;
+- read and evaluate HAL forms;
 - define functions, lexical bindings, closures, macros, namespaces, and modules;
 - work with immutable values and persistent collections;
 - use iteration, lazy sequences, numbers, structs, protocols, and multimethods;

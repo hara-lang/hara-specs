@@ -163,7 +163,7 @@
    :project/source-paths :project/test-paths :project/extension-paths
    :project/capabilities]
   :optional-keys [:project/main]
-  :legacy-read-only ["project.hal" "project.hara"]}
+  :legacy-read-only ["project.hara"]}
 
  :runtime/workspace
  {:file "workspace.edn"

@@ -292,4 +292,4 @@
   "Narrowing propositions are a strict subset of core.typed occurrence typing; the representation leaves room for let-aliasing and path refinement later."
   "std.typed.validate (runtime validation against the same schemas) is a future consumer and changes nothing in this file's boundary."
   "The semantics section above is written to double as the std.typed.* self-annotation seed once the library can lint itself."
-  "Custom checks, the hook registry, and the :lint project.hal key are launch-scope only where listed under :registries and :macro-handling; per-file config is intentionally absent."]}
+  "Custom checks, the hook registry, and the :lint project.edn key are launch-scope only where listed under :registries and :macro-handling; per-file config is intentionally absent."]}

@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The portable Hara language contract.">
+  <meta name="description" content="Portable contracts for the Hara kernel and HAL notation.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Hara Specifications">
-  <meta property="og:description" content="The portable language contract.">
+  <meta property="og:title" content="Hara / Specs">
+  <meta property="og:description" content="Portable contracts for the Hara kernel and HAL notation.">
   <meta property="og:image" content="https://specs.hara-lang.org/assets/og-hara-specs.png">
   <meta property="og:image:width" content="1730">
   <meta property="og:image:height" content="909">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Hara Specifications">
-  <meta name="twitter:description" content="The portable language contract.">
+  <meta name="twitter:title" content="Hara / Specs">
+  <meta name="twitter:description" content="Portable contracts for the Hara kernel and HAL notation.">
   <meta name="twitter:image" content="https://specs.hara-lang.org/assets/og-hara-specs.png">
   <link rel="icon" href="vendor/hara-ui/logo-white.svg" type="image/svg+xml">
-  <title>Hara Specs</title>
+  <title>Hara / Specs</title>
   <link rel="stylesheet" href="vendor/hara-ui/tokens.css">
   <link rel="stylesheet" href="vendor/hara-ui/components.css">
   <link rel="stylesheet" href="vendor/hara-ui/spec-explorer.css">
@@ -96,7 +96,8 @@
     const toggle = document.querySelector("[data-theme-toggle]");
     createSpecExplorer(document.querySelector("#spec-explorer"), {
       manifestUrl: "spec-manifest.json",
-      repositoryUrl: "https://github.com/hara-lang/hara-specs/blob/main"
+      repositoryUrl: "https://github.com/hara-lang/hara-specs/blob/main",
+      titlePrefix: "Hara / Specs"
     });
     const brand = document.querySelector(".hara-spec-brand");
     if (brand) {
