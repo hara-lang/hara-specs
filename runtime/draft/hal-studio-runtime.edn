@@ -21,6 +21,70 @@
           {:symbol node/stop :arguments [task] :returns :boolean}
           {:symbol node/info :arguments [] :returns :node/public-info}]}}
 
+ :runtime/kernel
+ {:role :process-or-wasm-runtime-container
+  :default-session "ROOT"
+  :shared
+  [:immutable-runtime-code :registered-standard-library-source]
+  :session-registry
+  {:operations
+   [{:operation session/create :arguments [:session/id]}
+    {:operation session/list :arguments []}
+    {:operation session/info :arguments [:session/id]}
+    {:operation session/attach-filesystem
+     :arguments [:session/id :filesystem/provider-id]}
+    {:operation session/eval :arguments [:session/id :source]}
+    {:operation session/eval-bound :arguments [:session/id :source :bindings]}
+    {:operation session/complete :arguments [:session/id :prefix]}
+    {:operation session/close :arguments [:session/id]}]
+   :legacy-aliases
+   {:eval [:session/eval "ROOT"]
+    :eval-bound [:session/eval-bound "ROOT"]
+    :complete [:session/complete "ROOT"]}}}
+
+ :runtime/session
+ {:owns
+  [:environment :namespace-registry :module-load-state :protocols
+   :fibers :task-handles :document-generations :current-namespace
+   :project-cache :capabilities :filesystem-attachment]
+  :host-call-identity [:kernel/id :session/id :task/id]
+  :close
+  [:cancel-tasks :reject-pending-host-calls :release-document-generations
+   :release-capabilities :detach-filesystem]
+  :isolation
+  "Closing or resetting one session MUST NOT mutate any other session in the same kernel."}
+
+ :runtime/filesystem-provider
+ {:identity :opaque-host-provider-id
+  :operations [:resolve :read :write :exists :list :mkdir :delete]
+  :browser
+  {:ephemeral :session-lifetime-memory
+   :persistent :explicit-keyed-indexeddb}
+  :native :host-confined-provider
+  :reattach
+  {:precondition
+   :no-active-evaluations-tasks-document-generations-or-pending-host-calls
+   :busy-error "SESSION_BUSY"
+   :validation :before-reset
+   :failure :atomic
+   :success
+   [:preserve-session-id :reset-language-state :reset-project-cache
+    :detach-previous-provider :attach-new-provider]}
+  :compatibility
+  {:studio.fs :facade-over-attached-provider
+   :std.foundation.file :attached-provider}}
+
+ :runtime/documentation-embedding
+ {:default
+  {:kernel :one-lazy-page-kernel
+   :session :one-private-session-per-live-embed
+   :filesystem :ephemeral-memory}
+  :attributes
+  {"data-hara-filesystem" :explicit-shared-indexeddb-key
+   "data-hara-kernel=isolated" :dedicated-worker-and-wasm-kernel}
+  :canvas-routing :originating-session
+  :ui-identity [:kernel-scope :session/id :filesystem-kind]}
+
  :runtime/anonymous-module
  {:form ns+
   :position :first-effective-top-level-form
