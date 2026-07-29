@@ -510,7 +510,13 @@
    :form/class :special-form
    :form/shape (quote (require module-spec*))
    :form/semantics "Loads HAL modules transactionally and applies aliases and referrals."
-   :form/evaluation :special}]
+   :form/evaluation :special}
+  {:form/id :hal.macro/with-ns
+   :form/symbol with-ns
+   :form/class :macro
+   :form/shape (quote (with-ns namespace body+))
+   :form/semantics "Evaluates body forms in an existing namespace and restores the caller namespace on success or failure."
+   :form/evaluation :macroexpand}]
 
  :spec/references
  [{:reference/id :hal.ref/l0

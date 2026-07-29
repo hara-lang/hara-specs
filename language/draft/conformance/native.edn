@@ -24,6 +24,27 @@
              :affects-equality false}
   :inventory :inspectable}
 
+ :inventory
+ {:status :accepted
+  :closed true
+  :type-count 18
+  :method-count 110
+  :source-of-truth :types
+  :extra-types :forbidden
+  :extra-methods :forbidden}
+
+ :method-conformance
+ {:status :accepted
+  :platforms [:rust :truffle]
+  :invocation :direct-canonical-method
+  :fixture "lib/test-fixtures/std/foundation/native_method_conformance.hal"
+  :classifications [:implemented :capability-gated]
+  :foundation-exposure [:hal-wrapper :foundation-primitive]
+  :raw-rust
+  {:scope :startup-descriptors
+   :method-parity false
+   :reason :source-libraries-and-capability-providers-are-not-bootstrapped}}
+
  :startup-visibility
  {:status :accepted
   :platforms [:rust :raw-rust :truffle]
@@ -48,45 +69,114 @@
 
  :types
  [{:name Maths
+   :availability :implemented
    :methods [abs acos acosh asin asinh atan atan2 atanh ceil cos cosh exp
-             floor pow sin sinh sqrt tan tanh]}
+             floor pow sin sinh sqrt tan tanh]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation.hal"}
   {:name Numbers
-   :methods [long double]}
+   :availability :implemented
+   :methods [long double]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation.hal"}
   {:name Bits
-   :methods [and or xor not shift-left shift-right]}
+   :availability :implemented
+   :methods [and or xor not shift-left shift-right]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation.hal"}
   {:name String
+   :availability :implemented
    :methods [length blank? includes? starts-with? ends-with? char-at slice
              index-of last-index-of join split split-lines repeat replace
              replace-first trim trim-left trim-right upper lower capitalize
-             decapitalize pad-left pad-right reverse encode-utf8 decode-utf8]}
+             decapitalize pad-left pad-right reverse encode-utf8 decode-utf8
+             comp lt? gt? to-fixed]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/string.hal"}
   {:name Bytes
-   :methods [new instance? count get set copy slice u8 s8]}
+   :availability :implemented
+   :methods [new instance? count get set copy slice u8 s8]
+   :method-classification
+   {:hal-wrapper [count get set copy slice u8 s8]
+    :foundation-primitive [new instance?]}
+   :wrapper-source "lib/src/std/foundation/bytes.hal"}
   {:name File
-   :methods [resolve read write exists? list mkdir delete]}
+   :availability :capability-gated
+   :methods [resolve read write exists? list mkdir delete]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/file.hal"}
   {:name Socket
-   :methods [connect listen endpoint events next send close]}
+   :availability :capability-gated
+   :methods [connect listen endpoint events next send close]
+   :method-classification {:hal-wrapper :all}
+   :server-streaming
+   {:listen {:arguments [host port options callback]
+             :returns :socket-server
+             :port-zero :ephemeral
+             :callback-events [:open :data :close :error]}
+    :endpoint {:returns {:host :string :port :integer}}
+    :events {:handles [:socket-server :socket]
+             :returns :socket-stream
+             :delivery :callback-and-stream
+             :queue {:max-events 256
+                     :max-bytes 1048576
+                     :overflow :close-connection}}
+    :next {:returns :promise
+           :fulfills :socket-event
+           :pending-limit 1}
+    :threading {:host-threads :raw-events-only
+                :hal-callbacks :evaluator-thread}}
+   :wrapper-source "lib/src/std/foundation/socket.hal"}
   {:name Promise
-   :methods [run new from all delay instance?]}
+   :availability :implemented
+   :methods [run new from all delay instance?]
+   :method-classification
+   {:hal-wrapper [run new from all delay]
+    :foundation-primitive [instance?]}
+   :wrapper-source "lib/src/std/foundation/promise.hal"}
   {:name Coroutine
-   :methods [create yield await instance?]}
+   :availability :implemented
+   :methods [create yield await instance?]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/coroutine.hal"}
   {:name Array
-   :methods [new instance?]}
+   :availability :implemented
+   :methods [new instance?]
+   :method-classification {:foundation-primitive :all}}
   {:name Object
-   :methods [new instance?]}
+   :availability :implemented
+   :methods [new instance?]
+   :method-classification {:foundation-primitive :all}}
   {:name Runtime
-   :methods [load-string macroexpand-1 gensym var-sym]}
+   :availability :implemented
+   :methods [load-string macroexpand-1 gensym var-sym]
+   :method-classification {:foundation-primitive :all}}
   {:name Printer
-   :methods [str pr-str]}
+   :availability :implemented
+   :methods [str pr-str]
+   :method-classification {:foundation-primitive :all}}
   {:name Edn
-   :methods [read]}
+   :availability :implemented
+   :methods [read]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/edn.hal"}
   {:name Json
-   :methods [read write pretty]}
+   :availability :implemented
+   :methods [read write pretty]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/json.hal"}
   {:name Regex
-   :methods [instance?]}
+   :availability :implemented
+   :methods [instance?]
+   :method-classification {:foundation-primitive :all}}
   {:name UUID
-   :methods [instance?]}
+   :availability :implemented
+   :methods [instance?]
+   :method-classification {:foundation-primitive :all}}
   {:name Error
-   :methods [new message class]}]
+   :availability :implemented
+   :methods [new message class]
+   :method-classification {:foundation-primitive :all}}]
 
  :deferred
  [{:type Random :reason :no-agreed-portable-surface}
