@@ -78,6 +78,11 @@ body {
   background: linear-gradient(rgba(237, 245, 243, .36), rgba(237, 245, 243, .64));
 }
 
+:root[data-theme="light"] .hara-spec-brand img,
+:root[data-theme="light"] .hara-explorer-welcome-mark {
+  filter: brightness(0) saturate(100%);
+}
+
 .hara-spec-explorer {
   grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr);
   color: var(--spec-text);
