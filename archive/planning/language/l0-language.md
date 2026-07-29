@@ -81,7 +81,7 @@ collection protocol functions; they do not introduce mutable update semantics.
 
 Collection navigation also includes `last`, `reverse`, `key`, `val`, `keys`,
 and `vals`. Membership is protocol-based: use `IFind/find` to retrieve an
-entry and `IFind/has?` to distinguish absence from a present nil value.
+entry and public `has?` to distinguish absence from a present nil value.
 `keys` and `vals` return lazy `Seq` values, while `reverse` returns a
 persistent list and does not mutate its input.
 

@@ -102,6 +102,10 @@
       "kind": "edn"
     },
     {
+      "path": "language/draft/conformance/protocols.edn",
+      "kind": "edn"
+    },
+    {
       "path": "language/draft/conformance/reader.edn",
       "kind": "edn"
     },

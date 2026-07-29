@@ -333,7 +333,7 @@ The Rust core now provides the small bootstrap predicates `inc`, `dec`, `zero?`,
 
 ## Collection membership and navigation
 
-The core collection surface includes `keys` and `vals` for persistent maps, mutable objects, vectors, and lists. Membership is exposed by `IFind/find` and `IFind/has?`: maps and objects test keys, vectors and lists test valid numeric indexes, and sets test values. `has?` remains true for a present key whose value is nil.
+The core collection surface includes `keys` and `vals` for persistent maps, mutable objects, vectors, and lists. Membership is exposed by public `find` and `has?`: maps and objects test keys, vectors and lists test valid numeric indexes, and sets test values. `has?` remains true for a present key whose value is nil.
 
 ## Rust protocol and persistent-vector layer
 

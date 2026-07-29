@@ -127,7 +127,7 @@
    :expect {:value 42 :type :integer}}
   {:id :module/core-bootstrap
    :class :module
-   :source "(load-resource \"std/foundation.hal\") ((comp2 inc inc) 40)"
+   :source "(load-resource \"std/foundation.hal\") ((comp inc inc) 40)"
    :expect {:value 42 :type :integer}}
   {:id :module/core-collection-helpers
    :class :module
@@ -139,7 +139,7 @@
    :expect {:value 11 :type :integer}}
   {:id :module/core-predicate-reductions
    :class :module
-   :source "(load-resource \"std/foundation.hal\") (+ (if (every? (fn [x] (> x 0)) [1 2]) 1 0) (if (any? (fn [x] (= x 2)) [1 2]) 2 0) (if (protocol-call IFind has? {:a nil} :a) 2 0))"
+   :source "(load-resource \"std/foundation.hal\") (+ (if (every? (fn [x] (> x 0)) [1 2]) 1 0) (if (any? (fn [x] (= x 2)) [1 2]) 2 0) (if (has? {:a nil} :a) 2 0))"
    :expect {:value 5 :type :integer}}
   {:id :module/core-nested-updates
    :class :module
@@ -147,7 +147,7 @@
    :expect {:value 4 :type :integer}}
   {:id :module/core-navigation
    :class :module
-   :source "(load-resource \"std/foundation.hal\") (+ (last [1 2 3]) (first (vals {:a 1})) (if (protocol-call IFind has? {:a nil} :a) 1 0))"
+   :source "(load-resource \"std/foundation.hal\") (+ (last [1 2 3]) (first (vals {:a 1})) (if (has? {:a nil} :a) 1 0))"
    :expect {:value 5 :type :integer}}
   {:id :collection/ordinary-dissoc-navigation
    :class :collection
@@ -183,7 +183,7 @@
    :expect {:value 7 :type :integer}}
   {:id :module/classpath-require
    :class :module
-   :source "(require \"std/foundation.hal\") ((comp2 inc inc) 40)"
+   :source "(require \"std/foundation.hal\") ((comp inc inc) 40)"
    :expect {:value 42 :type :integer}}
   {:id :collection/bytes
    :class :collection

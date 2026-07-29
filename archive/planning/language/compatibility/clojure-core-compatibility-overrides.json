@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "renamed": [
-    {"clojure": "contains?", "hara": "IFind/has?", "summary": "Protocol membership uses the Hara IFind/has? protocol method."}
+    {"clojure": "contains?", "hara": "has?", "summary": "Hara exposes collection membership as the public has? function."}
   ],
   "changed": [
     {"clojure": "map", "hara": "map", "dimensions": ["arity", "evaluation", "return-type"], "summary": "Direct calls are lazy in both; Hara's one-argument transform is eager on ordinary collections and returns a vector, while preserving arrays and existing lazy sources."},
