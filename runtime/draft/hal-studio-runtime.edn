@@ -1,10 +1,10 @@
 {:document/id :hal/studio-runtime
  :document/type :runtime-spec
- :document/version "1.0.0-draft"
+ :document/version "1.1.0-draft"
  :document/status :draft
  :document/title "HAL programmable Studio and node runtime"
  :document/summary
- "Normative project, workspace, anonymous-module, node, and substrate-compatible wire contract."
+ "Normative kernel, session, filesystem, editor, canvas, project, node, and wire contract."
 
  :runtime/builtins
  {:co {:qualified-prefix "co/"
@@ -85,6 +85,97 @@
   :canvas-routing :originating-session
   :ui-identity [:kernel-scope :session/id :filesystem-kind]}
 
+ :runtime/studio-editor
+ {:authorities
+  {:persisted-source
+   "The attached filesystem provider owns the last explicitly saved bytes."
+   :editor-buffer
+   "The editor owns the current unsaved bytes and dirty state."
+   :active-generation
+   "The document registry owns the last successfully activated ns+ generation."}
+  :document-id [:project/id :filesystem-space :normalized-path]
+  :operations
+  {:open
+   {:reads :persisted-source
+    :unsaved-buffer-policy :require-explicit-discard-before-replacement}
+   :save
+   {:source :editor-buffer
+    :target :attached-filesystem-provider
+    :effect [:replace-persisted-source :clear-dirty-state]
+    :evaluation false}
+   :run-file
+   {:source :editor-buffer
+    :filesystem-write false
+    :dirty-state :unchanged
+    :ordinary-module :evaluate-in-selected-session
+    :anonymous-module
+    [:prepare-candidate-generation :start-candidate-node-tasks
+     :await-required-activation-gates :commit-candidate-generation]}
+   :run-form
+   {:source :explicit-selection-or-innermost-complete-form
+    :target :active-document-generation-when-present
+    :fallback :selected-session}
+   :complete
+   {:target :active-document-generation-when-present
+    :fallback :selected-session}}
+  :keyboard
+  {"Ctrl-or-Meta-S" :save
+   "Ctrl-or-Meta-E" :run-form
+   "Ctrl-or-Meta-Enter" :run-file}
+  :invariants
+  [{:id :editor/run-does-not-save
+    :text "Running a file or form MUST NOT modify persisted source or clear dirty state."}
+   {:id :editor/path-scoped-generation
+    :text "Document generations MUST include project, filesystem space, and normalized path in their identity."}
+   {:id :editor/failed-candidate-retains-active
+    :text "A failed candidate MUST be discarded without replacing the active generation."}]}
+
+ :runtime/studio-canvas
+ {:identity
+  {:surface :host-canvas-element
+   :semantic-canvas-id :session-local-name
+   :owner :active-document-generation
+   :candidate :prepared-document-generation}
+  :ownership
+  {:per-physical-surface
+   {:committed-owner :at-most-one
+    :candidate-owner :at-most-one}
+   :operations
+   [:register :claim :stage :wait-for-first-render :commit :discard :release]
+   :replacement
+   [:cancel-pending-frame :reject-former-owner-render :release-resources]}
+  :activation
+  {:canvas-document-gate :candidate-first-successful-render
+   :success [:commit-document-generation :commit-canvas-owner]
+   :failure [:discard-document-generation :discard-canvas-candidate]
+   :pixel-atomicity
+   "The first candidate frame is the activation proof; hosts need not double-buffer the previous pixels."}
+  :frame
+  {:scheduler :host-animation-frame
+   :geometry :integer-css-pixels
+   :backing-store :css-size-times-device-pixel-ratio
+   :maximum-device-pixel-ratio 2
+   :input-delivery :exactly-once-on-next-frame}
+  :input
+  {:scope :session-canvas-runtime
+   :visible-only true
+   :queue-limit 128
+   :events [:keyboard :pointer]}
+  :close
+  [:remove-host-listeners :reject-pending-frames :release-webgl-resources
+   :clear-surface-ownership :clear-input-queue]}
+
+ :runtime/studio-embedding
+ {:layout
+  [:filesystem-tree :editor :repl-log :status-strip :optional-canvas]
+  :selected-target
+  [:kernel/id :session/id :filesystem/provider-id]
+  :private-document-sessions true
+  :host-routing
+  "Editor evaluation, filesystem calls, canvas calls, and input MUST route using the originating kernel and session identity."
+  :documentation-difference
+  "Generated Markdown may choose a compact per-embed layout, but it obeys the same session, filesystem, document-generation, and canvas contracts."}
+
  :runtime/anonymous-module
  {:form ns+
   :position :first-effective-top-level-form
@@ -141,9 +232,20 @@
     :text "A node processes sequentially unless source starts additional node tasks."}]}
 
  :runtime/document-protocol
- [{:operation evalDocument
+ [{:operation prepareDocument
    :arguments [:kernel/id :document/id :source :node/id]
-   :effect :candidate-generation
+   :effect :uncommitted-candidate-generation
+   :returns [:value :generation :module/id]}
+  {:operation commitDocument
+   :arguments [:candidate-generation]
+   :effect :atomically-replace-active-generation}
+  {:operation discardDocument
+   :arguments [:candidate-generation]
+   :effect :release-candidate-without-replacing-active}
+  {:operation evalDocument
+   :arguments [:kernel/id :document/id :source :node/id]
+   :effect :prepare-and-immediately-commit
+   :compatibility true
    :returns [:value :generation :module/id]}
   {:operation evalForm
    :arguments [:kernel/id :document/id :source]
