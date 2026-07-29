@@ -4,13 +4,13 @@ This is a non-normative implementation companion to
 [`hal-packagespec.edn`](hal-packagespec.edn).
 
 ```text
-publisher key                    hara-lang/hara-identity
+publisher key                    tap identity repository
      | signed release intent                 | public keys, policy, revocations
      v                                       v
-source repository tag -> hara-lang/hara-packages CI -> GitHub Release assets
+source repository tag -> tap registry CI -> GitHub Release assets
                              | deterministic .harp + CI attestation
                              v
-                    reviewed registry release record
+                    reviewed tap registry release record
                              |
                              v
                  hara package sync / browser host cache
@@ -18,11 +18,17 @@ source repository tag -> hara-lang/hara-packages CI -> GitHub Release assets
 
 ## Repositories
 
-- `hara-lang/hara-packages`: package records, schemas, registry validation,
+- A tap registry (such as `hara-lang/hara-packages`): package records, schemas, registry validation,
   deterministic package CI, and generated browse indexes.
-- `hara-lang/hara-identity`: public Ed25519 keys, delegations, validity and
+- A paired identity repository (such as `hara-lang/hara-identity`): public Ed25519 keys, delegations, validity and
   revocation records, and protected CODEOWNERS policy.
 - Source repositories: tagged package source and GitHub Release assets.
+
+Users add a tap locally with an out-of-band fingerprint of its identity root
+key. The signed identity policy is verified before publisher authorization is
+read. A project only names the trusted tap (`team:owner/name`), and the lock
+records exact tap registry and identity commits. This lets independent pairs
+continue working when any other tap is unavailable.
 
 Registry CI uses a narrowly installed GitHub App to read the immutable source
 tag and upload release assets. Build validation is untrusted; a distinct,

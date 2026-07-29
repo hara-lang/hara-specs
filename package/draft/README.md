@@ -25,7 +25,8 @@ project.edn -> hara package sync -> project.lock.edn
 Package features are part of the bundled `hara` CLI:
 
 ```shell
-hara package add hara/graph@^1.2.0
+hara package tap add hara --registry github:hara-lang/hara-packages --identity github:hara-lang/hara-identity --identity-key sha256:...
+hara package add hara:hara/graph@^1.2.0
 hara package sync --frozen
 hara package build
 hara package inspect graph-1.2.3.harp
@@ -36,10 +37,15 @@ outside version one.
 
 ## Trust and publication
 
-The reviewed registry is `github:hara-lang/hara-packages`; package archives
-are primary GitHub Release assets on their source repositories. A package is
-verified only when both of these detached Ed25519 signatures validate against
-the locked revision of `github:hara-lang/hara-identity`:
+The official Hara registry is `github:hara-lang/hara-packages`, paired with
+`github:hara-lang/hara-identity`, but it is only the default **tap**. Anyone
+can operate their own registry/identity pair and users trust it explicitly by
+pinning its identity-root public-key fingerprint in their local tap store.
+Project dependencies are tap-qualified (`team:owner/name`) so independently
+operated registries cannot collide.
+
+A package is verified only when both detached Ed25519 signatures validate
+against the lockfile's verified identity-policy revision:
 
 1. the publisher release intent for the coordinate, version, repository ID,
    tag, and commit;
@@ -47,6 +53,35 @@ the locked revision of `github:hara-lang/hara-identity`:
 
 `hara-identity` contains public keys, delegation, validity, revocation, and
 CODEOWNERS-governed policy only. Private signing keys never enter Git.
+
+`hara package publish --tap team` requires a signed `v<version>` source tag,
+creates canonical intent bytes, invokes the configured external signer, and
+submits the signed request as a GitHub pull request. Registry CI rebuilds and
+attests the archive independently. Tap registry and identity mirrors can be
+used for availability, but only when they yield the same pinned verified data.
+
+## Operating a tap
+
+`tap init` creates a local registry/identity repository pair and installs that
+pair as the creator's trusted tap. The root public key is supplied explicitly;
+the configured external signer signs the initial policy. The command cannot
+generate or store a private key.
+
+```shell
+export HARA_SIGNER=/path/to/identity-signer
+hara package tap init acme \
+  --registry ./acme-packages \
+  --identity ./acme-identity \
+  --identity-root-key <32-byte-ed25519-public-key-as-hex>
+```
+
+It prints the identity-root fingerprint. Share that fingerprint independently
+with users; they use it with `tap add`. Commit the scaffolds to separately
+protected Git repositories, configure the generated request workflow with a
+pinned Hara registry verifier, and keep CI publishing/signing credentials in
+a distinct protected job.
+
+See [Operating federated taps](taps.md) for the lifecycle and trust model.
 
 ## Archives and browser hosts
 
