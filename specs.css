@@ -1,12 +1,13 @@
 :root {
   color-scheme: dark;
+  --hara-violet: var(--hara-cyan);
   --spec-bg: #06090d;
   --spec-panel: rgba(11, 17, 24, .9);
   --spec-panel-2: #0f1720;
   --spec-text: #edf7f5;
   --spec-muted: #8fa2a8;
   --spec-cyan: #63f5e5;
-  --spec-violet: #9c7bff;
+  --spec-violet: var(--spec-cyan);
   --spec-line: rgba(99, 245, 229, .16);
   --spec-grid: rgba(99, 245, 229, .07);
   --spec-shadow: rgba(0, 0, 0, .38);
@@ -22,7 +23,7 @@
   --hara-cyan: #ff2e88;
   --hara-cyan-bright: #9b164f;
   --hara-green: #008a5a;
-  --hara-violet: #5d43ae;
+  --hara-violet: var(--hara-cyan);
   --hara-amber: #a46600;
   --hara-text: #16252c;
   --hara-muted: #536770;
@@ -36,7 +37,7 @@
   --spec-muted: #5d7078;
   /* Docs use Hara's magenta/red accent on light surfaces. */
   --spec-cyan: #ff2e88;
-  --spec-violet: #6b52c8;
+  --spec-violet: var(--spec-cyan);
   --spec-line: rgba(255, 46, 136, .2);
   --spec-grid: rgba(255, 46, 136, .1);
   --spec-shadow: rgba(80, 30, 56, .16);

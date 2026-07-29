@@ -35,6 +35,34 @@
   <script type="module">
     import { createSpecExplorer } from "./vendor/hara-ui/spec-explorer.js";
 
+    const versionParts = (path) => {
+      const match = path.match(/(?:^|\/)v(\d+(?:\.\d+)*)\b/i);
+      return match ? match[1].split(".").map(Number) : null;
+    };
+    const compareVersions = (left, right) => {
+      for (let index = 0; index < Math.max(left.length, right.length); index += 1) {
+        const difference = (left[index] || 0) - (right[index] || 0);
+        if (difference) return difference;
+      }
+      return 0;
+    };
+    const defaultSpecPath = (files) => {
+      const rankStatus = (path) => path.match(/(?:^|\/)(ready|draft)(?:\/|$)/i)?.[1].toLowerCase() === "ready" ? 2 : 1;
+      const isReadme = (path) => /(?:^|\/)README\.md$/i.test(path);
+      const versioned = files
+        .map((file) => ({ file, version: versionParts(file.path) }))
+        .filter(({ version }) => version)
+        .sort((left, right) => compareVersions(right.version, left.version) || rankStatus(right.file.path) - rankStatus(left.file.path) || Number(isReadme(right.file.path)) - Number(isReadme(left.file.path)) || left.file.path.localeCompare(right.file.path));
+      if (versioned.length) {
+        const latestVersion = versioned[0].version;
+        return versioned.find(({ version, file }) => compareVersions(version, latestVersion) === 0 && isReadme(file.path))?.file.path || versioned[0].file.path;
+      }
+      const statusFiles = files
+        .filter(({ path }) => /(?:^|\/)(ready|draft)(?:\/|$)/i.test(path))
+        .sort((left, right) => rankStatus(right.path) - rankStatus(left.path) || Number(isReadme(right.path)) - Number(isReadme(left.path)) || left.path.localeCompare(right.path));
+      return statusFiles.find(({ path }) => isReadme(path))?.path || statusFiles[0]?.path || "README.md";
+    };
+
     const nativeFetch = window.fetch.bind(window);
     window.fetch = async (...args) => {
       const response = await nativeFetch(...args);
@@ -43,6 +71,9 @@
         const manifest = await response.json();
         const visibleFiles = (manifest.files || []).filter(({ path }) => path !== "archive" && !path.startsWith("archive/"));
         const visibleDirectories = (manifest.directories || []).filter((path) => path !== "archive" && !path.startsWith("archive/"));
+        if (!location.hash || location.hash === "#/" || location.hash === "#") {
+          history.replaceState(null, "", `#/${encodeURIComponent(defaultSpecPath(visibleFiles))}`);
+        }
         return new Response(JSON.stringify({ ...manifest, files: visibleFiles, directories: visibleDirectories }), {
           status: response.status,
           statusText: response.statusText,
