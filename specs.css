@@ -13,6 +13,12 @@
   --spec-shadow: rgba(0, 0, 0, .38);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root[data-theme="light"] {
   color-scheme: light;
   --hara-abyss: #f7faf9;
@@ -48,6 +54,7 @@ body {
   min-height: 100%;
   margin: 0;
   background: var(--spec-bg);
+  overflow-x: hidden;
 }
 
 body {
@@ -215,4 +222,63 @@ body {
 
 @media (max-width: 760px) {
   .hara-explorer-sidebar { max-height: 42vh; }
+}
+
+@media (max-width: 900px) {
+  #spec-explorer,
+  .hara-spec-explorer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .hara-explorer-sidebar {
+    width: 100%;
+    max-height: 38vh;
+    overflow: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--spec-line);
+    box-shadow: 0 18px 50px var(--spec-shadow);
+  }
+
+  .hara-explorer-viewer {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .hara-explorer-header {
+    min-height: 0;
+    padding: .8rem 1rem;
+  }
+
+  .hara-explorer-file-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: .65rem;
+  }
+
+  .hara-explorer-actions {
+    width: 100%;
+    gap: .35rem;
+  }
+
+  .hara-explorer-actions .hara-button {
+    flex: 1 1 auto;
+  }
+
+  .hara-explorer-document {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .hara-markdown {
+    width: 100%;
+    font-size: .82rem;
+  }
+
+  .hara-markdown pre,
+  .hara-source {
+    max-width: calc(100vw - 2rem);
+  }
 }
