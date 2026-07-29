@@ -83,6 +83,18 @@ a distinct protected job.
 
 See [Operating federated taps](taps.md) for the lifecycle and trust model.
 
+The bundled CLI also has one deliberately narrow bootstrap profile:
+
+```shell
+hara package tap bootstrap hara
+hara package tap mirror add hara --registry https://mirror.example.org/hara-packages.git
+```
+
+This installs the canonical Hara GitHub repositories in GitHub-governed
+bootstrap mode. It does not make arbitrary Git URLs trusted: other taps retain
+the pinned root-key path. The API at `api.hara-lang.org` is advisory read-only
+discovery/cache infrastructure; lockfiles and Git commits remain authoritative.
+
 ## Archives and browser hosts
 
 Archives have deterministic ZIP-compatible layout, generated `package.edn`,

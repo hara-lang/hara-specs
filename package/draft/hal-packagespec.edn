@@ -23,6 +23,9 @@
   {:requirement/id :package/federated-taps
    :requirement/level :must
    :requirement/text "A tap pairs independently operated registry and identity-policy repositories. Clients trust a tap only after an out-of-band identity-root public-key fingerprint is pinned locally."}
+  {:requirement/id :package/official-bootstrap
+   :requirement/level :must
+   :requirement/text "The bundled CLI may expose the named hara bootstrap profile. It is restricted to canonical hara-lang GitHub repository identities and explicitly declares GitHub-governed bootstrap trust; it must not confer that mode on arbitrary taps."}
   {:requirement/id :package/github-release-data-plane
    :requirement/level :must
    :requirement/text "An official package archive is retrieved from the declared GitHub Release asset and is identified by its archive digest, not its URL."}
@@ -113,6 +116,9 @@
     {:requirement/id :identity/bootstrap
      :requirement/level :must
      :requirement/text "The policy snapshot is detached-signed by its declared root key. The client verifies that key's SHA-256 fingerprint against the locally pinned tap trust record before interpreting publisher or CI grants."}
+    {:requirement/id :identity/github-bootstrap
+     :requirement/level :must
+     :requirement/text "Before official root-key custody exists, the hara profile may use protected GitHub governance as its explicit policy authority. Clients accept this only for the built-in hara profile and must record its exact Git revision."}
     {:requirement/id :identity/publisher-intent
      :requirement/level :must
      :requirement/text "A publisher signs a canonical release-intent statement binding coordinate, version, source repository numeric ID, tag, and resolved commit."}
@@ -217,6 +223,7 @@
  ["hara package add TAP:COORDINATE@RANGE" "hara package remove TAP:COORDINATE"
   "hara package sync [--offline|--locked|--frozen]" "hara package update [COORDINATE]"
   "hara package check [PATH]" "hara package build" "hara package inspect ARCHIVE.harp"
-  "hara package publish --tap NAME" "hara package tap init NAME --registry PATH --identity PATH --identity-root-key ED25519_HEX"
+  "hara package publish --tap NAME" "hara package tap bootstrap hara" "hara package tap mirror add NAME [--registry URL] [--identity URL]"
+  "hara package registry verify-request --request PATH --identity PATH" "hara package tap init NAME --registry PATH --identity PATH --identity-root-key ED25519_HEX"
   "hara package tap add NAME --registry URL --identity URL --identity-key SHA256"
   "hara package tap remove NAME" "hara package search QUERY" "hara package info COORDINATE"]}
