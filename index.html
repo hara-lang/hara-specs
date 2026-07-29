@@ -22,9 +22,8 @@
   <link rel="stylesheet" href="specs.css?v=docs-grid-theme-1">
 </head>
 <body>
-  <button class="specs-theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+  <button class="specs-theme-toggle" type="button" data-theme-toggle aria-label="Toggle light and dark mode" title="Toggle light and dark mode" aria-pressed="false">
     <span aria-hidden="true">◐</span>
-    <span data-theme-label>LIGHT MODE</span>
   </button>
   <main id="spec-explorer">
     <section class="hara-explorer-welcome">
@@ -58,10 +57,15 @@
       manifestUrl: "spec-manifest.json",
       repositoryUrl: "https://github.com/hara-lang/hara-specs/blob/main"
     });
-    document.querySelector(".hara-explorer-actions")?.append(toggle);
+    const brand = document.querySelector(".hara-spec-brand");
+    if (brand) {
+      const brandRow = document.createElement("div");
+      brandRow.className = "specs-brand-row";
+      brand.before(brandRow);
+      brandRow.append(brand, toggle);
+    }
 
     const root = document.documentElement;
-    const label = document.querySelector("[data-theme-label]");
     const storedTheme = localStorage.getItem("hara-specs-theme");
     const preferredTheme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
 
@@ -69,7 +73,6 @@
       const isLight = theme === "light";
       root.dataset.theme = theme;
       toggle.setAttribute("aria-pressed", String(isLight));
-      label.textContent = isLight ? "DARK MODE" : "LIGHT MODE";
       localStorage.setItem("hara-specs-theme", theme);
     };
 
