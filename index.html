@@ -53,13 +53,14 @@
       });
     };
 
+    const toggle = document.querySelector("[data-theme-toggle]");
     createSpecExplorer(document.querySelector("#spec-explorer"), {
       manifestUrl: "spec-manifest.json",
       repositoryUrl: "https://github.com/hara-lang/hara-specs/blob/main"
     });
+    document.querySelector(".hara-explorer-actions")?.append(toggle);
 
     const root = document.documentElement;
-    const toggle = document.querySelector("[data-theme-toggle]");
     const label = document.querySelector("[data-theme-label]");
     const storedTheme = localStorage.getItem("hara-specs-theme");
     const preferredTheme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";

@@ -63,7 +63,6 @@ body {
   position: relative;
   z-index: 1;
   min-height: 100vh;
-  padding-top: 58px;
   background: linear-gradient(rgba(6, 9, 13, .34), rgba(6, 9, 13, .64));
 }
 
@@ -130,6 +129,7 @@ body {
 }
 
 .hara-explorer-header {
+  position: relative;
   min-height: 72px;
   padding: .8rem clamp(1rem, 3vw, 2.4rem) .75rem;
   background:
@@ -174,10 +174,8 @@ body {
 .hara-explorer-actions .hara-icon-button { font-size: .68rem; }
 
 .specs-theme-toggle {
-  position: fixed;
-  z-index: 10;
-  top: 14px;
-  right: 16px;
+  position: static;
+  z-index: auto;
   display: inline-flex;
   align-items: center;
   gap: .55rem;
@@ -192,13 +190,13 @@ body {
   cursor: pointer;
   box-shadow: 0 10px 26px var(--spec-shadow);
   backdrop-filter: blur(16px);
+  white-space: nowrap;
 }
 
 .specs-theme-toggle:hover,
 .specs-theme-toggle:focus-visible { color: var(--spec-cyan); border-color: var(--spec-cyan); outline: none; }
 
 @media (max-width: 760px) {
-  #spec-explorer { padding-top: 52px; }
-  .specs-theme-toggle { top: 10px; right: 10px; }
+  .specs-theme-toggle { margin-left: auto; }
   .hara-explorer-sidebar { max-height: 42vh; }
 }
