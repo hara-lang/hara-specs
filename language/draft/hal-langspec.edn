@@ -197,15 +197,46 @@
    [{:requirement/id :fn/closure
      :requirement/level :must
      :requirement/text
-     "A function captures referenced lexical bindings from its definition environment."}
+     "A function captures referenced lexical bindings from its definition environment."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:function/closure-capture]}]}
     {:requirement/id :fn/arity
      :requirement/level :must
      :requirement/text
-     "Functions support fixed arities, a final variadic binding introduced by &, and multiple arity clauses."}
-    {:requirement/id :binding/let-parallel
+     "Functions support fixed arities, a final variadic binding introduced by &, and multiple arity clauses. Calling a function with no matching arity is a deterministic HAL error."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:function/fixed-arity
+               :function/variadic-arity
+               :function/multiple-arities
+               :function/arity-error]}]}
+    {:requirement/id :binding/let-sequential
      :requirement/level :must
      :requirement/text
-     "let initializers evaluate against the enclosing lexical environment rather than bindings created earlier in the same vector."}]
+     "let bindings are established from left to right. Each initializer evaluates after the preceding bindings in the same vector have entered scope, so it may refer to those earlier bindings."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:binding/let-sequential]}]}
+    {:requirement/id :binding/destructuring
+     :requirement/level :must
+     :requirement/text
+     "Function, let, and loop bindings accept nested sequential and map destructuring. Sequential patterns support &, :as, and missing positions; map patterns support :keys, :strs, :syms, :as, and :or. Missing values bind nil, and :or supplies defaults when the selected map value is missing or nil."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:binding/sequential-destructuring
+               :binding/map-destructuring
+               :binding/missing-destructuring
+               :binding/nil-map-default]}]}
+    {:requirement/id :definition/metadata
+     :requirement/level :must
+     :requirement/text
+     "Definitions preserve declared metadata and expose descriptive :doc, :schema, and :arglists values through their Vars."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:definition/doc-metadata
+               :definition/schema-metadata
+               :definition/arglists-metadata]}]}]
    :section/forms
    [:hal.form/fn
     :hal.form/let
@@ -261,11 +292,24 @@
    [{:requirement/id :error/finally
      :requirement/level :must
      :requirement/text
-     "A finally clause executes during both normal completion and error unwinding."}
+     "A finally clause executes exactly once during normal completion and error unwinding. If cleanup fails, the cleanup error becomes the observable result."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:error/finally-normal
+               :error/finally-unwind]}]}
+    {:requirement/id :error/guest-value
+     :requirement/level :must
+     :requirement/text
+     "throw raises the evaluated HAL value without converting it to host text. Catch clauses are tested in source order, bind the original value, and unmatched values continue unwinding."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:error/catch-guest-value
+               :error/catch-order
+               :error/unmatched-catch]}]}
     {:requirement/id :error/source
      :requirement/level :must
      :requirement/text
-     "Reader, analysis, arity, protocol, and runtime errors retain available source location information."}]
+     "Reader, analysis, arity, destructuring, recur, protocol, and runtime errors retain available source location information."}]
    :section/forms
    [:hal.form/throw :hal.form/try]}
 
@@ -302,27 +346,76 @@
    [{:requirement/id :namespace/var-identity
      :requirement/level :must
      :requirement/text
-     "Aliases and referred symbols preserve the identity and current value of their source Var."}
+     "Aliases and referred symbols preserve the identity and current value of their source Var."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/alias-var-identity
+               :namespace/refer-var-identity]}]}
     {:requirement/id :namespace/facade-vars
      :requirement/level :must
      :requirement/text
-     "intern-var, intern-in, and intern-all create receiving-namespace façade Vars by copying the source Var's current root and metadata; they do not create aliases or referrals."}
+     "intern-var, intern-in, and intern-all create receiving-namespace façade Vars by copying the source Var's current root and metadata; they do not create aliases or referrals."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/facade-var-copy]}]}
     {:requirement/id :module/transactional
      :requirement/level :must
      :requirement/text
-     "A failed module load rolls back partial namespace and macro changes."}
+     "A module is identified by its canonical resolved resource. Dependencies initialize before their dependants in source order; cycles are errors. A failed load publishes no partial namespace, Var, macro, dependency, or revision changes."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:module/canonical-cache
+               :module/dependency-order
+               :module/cycle-rollback
+               :module/failure-rollback]}]}
+    {:requirement/id :module/reload
+     :requirement/level :must
+     :requirement/text
+     "A successful initial load establishes revision 1. Explicit reload evaluates transactionally and increments the revision only after success. Existing compiled call targets remain immutable; subsequent compilation resolves the new Var and macro roots."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:module/reload-revision
+               :module/reload-rollback
+               :macro/reload-new-compilation]}]}
     {:requirement/id :module/lazy-alias
      :requirement/level :must
      :requirement/text
-     "A require spec may declare (:lazy true) only with (:as alias). It records a non-forcing alias, loads its target on first qualified lookup, Var lookup, or resolve, and rejects :refer and :refer-macros in the same spec."}
+     "A require spec may declare (:lazy true) only with (:as alias). It records a non-forcing alias, loads its target on first qualified lookup, Var lookup, or resolve, and rejects :refer and :refer-macros in the same spec. A failed force publishes no partial bindings, records :failed, and is retried only by explicit reload."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:lazy/non-forcing
+               :lazy/qualified-force
+               :lazy/failure-state
+               :lazy/explicit-retry]}]}
     {:requirement/id :module/loading-state
      :requirement/level :must
      :requirement/text
-     "ns-state, ns-loaded?, and ns-alias-state are non-forcing inspection operations. ns-state returns one of :unknown, :unloaded, :loading, :loaded, or :failed; alias state is local to the querying namespace."}
+     "ns-state, ns-loaded?, and ns-alias-state are non-forcing inspection operations. ns-state returns one of :unknown, :unloaded, :loading, :loaded, or :failed; alias state is local to the querying namespace and may be inspected from another namespace."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/loading-state
+               :namespace/cross-namespace-alias-state]}]}
     {:requirement/id :namespace/with-ns
      :requirement/level :must
      :requirement/text
-     "with-ns evaluates its quoted body forms in an existing loaded target namespace, returns the final value, and restores the caller namespace on success or failure. It neither creates nor loads namespaces and does not capture caller lexical locals."}
+     "with-ns evaluates its quoted body forms in an existing loaded target namespace, returns the final value, and restores the caller namespace on success or failure. It neither creates nor loads namespaces and does not capture caller lexical locals."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/with-ns-success
+               :namespace/with-ns-failure
+               :namespace/with-ns-lexical-isolation]}]}
+    {:requirement/id :namespace/session-isolation
+     :requirement/level :must
+     :requirement/text
+     "Namespace, Var root, dynamic binding, macro, module, loading-state, and REPL history changes are isolated by session. Native facilities, including Host, are exposed as session-local façade objects even when their immutable descriptors or underlying host service registries are shared. Resources may be shared as immutable package locks, source bytes, or HIR bytes, but live Vars, namespace objects, closures, mutable references, streams, sockets, native façade objects, and host handles do not cross sessions."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:session/namespace-isolation
+               :session/dynamic-unwind
+               :session/immutable-transfer
+               :session/reject-live-transfer
+               :repl/retained-state
+               :repl/error-recovery]}]}
     {:requirement/id :foundation/templates
      :requirement/level :must
      :requirement/text
@@ -533,6 +626,11 @@
    :reference/path "conformance/reader.edn"
    :reference/authority :evidence
    :reference/description "Reader acceptance, canonical printing, and error cases."}
+  {:reference/id :hal.ref/modules
+   :reference/kind :conformance
+   :reference/path "conformance/modules.edn"
+   :reference/authority :evidence
+   :reference/description "Namespace, module, lazy-loading, session, and retained-REPL acceptance scenarios."}
   {:reference/id :hal.ref/jvm-truffle
    :reference/kind :parity
    :reference/path "conformance/parity/jvm-truffle.edn"
@@ -557,6 +655,7 @@
  :spec/conformance
  [:hal.ref/l0
   :hal.ref/reader
+  :hal.ref/modules
   :hal.ref/jvm-truffle
   :hal.ref/wasm-truffle]
 

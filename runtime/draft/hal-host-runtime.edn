@@ -1,0 +1,103 @@
+{:document/id :hal/host-runtime
+ :document/type :runtime-spec
+ :document/version "0.1.0-draft"
+ :document/status :draft
+ :document/title "HAL host capability boundary"
+ :document/summary
+ "Product-neutral contract between a Hara evaluator and capabilities supplied by its embedding host."
+
+ :host/ownership
+ {:runtime-object std.native/Host
+  :foundation-alias std.foundation/Host
+  :startup-alias Host
+  :identity "(= Host std.native/Host std.foundation/Host)"
+  :portable-module std.foundation.host
+  :consumer-prefix host/
+  :product-shells [:greenways.studio]
+  :rule
+  "Hara owns capability invocation, grants, kernels, sessions, package activation, and providers. Product shells own editors, REPL views, visualizations, and management interfaces."}
+
+ :host/native-type
+ {:qualified-var std.native/Host
+  :qualified-methods
+  [{:symbol std.native.Host/call
+    :arguments [service method args-vector]
+    :returns :promise}
+   {:symbol std.native.Host/describe
+    :arguments []
+    :returns :promise/descriptor}
+   {:symbol std.native.Host/capabilities
+    :arguments []
+    :returns :promise/vector}
+   {:symbol std.native.Host/capability?
+    :arguments [capability]
+    :returns :promise/boolean}]
+  :raw-special-form nil
+  :direct-user-call false}
+
+ :host/foundation
+ {:module std.foundation.host
+  :require "[std.foundation.host :as host]"
+  :functions
+  [{:symbol host/call
+    :arguments [service method & args]
+    :implementation "(std.native.Host/call service method (vec args))"}
+   {:symbol host/describe :arguments []}
+   {:symbol host/capabilities :arguments []}
+   {:symbol host/capability? :arguments [capability]}]}
+
+ :host/substrate
+ {:namespace std.lib.substrate
+  :protocol-namespace std.lib.substrate.protocol
+  :frame-namespace std.lib.substrate.frame
+  :layer :portable-above-host
+  :host-authority false
+  :role
+  "Defines transport-neutral nodes, frames, request/response, streams, and routing. Host capabilities are used only by adapters that cross an embedding boundary."}
+
+ :host/descriptor
+ {:version-key :host/version
+  :version "hara.host.v1"
+  :available-key :host/available
+  :granted-key :host/granted
+  :limits-key :host/limits
+  :capabilities-result :session-granted
+  :capability-result :membership-in-session-grant
+  :available-meaning :provider-installed
+  :granted-meaning :project-policy-intersected-with-available}
+
+ :host/session-authority
+ {:identity [:kernel/id :session/id]
+  :grant-source [:project/capabilities :embedding-policy]
+  :default :deny-ungranted
+  :isolation :per-session
+  :close :revoke-all-session-grants
+  :provider-dispatch
+  [:resolve-session :require-grant :validate-method-and-arguments :invoke-provider]}
+
+ :host/browser
+ {:owner hara-web
+  :source-root "rust/web/host/"
+  :wire-event
+  [:host-call :call/id :task/id :session/id
+   :filesystem/mount-id-or-nil :service :method :arguments]
+  :wasm-authority
+  "The evaluator emits calls and receives settlements. JavaScript owns browser APIs, provider instances, project policy, verified package bytes, and session-scoped grants."
+  :atomic-resource-target "register-resources"}
+
+ :host/native
+ {:provider-side :runtime-embedding
+  :same-contract true
+  :filesystem :host-confined-root
+  :socket :native-provider
+  :unavailable-result :rejected-promise}
+
+ :host/conformance
+ [{:id :host/type-identity
+   :assert "(= Host std.native/Host std.foundation/Host)"}
+  {:id :host/no-special-form
+   :assert "host/call resolves only through an explicitly required HAL namespace"}
+  {:id :host/session-grants
+   :assert "Two sessions may observe different host/capabilities results."}
+  {:id :host/atomic-resources
+   :assert "A failed batch registers no resources."}]}

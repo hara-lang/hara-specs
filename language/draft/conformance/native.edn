@@ -27,8 +27,8 @@
  :inventory
  {:status :accepted
   :closed true
-  :type-count 19
-  :method-count 126
+  :type-count 20
+  :method-count 136
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -52,8 +52,8 @@
   :canonical-var "std.native/<Type>"
   :global-alias "<Type>"
   :global-aliases
-  [Maths Numbers Bits String Bytes File Socket Promise Coroutine Array Object
-   Runtime Printer Edn Json Regex UUID Error Kernel]
+  [Maths Numbers Bits String Bytes File Socket Promise Coroutine Arr Obj
+   Runtime Printer Edn Json Host Regex UUID Error Kernel]
   :identity :same-native-type-object
   :identity-example "(= Maths std.native/Maths std.foundation/Maths)"
   :installed-with :global-protocol-aliases}
@@ -147,13 +147,13 @@
    :methods [create yield await instance?]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation/coroutine.hal"}
-  {:name Array
+  {:name Arr
    :availability :implemented
-   :methods [new instance?]
+   :methods [new instance? get-index set-index]
    :method-classification {:foundation-primitive :all}}
-  {:name Object
+  {:name Obj
    :availability :implemented
-   :methods [new instance?]
+   :methods [new instance? get-key set-key has-key? delete-key]
    :method-classification {:foundation-primitive :all}}
   {:name Runtime
    :availability :implemented
@@ -173,6 +173,11 @@
    :methods [read write pretty]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation/json.hal"}
+  {:name Host
+   :availability :capability-gated
+   :methods [call describe capabilities capability?]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/host.hal"}
   {:name Regex
    :availability :implemented
    :methods [instance?]

@@ -1,101 +1,146 @@
-{:suite/id :hal/modules
- :suite/version 1
- :suite/summary
- "Machine-readable acceptance scenarios for namespace and module loading."
+{:spec/version "0.1"
+ :language "hal-modules"
+ :description
+ "Cross-runtime acceptance scenarios for namespace identity, transactional modules, lazy loading, macros, sessions, and retained REPL state."
+ :runtime/profiles
+ {:jvm-truffle
+  {:resource-order
+   [:loaded-native-namespace
+    :runtime-library
+    :project-source
+    :classpath-source
+    :extension-package]}
+  :rust
+  {:resource-order
+   [:loaded-native-namespace
+    :registered-resource
+    :registered-extension]}}
  :cases
- [{:id :module/require-source
-   :area :module
-   :scenario :require
-   :expect {:status :loaded :preserves-var-identity true}}
-  {:id :module/require-missing
-   :area :module
-   :scenario :require
-   :expect {:status :error :phase :resolve}}
-  {:id :module/require-cycle
-   :area :module
-   :scenario :require
-   :expect {:status :error :phase :load}}
-  {:id :module/transaction-vars
-   :area :transaction
-   :scenario :rollback
-   :expect {:partial-vars false}}
-  {:id :module/transaction-macros
-   :area :transaction
-   :scenario :rollback
-   :expect {:partial-macros false}}
-  {:id :module/transaction-aliases
-   :area :transaction
-   :scenario :rollback
-   :expect {:partial-aliases false}}
-  {:id :module/transaction-current-namespace
-   :area :transaction
-   :scenario :rollback
-   :expect {:caller-restored true}}
-  {:id :module/lazy-non-forcing
-   :area :lazy
-   :scenario :declare
-   :expect {:state :unloaded}}
-  {:id :module/lazy-first-lookup
-   :area :lazy
-   :scenario :resolve
-   :expect {:state :loaded}}
-  {:id :module/lazy-requires-alias
-   :area :lazy
-   :scenario :validate
-   :expect {:status :error}}
-  {:id :module/lazy-rejects-refer
-   :area :lazy
-   :scenario :validate
-   :expect {:status :error}}
-  {:id :module/lazy-failure-state
-   :area :lazy
-   :scenario :resolve
-   :expect {:state :failed}}
-  {:id :namespace/alias-var
+ [{:id :namespace/alias-var-identity
    :area :namespace
-   :scenario :alias
-   :expect {:preserves-var-identity true}}
-  {:id :namespace/refer-var
+   :scenario :var-identity
+   :expect {:same-var true :live-root true}}
+  {:id :namespace/refer-var-identity
    :area :namespace
-   :scenario :refer
-   :expect {:preserves-var-identity true}}
-  {:id :namespace/refer-macro
-   :area :namespace
-   :scenario :refer-macros
-   :expect {:macro-visible true}}
+   :scenario :var-identity
+   :expect {:same-var true :live-root true}}
   {:id :namespace/use-declaration
    :area :namespace
    :scenario :use
-   :expect {:vars-visible true :macros-visible true}}
-  {:id :namespace/state-unknown
-   :area :state
-   :scenario :inspect
-   :expect {:state :unknown}}
-  {:id :namespace/state-loading
-   :area :state
-   :scenario :inspect
-   :expect {:state :loading}}
-  {:id :namespace/state-loaded
-   :area :state
-   :scenario :inspect
-   :expect {:state :loaded}}
-  {:id :namespace/state-failed
-   :area :state
-   :scenario :inspect
-   :expect {:state :failed}}
-  {:id :namespace/alias-state-local
-   :area :state
-   :scenario :inspect
-   :expect {:scope :namespace}}
+   :expect {:vars-visible true
+            :macros-visible true
+            :preserves-var-identity true}}
+  {:id :namespace/facade-var-copy
+   :area :namespace
+   :scenario :facade
+   :expect {:same-var false :copied-root true :copied-metadata true}}
   {:id :namespace/with-ns-success
-   :area :with-ns
-   :scenario :evaluate
-   :expect {:caller-restored true}}
+   :area :namespace
+   :scenario :with-ns
+   :expect {:result :target-final-value :caller-restored true}}
   {:id :namespace/with-ns-failure
-   :area :with-ns
-   :scenario :throw
-   :expect {:caller-restored true}}
-  {:id :namespace/with-ns-missing
-   :area :with-ns
-   :scenario :resolve
-   :expect {:status :error :creates-namespace false}}]}
+   :area :namespace
+   :scenario :with-ns
+   :expect {:error :guest :caller-restored true}}
+  {:id :namespace/with-ns-lexical-isolation
+   :area :namespace
+   :scenario :with-ns
+   :expect {:caller-locals-visible false}}
+  {:id :namespace/loading-state
+   :area :namespace
+   :scenario :state-inspection
+   :expect {:non-forcing true
+            :states [:unknown :unloaded :loading :loaded :failed]}}
+  {:id :namespace/cross-namespace-alias-state
+   :area :namespace
+   :scenario :state-inspection
+   :expect {:owner-explicit true :non-forcing true}}
+
+  {:id :module/canonical-cache
+   :area :module
+   :scenario :canonical-identity
+   :expect {:initial-revision 1 :duplicate-evaluation false}}
+  {:id :module/dependency-order
+   :area :module
+   :scenario :dependency-graph
+   :expect {:order :dependency-first-source-order}}
+  {:id :module/cycle-rollback
+   :area :module
+   :scenario :transaction
+   :expect {:error :cycle :partial-state false}}
+  {:id :module/failure-rollback
+   :area :module
+   :scenario :transaction
+   :expect {:partial-vars false
+            :partial-macros false
+            :partial-dependencies false
+            :revision-increment false}}
+  {:id :module/reload-revision
+   :area :module
+   :scenario :reload
+   :expect {:revision-increment 1 :new-compilation-sees-root true}}
+  {:id :module/reload-rollback
+   :area :module
+   :scenario :reload
+   :expect {:previous-revision-preserved true :previous-roots-preserved true}}
+  {:id :module/resource-precedence
+   :area :module
+   :scenario :resolution
+   :expect {:deterministic true
+            :declared-by-runtime-profile true
+            :same-canonical-resource-evaluated-once true}}
+  {:id :module/source-hir-parity
+   :area :module
+   :scenario :hir
+   :expect {:same-value true :same-var-metadata true :same-error-category true}}
+
+  {:id :lazy/non-forcing
+   :area :lazy
+   :scenario :lazy-alias
+   :expect {:state :unloaded :target-evaluated false}}
+  {:id :lazy/qualified-force
+   :area :lazy
+   :scenario :lazy-alias
+   :expect {:state :loaded :target-evaluations 1}}
+  {:id :lazy/failure-state
+   :area :lazy
+   :scenario :lazy-alias
+   :expect {:state :failed :partial-state false}}
+  {:id :lazy/explicit-retry
+   :area :lazy
+   :scenario :lazy-alias
+   :expect {:ordinary-force-retries false :reload-retries true}}
+  {:id :macro/reload-new-compilation
+   :area :macro
+   :scenario :reload
+   :expect {:existing-call-target :unchanged :new-compilation :new-expansion}}
+
+  {:id :session/namespace-isolation
+   :area :session
+   :scenario :isolation
+   :expect {:vars-shared false :modules-shared false :macros-shared false}}
+  {:id :session/dynamic-unwind
+   :area :session
+   :scenario :dynamic-binding
+   :expect {:binding-session-local true :restored-after-error true}}
+  {:id :session/immutable-transfer
+   :area :session
+   :scenario :transfer
+   :expect {:immutable-data true}}
+  {:id :session/reject-live-transfer
+   :area :session
+   :scenario :transfer
+   :expect {:functions false
+            :vars false
+            :mutable-references false
+            :streams false
+            :sockets false
+            :host-handles false}}
+  {:id :repl/retained-state
+   :area :repl
+   :scenario :retained-session
+   :expect {:namespace-retained true :history-retained true :multiline true}}
+  {:id :repl/error-recovery
+   :area :repl
+   :scenario :retained-session
+   :expect {:session-survives true :namespace-restored true}}]}

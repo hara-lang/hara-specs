@@ -53,7 +53,7 @@ editor UX, and extension packaging are outside this language document.
 3. **Evaluation** — left-to-right invocation, special evaluation, `do`, and
    tail-position `recur`.
 4. **Functions and bindings** — lexical closure, arity, destructuring, and
-   parallel `let` initialisation.
+   left-to-right sequential `let` bindings.
 5. **Collections and iteration** — persistent updates, collection-family
    preservation, lazy acquisition, and iterator cleanup.
 6. **Numbers** — numeric categories, promotion, ratio-free division, and
@@ -80,11 +80,13 @@ cases and future tooling.
   behaviour.
 - [`conformance/reader.edn`](conformance/reader.edn) — reader and canonical
   representation.
+- [`conformance/modules.edn`](conformance/modules.edn) — namespace, module,
+  lazy-loading, session, and retained-REPL scenarios.
 - [`conformance/parity/jvm-truffle.edn`](conformance/parity/jvm-truffle.edn) —
   JVM interpreter/Truffle parity.
 - [`conformance/parity/wasm-truffle.edn`](conformance/parity/wasm-truffle.edn) —
   Rust WebAssembly/Truffle parity.
 
-Coverage is currently partial. Host authority, module rollback, numeric
-promotion, iterator closure, error-source behaviour, and standard-library
-behaviour still need explicitly linked cases before candidate promotion.
+Coverage is currently partial. Host authority, numeric promotion, iterator
+closure, error-source behaviour, and standard-library behaviour still need
+explicitly linked cases before candidate promotion.
