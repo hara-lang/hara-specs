@@ -269,12 +269,12 @@
   {:section/id :hal/numbers
    :section/title "Numbers"
    :section/summary
-   "HAL has fixed-width integers, arbitrary-precision integers, floating values, and arbitrary-precision decimals without a mandatory ratio type."
+   "HAL has signed 64-bit integers and IEEE-754 binary64 floating-point values; ratios, arbitrary-precision integers, and exact decimals are outside the portable profile."
    :section/requirements
    [{:requirement/id :number/promotion
-     :requirement/level :must
-     :requirement/text
-     "Arithmetic promotes to a numeric representation capable of preserving the operation result."}
+    :requirement/level :must
+    :requirement/text
+     "Arithmetic preserves the portable numeric profile: integer results remain signed 64-bit values when representable, floating-point results are binary64 values, and results outside the profile report a HAL error."}
     {:requirement/id :number/ratio-free
      :requirement/level :must-not
      :requirement/text
