@@ -27,8 +27,8 @@
  :inventory
  {:status :accepted
   :closed true
-  :type-count 18
-  :method-count 110
+  :type-count 19
+  :method-count 126
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -53,7 +53,7 @@
   :global-alias "<Type>"
   :global-aliases
   [Maths Numbers Bits String Bytes File Socket Promise Coroutine Array Object
-   Runtime Printer Edn Json Regex UUID Error]
+   Runtime Printer Edn Json Regex UUID Error Kernel]
   :identity :same-native-type-object
   :identity-example "(= Maths std.native/Maths std.foundation/Maths)"
   :installed-with :global-protocol-aliases}
@@ -84,6 +84,14 @@
    :methods [and or xor not shift-left shift-right]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation.hal"}
+  {:name Kernel
+   :availability :capability-gated
+   :methods [session-create session-close session-list session-info session-eval
+             session-namespace session-complete resource-register resource-remove
+             resource-list filesystem-create filesystem-attach filesystem-detach
+             filesystem-info filesystem-close capabilities]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/kernel.hal"}
   {:name String
    :availability :implemented
    :methods [length blank? includes? starts-with? ends-with? char-at slice

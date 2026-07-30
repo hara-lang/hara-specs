@@ -361,7 +361,11 @@
     {:requirement/id :std.pretty/api
      :requirement/level :must
      :requirement/text
-     "The std.pretty namespace provides pprint-str. It accepts one HAL value and returns its canonical readable representation."}]}
+     "The std.pretty namespace provides pprint-str. It accepts one HAL value and returns its canonical readable representation."}
+    {:requirement/id :std.foundation.kernel/api
+     :requirement/level :must
+     :requirement/text
+     "std.foundation.kernel exposes local process-kernel lifecycle through flat session-*, resource-*, filesystem-*, and capabilities functions. Sessions are isolated; session-eval transfers only immutable HAL data and rejects functions, Vars, mutable references, streams, sockets, and host handles. ROOT cannot be closed. Resources are executable .hal sources. Every runtime exposes the same API shape; unavailable host operations fail explicitly according to capabilities."}]}
 
   {:section/id :hal/host-boundary
    :section/title "Host boundary"
