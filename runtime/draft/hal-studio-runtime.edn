@@ -1,10 +1,10 @@
 {:document/id :hal/studio-runtime
  :document/type :runtime-spec
- :document/version "1.3.0-draft"
+ :document/version "1.4.0-draft"
  :document/status :draft
  :document/title "HAL programmable Studio and node runtime"
  :document/summary
- "Normative kernel, session, filesystem, editor, canvas, project, node, and wire contract."
+ "Normative kernel, session, filesystem, editor, canvas, audio graph, project, node, and wire contract."
 
  :runtime/host-contract
  {:spec :hal/host-runtime
@@ -230,6 +230,54 @@
   :close
   [:remove-host-listeners :reject-pending-frames :release-webgl-resources
    :clear-surface-ownership :clear-input-queue]}
+
+ :runtime/supersonic
+ {:hal-namespace gw.audio.supersonic
+  :host-service "gw.audio.supersonic"
+  :capability "audio/playback"
+  :operations
+  [{:symbol gw.audio.supersonic/start
+    :arguments [graph]
+    :returns :audio/graph-snapshot}
+   {:symbol gw.audio.supersonic/update
+    :arguments [graph-id node-id parameter value]
+    :returns :audio/graph-snapshot}
+   {:symbol gw.audio.supersonic/status
+    :arguments [graph-id]
+    :returns :audio/graph-snapshot}
+   {:symbol gw.audio.supersonic/stop
+    :arguments [graph-id]
+    :returns :audio/graph-snapshot}]
+  :graph
+  {:required ["graph/id" "nodes" "connections"]
+   :node-required ["id" "type"]
+   :node-ui-metadata ["label" "summary" "input" "output" "runtime"]
+   :parameters
+   {:values "params"
+    :controls ["parameter" "type" "label" "min" "max" "step" "choices"]
+    :types ["number" "boolean" "choice"]}
+   :connection-required ["from" "to"]
+   :endpoint [node-id port-id]
+   :kinds ["audio" "analysis" "hta/latest" "host"]}
+  :authority
+  {:source "The active HAL document owns the graph descriptor."
+   :provider "The session-owned host provider owns executable audio resources and the live snapshot."
+   :ui "Interfaces MUST project the provider snapshot and MUST NOT maintain a parallel node or control schema."
+   :runtime-overlays "Parameter updates persist by graph, node, and parameter without rewriting HAL source."}
+  :replacement
+  {:validation :before-engine-prepare
+   :commit :whole-graph
+   :failure :retain-previous-generation}
+  :browser
+  {:provider :hara-web
+   :dsp [:rust-wasm :web-audio]
+   :audio-start :explicit-user-gesture}
+  :portability
+  {:contract :provider-neutral
+   :native-and-truffle :deferred}
+  :compatibility
+  {:studio.audio :same-provider
+   :status :deprecated}}
 
  :runtime/studio-embedding
  {:layout
