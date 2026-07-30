@@ -57,6 +57,24 @@ body {
   overflow-x: hidden;
 }
 
+.specs-contribution-label {
+  position: fixed;
+  z-index: 20;
+  right: 4.5rem;
+  top: 0.75rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid color-mix(in srgb, #50e3a4 52%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, #10291f 92%, transparent);
+  color: #8bf0c2;
+  font: 600 0.75rem/1.2 system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.specs-contribution-label[hidden] {
+  display: none;
+}
+
 body {
   background-image:
     linear-gradient(var(--spec-grid) 1px, transparent 1px),

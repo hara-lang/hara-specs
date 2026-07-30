@@ -32,6 +32,7 @@
   <button class="specs-theme-toggle" type="button" data-theme-toggle aria-label="Toggle light and dark mode" title="Toggle light and dark mode" aria-pressed="false">
     <span aria-hidden="true">◐</span>
   </button>
+  <aside class="specs-contribution-label" data-contribution-label hidden></aside>
   <main id="spec-explorer">
     <section class="hara-explorer-welcome">
       <h1>Hara specifications</h1>
@@ -101,6 +102,18 @@
     };
 
     const toggle = document.querySelector("[data-theme-toggle]");
+    const contributionLabel = document.querySelector("[data-contribution-label]");
+    const updateContributionLabel = () => {
+      const selectedPath = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
+      const parts = selectedPath.split("/");
+      const owner = parts[0] === "contrib" ? parts[1] : null;
+      contributionLabel.hidden = !owner;
+      contributionLabel.textContent = owner
+        ? `${owner} contribution · hosted and verified by Hara`
+        : "";
+    };
+    addEventListener("hashchange", updateContributionLabel);
+    updateContributionLabel();
     createSpecExplorer(document.querySelector("#spec-explorer"), {
       manifestUrl: "spec-manifest.json",
       repositoryUrl: "https://github.com/hara-lang/hara-specs/blob/main",

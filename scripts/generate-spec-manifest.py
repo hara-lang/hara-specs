@@ -15,17 +15,34 @@ EXCLUDED = {"spec-manifest.json"}
 
 
 def files() -> list[dict[str, str]]:
-    tracked = subprocess.check_output(
+    tracked = set(subprocess.check_output(
         ["git", "ls-files"], cwd=ROOT, text=True
-    ).splitlines()
+    ).splitlines())
+    tracked.update(subprocess.check_output(
+        ["git", "ls-files", "--others", "--exclude-standard"], cwd=ROOT, text=True
+    ).splitlines())
     entries = []
-    for path in tracked:
+    for path in sorted(tracked):
         if path in EXCLUDED:
             continue
         kind = EXTENSIONS.get(Path(path).suffix.lower())
         if kind is None:
             continue
-        entries.append({"path": path, "kind": kind})
+        entry = {"path": path, "kind": kind}
+        parts = Path(path).parts
+        if len(parts) >= 2 and parts[0] == "contrib":
+            owner = parts[1]
+            entry.update({
+                "classification": "contribution",
+                "owner": owner,
+                "label": f"{owner} contribution",
+            })
+        else:
+            entry.update({
+                "classification": "hara",
+                "owner": "hara-lang",
+            })
+        entries.append(entry)
     return sorted(entries, key=lambda entry: entry["path"])
 
 
