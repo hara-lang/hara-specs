@@ -1,6 +1,6 @@
 {:document/id :hal/studio-runtime
  :document/type :runtime-spec
- :document/version "1.4.0-draft"
+ :document/version "1.5.0-draft"
  :document/status :draft
  :document/title "HAL programmable Studio and node runtime"
  :document/summary
@@ -254,8 +254,14 @@
    :node-ui-metadata ["label" "summary" "input" "output" "runtime"]
    :parameters
    {:values "params"
-    :controls ["parameter" "type" "label" "min" "max" "step" "choices"]
-    :types ["number" "boolean" "choice"]}
+    :controls ["parameter" "type" "label" "min" "max" "step" "integer" "choices"]
+    :types ["number" "boolean" "choice" "steps"]
+    :steps
+    {:representation :semitone-offset-or-nil-rest
+     :minimum-length 1
+     :maximum-length 64
+     :minimum-offset -48
+     :maximum-offset 48}}
    :connection-required ["from" "to"]
    :endpoint [node-id port-id]
    :kinds ["audio" "analysis" "hta/latest" "host"]}
@@ -268,6 +274,12 @@
   {:validation :before-engine-prepare
    :commit :whole-graph
    :failure :retain-previous-generation}
+  :tune
+  {:root :midi-note
+   :default-steps-per-beat 2
+   :update-while-stopped :immediate
+   :update-while-playing :next-loop-boundary
+   :snapshot [:active-revision :pending]}
   :browser
   {:provider :hara-web
    :dsp [:rust-wasm :web-audio]
@@ -289,6 +301,13 @@
   "Editor evaluation, filesystem calls, canvas calls, and input MUST route using the originating kernel and session identity."
   :documentation-difference
   "Generated Markdown may choose a compact per-embed layout, but it obeys the same session, filesystem, document-generation, and canvas contracts."}
+
+ :runtime/document-repl
+ {:target :active-document-generation
+  :operation :eval-form
+  :inherits [:namespace :aliases :vars :host-capabilities]
+  :history [:source :value-or-error]
+  :failed-document-policy :retain-previous-active-generation}
 
  :runtime/anonymous-module
  {:form ns+
