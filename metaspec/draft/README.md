@@ -1,22 +1,35 @@
-# HAL language specification meta-spec
+# Hara meta-specifications
 
 Status: **draft**  
 Version: **0.1.0-draft**
 
-The authoritative document is
-[`hal-metaspec.edn`](hal-metaspec.edn). This README is its human-readable
-companion and must not introduce requirements that are absent from the EDN.
+The authoritative documents are:
+
+- [`hal-metaspec-metaspec.edn`](hal-metaspec-metaspec.edn), the
+  self-describing contract for metaspec documents and agent repair reports;
+- [`hal-metaspec.edn`](hal-metaspec.edn), the shape of HAL language
+  specifications;
+- [`hal-artifact-metaspec.edn`](hal-artifact-metaspec.edn), the sibling
+  contract for deterministic artifact-format specifications.
+
+This README is an informative companion and must not introduce requirements
+that are absent from those EDN documents.
 
 ## Purpose
 
-The meta-spec defines the structure and authority rules for machine-readable
-HAL language specifications. It standardises:
+The meta-meta-spec lets an AI agent generate a metaspec, lint it, apply
+structured repairs, and verify it without network access. The language
+meta-spec then defines the structure and authority rules for machine-readable
+HAL language specifications. Together they standardise:
 
 - document identity, version, and lifecycle status;
 - ordered normative sections and stable requirement identifiers;
 - special-form, macro, function, and reader-form declarations;
 - conformance, parity, implementation, and historical references;
 - validation, rendering, and promotion requirements.
+
+The artifact meta-spec is deliberately separate: it describes domain formats
+without expanding or weakening the HAL language contract.
 
 ## Authority model
 
@@ -46,6 +59,18 @@ Normative requirements carry stable qualified identifiers and one of
 Validation checks identifier uniqueness, cross-reference integrity, section
 ordering, requirement evidence, authority boundaries, and repository-local
 paths. Unknown extension keys must be qualified.
+
+The local workflow is:
+
+```text
+hara spec template
+hara spec lint FILE --format edn
+hara spec verify FILE --format edn
+hara spec validate ARTIFACT_SPEC --against ARTIFACT_METASPEC --format edn
+```
+
+Reports use stable finding IDs, data paths, and machine-readable repair
+actions. A report cannot pass with failed, unknown, or blocked obligations.
 
 ## Rendering
 
