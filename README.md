@@ -1,8 +1,12 @@
 # Hara specifications
 
-The specification repository is organised around three machine-readable
-documents:
+The specification repository is organised around Hara-owned machine-readable
+documents and separately attributed contributions.
 
+- [`metaspec/draft/hal-metaspec-metaspec.edn`](metaspec/draft/hal-metaspec-metaspec.edn)
+   defines the self-describing contract used to lint and verify metaspecs.
+- [`metaspec/draft/hal-artifact-metaspec.edn`](metaspec/draft/hal-artifact-metaspec.edn)
+   defines the shape of deterministic artifact-format specifications.
 - [`metaspec/draft/hal-metaspec.edn`](metaspec/draft/hal-metaspec.edn)
    defines the shape and authority rules for a HAL language specification.
 - [`language/draft/hal-langspec.edn`](language/draft/hal-langspec.edn)
@@ -13,6 +17,14 @@ documents:
 
 Each EDN document has an adjacent rendered `README.md` for human readers. The
 EDN source remains authoritative.
+
+## Contributions
+
+[`contrib/greenways/`](contrib/greenways/README.md) publishes verified snapshots
+of Greenways-owned formats, including the Build DSL and Supersonic audio graph.
+These documents remain Greenways contributions: Hara hosting and verification
+do not make their domain vocabulary part of the HAL language contract. Each
+snapshot includes an owner-qualified contribution envelope and content digest.
 
 ## What the language spec allows
 
