@@ -30,7 +30,16 @@
   :projections [:hara-source :dsl-source :patch-graph]
   :stable-identities [:node-id :port-id :connection-id :declaration-id :source-location]
   :non-semantic-metadata [:layout :zoom :grouping :presentation]
-  :losslessness "Unsupported visual edits are rejected or represented explicitly; source semantics are never silently discarded."}
+  :losslessness "Unsupported visual edits are rejected or represented explicitly; source semantics are never silently discarded."
+  :projection-sync
+  {:source-authority true
+   :parameter-edit {:visual-to-source :patch-literal
+                    :runtime :incremental-live-update}
+   :topology-edit :source-only
+   :invalid-source :retain-last-current-projection
+   :source-provenance {:range :complete-node-form
+                       :render [:type-coloured-gutter :subtle-line-background]
+                       :selection :bidirectional}}}
 
  :design/node-grammar
  {:node [:id :kind :parameters :diagnostics :selection :focus :execution-feedback :provenance]
@@ -43,6 +52,13 @@
   :structural-edits {:create-node :create-declaration :delete-node :delete-structure :wire-ports :edit-connection}
   :wiring {:gesture :drag-output-to-input :preview :provisional-svg-cable :rejection :explicit-visible}
   :evaluation {:states [:pending :current :stale :error] :feedback [:node :cable :console :inspector]}}
+
+ :design/repl
+ {:mobile :large-multiline-editor
+  :recipes {:selectable true :execute-on-select false :editable true}
+  :completion {:sources [:language-symbol :namespace-alias :graph-id :node-id :parameter :choice :recipe]
+               :interaction [:touch-listbox :arrow-navigation :tab-or-enter :escape :ctrl-space]
+               :execute-on-select false}}
 
  :design/code-visual-actions
  [{:id :link-create :icon "⛓" :effect :bind-source-and-visual-selection}

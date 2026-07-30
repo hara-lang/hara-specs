@@ -307,6 +307,11 @@
   :operation :eval-form
   :inherits [:namespace :aliases :vars :host-capabilities]
   :history [:source :value-or-error]
+  :completion
+  {:context [:active-document :namespace-aliases :runtime-graph]
+   :candidates [:symbol :graph-id :node-id :parameter :choice :recipe]
+   :selection :insert-at-caret
+   :automatic-evaluation false}
   :failed-document-policy :retain-previous-active-generation}
 
  :runtime/anonymous-module
