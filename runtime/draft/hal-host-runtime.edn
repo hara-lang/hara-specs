@@ -75,6 +75,20 @@
   :provider-dispatch
   [:resolve-session :require-grant :validate-method-and-arguments :invoke-provider]}
 
+ :host/errors
+ {:transport :rejected-promise
+  :value :ex-info
+  :code-key :error/code
+  :codes
+  [:host/unavailable
+   :host/capability-unavailable
+   :host/capability-denied
+   :host/method-unavailable
+   :host/call-failed
+   :host/call-cancelled]
+  :rule
+  "The original ex-info value, including :error/code, remains observable through promise catch, deref, session evaluation, and host transport settlement."}
+
  :host/browser
  {:owner hara-web
   :source-root "rust/web/host/"
@@ -95,9 +109,21 @@
  :host/conformance
  [{:id :host/type-identity
    :assert "(= Host std.native/Host std.foundation/Host)"}
+  {:id :host/session-local-facade
+   :assert
+   "Each session receives a distinct Host façade identity while all three Host names within that session resolve to that one identity."}
+  {:id :host/namespace-loaded
+   :assert
+   "std.native and std.native.Host report :loaded immediately and inspection does not force provider discovery or package activation."}
   {:id :host/no-special-form
    :assert "host/call resolves only through an explicitly required HAL namespace"}
   {:id :host/session-grants
    :assert "Two sessions may observe different host/capabilities results."}
+  {:id :host/no-live-transfer
+   :assert
+   "Host façades, provider handles, promises, streams, and sockets are rejected by session transfer."}
+  {:id :host/rejected-ex-info
+   :assert
+   "Rejected Host promises preserve ex-info identity and one of the normative :host/* error codes through catch, deref, and session evaluation."}
   {:id :host/atomic-resources
    :assert "A failed batch registers no resources."}]}
