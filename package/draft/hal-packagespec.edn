@@ -1,6 +1,6 @@
 {:document/id :hara/package
  :document/type :package-spec
- :document/version "0.1.0-draft"
+ :document/version "0.1.1-draft"
  :document/status :draft
  :document/title "Hara package and registry specification"
  :document/summary
@@ -9,7 +9,8 @@
  :package/scope
  {:includes #{:project-manifests :lockfiles :semver-resolution :harp-archives
               :federated-taps :git-registry :github-release-assets :identity-policy
-              :publisher-signatures :registry-ci-attestations :wasm-package-loading}
+              :publisher-signatures :registry-ci-attestations :wasm-package-loading
+              :studio-project-publication}
   :excludes #{:ir-to-machine-code :native-executable-compilation :package-lifecycle-scripts
               :private-key-storage :ambient-network-require}}
 
@@ -40,7 +41,7 @@
    :requirement/text "A verified package requires both an authorized publisher release-intent signature and an authorized registry-CI archive attestation."}]
 
  :package/section-order
- [:package/project :package/lock :package/archive :package/resolution
+ [:package/project :package/studio-project :package/lock :package/archive :package/resolution
   :package/identity :package/registry :package/publication :package/wasm :package/commands]
 
  :package/sections
@@ -57,6 +58,23 @@
     {:requirement/id :project/package-fields
      :requirement/level :must
      :requirement/text "Package-aware projects use :project/dependencies, :project/repositories, :project/hara-version, :project/hir-formats, :project/artifact-paths, :project/archive-root, and :project/package without changing required existing project keys."}]
+   :section/forms []}
+  {:section/id :package/studio-project
+   :section/title "Studio projects and draft publication"
+   :section/summary "A Studio project is an editable source tree; draft sharing and signed Hara release publication are distinct operations."
+   :section/requirements
+   [{:requirement/id :studio-project/release-inputs
+     :requirement/level :must
+     :requirement/text "A release archive contains project.edn, project.lock.edn when dependencies are declared, declared source and artifact paths, and workspace.edn only when :project/package declares {:workspace true}."}
+    {:requirement/id :studio-project/workspace-boundary
+     :requirement/level :must
+     :requirement/text "workspace.edn may contain portable layout and declarative project state, but MUST NOT contain live sessions, kernel values, provider caches, credentials, machine paths, or other ephemeral host state."}
+    {:requirement/id :studio-project/draft-export
+     :requirement/level :must
+     :requirement/text "Draft export may create a ZIP, gist, or host-specific workspace snapshot without package signatures, registry publication, or dependency authority."}
+    {:requirement/id :studio-project/release-publication
+     :requirement/level :must
+     :requirement/text "Signed package release uses the normal project version, lockfile, deterministic HARP archive, publisher intent, and registry CI attestation flow; a browser host never receives a publisher private key."}]
    :section/forms []}
   {:section/id :package/lock
    :section/title "Locked resolution"
@@ -178,7 +196,13 @@
      :requirement/text "The JavaScript host performs package retrieval, signature verification, and digest-addressed caching; the WASM evaluator does not fetch network content."}
     {:requirement/id :wasm/extension-validation
      :requirement/level :must
-     :requirement/text "WASM modules and HTA assets are declared in package.edn and hara.extension.edn, validated before startup, and receive no authority from declaration alone."}]
+     :requirement/text "WASM modules and HTA assets are declared in package.edn and hara.extension.edn, validated before startup, and receive no authority from declaration alone."}
+    {:requirement/id :wasm/browser-activation
+     :requirement/level :must
+     :requirement/text "Before project evaluation, a browser host resolves the locked graph, verifies signatures and archive digest, validates safe unique archive entries and package.edn, caches bytes by digest, mounts verified roots read-only, validates extension descriptors and assets, and registers required resources atomically."}
+    {:requirement/id :wasm/no-network-require
+     :requirement/level :must-not
+     :requirement/text "Extension require or project require must not fetch, resolve, verify, or mount packages; failure to activate the complete verified graph leaves no partial graph visible to evaluation."}]
    :section/forms []}
   {:section/id :package/commands
    :section/title "Command interface"

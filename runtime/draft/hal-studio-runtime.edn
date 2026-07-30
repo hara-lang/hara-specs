@@ -1,6 +1,6 @@
 {:document/id :hal/studio-runtime
  :document/type :runtime-spec
- :document/version "1.1.0-draft"
+ :document/version "1.2.0-draft"
  :document/status :draft
  :document/title "HAL programmable Studio and node runtime"
  :document/summary
@@ -31,8 +31,17 @@
    [{:operation session/create :arguments [:session/id]}
     {:operation session/list :arguments []}
     {:operation session/info :arguments [:session/id]}
+    {:operation filesystem/create
+     :arguments [:filesystem/provider-descriptor]
+     :returns :filesystem/mount-id}
+    {:operation filesystem/info
+     :arguments [:filesystem/mount-id]}
+    {:operation filesystem/close
+     :arguments [:filesystem/mount-id]}
     {:operation session/attach-filesystem
-     :arguments [:session/id :filesystem/provider-id]}
+     :arguments [:session/id :filesystem/mount-id]}
+    {:operation session/detach-filesystem
+     :arguments [:session/id]}
     {:operation session/eval :arguments [:session/id :source]}
     {:operation session/eval-bound :arguments [:session/id :source :bindings]}
     {:operation session/complete :arguments [:session/id :prefix]}
@@ -47,7 +56,8 @@
   [:environment :namespace-registry :module-load-state :protocols
    :fibers :task-handles :document-generations :current-namespace
    :project-cache :capabilities :filesystem-attachment]
-  :host-call-identity [:kernel/id :session/id :task/id]
+  :host-call-identity
+  [:kernel/id :session/id :task/id :filesystem/mount-id]
   :close
   [:cancel-tasks :reject-pending-host-calls :release-document-generations
    :release-capabilities :detach-filesystem]
@@ -55,7 +65,22 @@
   "Closing or resetting one session MUST NOT mutate any other session in the same kernel."}
 
  :runtime/filesystem-provider
- {:identity :opaque-host-provider-id
+ {:identity
+  {:type :opaque-positive-u64
+   :hta1-range :signed-positive-i64
+   :allocation :kernel
+   :persistence :kernel-local-only}
+  :authority
+  {:kernel
+   [:allocate-mount-id :validate-session-attachment
+    :own-attachment-count :reject-close-while-attached]
+   :host
+   [:instantiate-provider :execute-file-operation]
+   :single-source-of-truth :kernel-mount-registry}
+  :provider-descriptors
+  [{:provider "memory"}
+   {:provider "indexeddb" :key :non-empty-persistent-key}
+   {:provider "native" :root :host-confined-root}]
   :operations [:resolve :read :write :exists :list :mkdir :delete]
   :browser
   {:ephemeral :session-lifetime-memory
@@ -65,14 +90,48 @@
   {:precondition
    :no-active-evaluations-tasks-document-generations-or-pending-host-calls
    :busy-error "SESSION_BUSY"
-   :validation :before-reset
+   :validation :before-attachment-change
    :failure :atomic
    :success
-   [:preserve-session-id :reset-language-state :reset-project-cache
-    :detach-previous-provider :attach-new-provider]}
-  :compatibility
-  {:studio.fs :facade-over-attached-provider
-   :std.foundation.file :attached-provider}}
+   [:preserve-session-id :preserve-language-state :preserve-project-cache
+    :detach-previous-mount :attach-new-mount]}
+  :lifetime
+  {:close-precondition :attachment-count-zero
+   :attached-error "FILESYSTEM_ATTACHED"
+   :session-close :detach-and-decrement
+   :kernel-close :close-all-registrations
+   :persistent-data-delete false}
+  :hal-api :std.foundation.file
+  :removed-compatibility [:studio.fs :studio.space]
+  :generic-store-role :non-filesystem-key-value-data}
+
+ :runtime/filesystem-conformance
+ [{:id :filesystem/unique-mount-ids
+   :given [:two-provider-creations]
+   :assert [:positive-integer-ids :ids-differ]}
+  {:id :filesystem/session-isolation
+   :given [:two-memory-mounts :two-sessions]
+   :assert [:writes-are-isolated]}
+  {:id :filesystem/shared-mount
+   :given [:one-mount :two-sessions]
+   :assert [:writes-are-shared]}
+  {:id :filesystem/reattach-preserves-runtime
+   :given [:defined-var :idle-session :second-mount]
+   :assert [:defined-var-remains-bound]}
+  {:id :filesystem/busy-reattach-rejected
+   :given [:pending-host-call :second-mount]
+   :assert-error "SESSION_BUSY"}
+  {:id :filesystem/refcounted-close
+   :given [:attached-mount]
+   :assert-error "FILESYSTEM_ATTACHED"}
+  {:id :filesystem/canonical-file-api
+   :given [:attached-mount]
+   :call
+   [:std.foundation.file/resolve :std.foundation.file/read
+    :std.foundation.file/write :std.foundation.file/exists?
+    :std.foundation.file/list :std.foundation.file/mkdir
+    :std.foundation.file/delete]
+   :assert :same-observable-results-on-native-and-browser}]
 
  :runtime/documentation-embedding
  {:default
@@ -83,7 +142,7 @@
   {"data-hara-filesystem" :explicit-shared-indexeddb-key
    "data-hara-kernel=isolated" :dedicated-worker-and-wasm-kernel}
   :canvas-routing :originating-session
-  :ui-identity [:kernel-scope :session/id :filesystem-kind]}
+  :ui-identity [:kernel-scope :session/id :filesystem/mount-id]}
 
  :runtime/studio-editor
  {:authorities
@@ -93,7 +152,7 @@
    "The editor owns the current unsaved bytes and dirty state."
    :active-generation
    "The document registry owns the last successfully activated ns+ generation."}
-  :document-id [:project/id :filesystem-space :normalized-path]
+  :document-id [:project/id :filesystem/mount-id :normalized-path]
   :operations
   {:open
    {:reads :persisted-source
@@ -126,7 +185,7 @@
   [{:id :editor/run-does-not-save
     :text "Running a file or form MUST NOT modify persisted source or clear dirty state."}
    {:id :editor/path-scoped-generation
-    :text "Document generations MUST include project, filesystem space, and normalized path in their identity."}
+    :text "Document generations MUST include project, filesystem mount, and normalized path in their identity."}
    {:id :editor/failed-candidate-retains-active
     :text "A failed candidate MUST be discarded without replacing the active generation."}]}
 
@@ -169,7 +228,7 @@
  {:layout
   [:filesystem-tree :editor :repl-log :status-strip :optional-canvas]
   :selected-target
-  [:kernel/id :session/id :filesystem/provider-id]
+  [:kernel/id :session/id :filesystem/mount-id]
   :private-document-sessions true
   :host-routing
   "Editor evaluation, filesystem calls, canvas calls, and input MUST route using the originating kernel and session identity."
@@ -296,6 +355,12 @@
   :implementation :hara-native
   :compatibility :existing-json-frames-remain-valid
   :version "substrate.v1"
+  :hta-mailbox
+  {:abi-version 2
+   :value-codec :hta1
+   :host-call-event
+   [:host-call :call/id :task/id :session/id
+    :filesystem/mount-id-or-nil :service :method :arguments]}
   :json
   {:required true
    :role :portable-control-and-ordinary-data
