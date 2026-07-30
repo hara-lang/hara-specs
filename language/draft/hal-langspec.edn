@@ -407,7 +407,7 @@
     {:requirement/id :namespace/session-isolation
      :requirement/level :must
      :requirement/text
-     "Namespace, Var root, dynamic binding, macro, module, loading-state, and REPL history changes are isolated by session. Resources may be shared as immutable source or HIR bytes, but live Vars, namespace objects, closures, mutable references, streams, sockets, and host handles do not cross sessions."
+     "Namespace, Var root, dynamic binding, macro, module, loading-state, and REPL history changes are isolated by session. Native facilities, including Host, are exposed as session-local façade objects even when their immutable descriptors or underlying host service registries are shared. Resources may be shared as immutable package locks, source bytes, or HIR bytes, but live Vars, namespace objects, closures, mutable references, streams, sockets, native façade objects, and host handles do not cross sessions."
      :requirement/evidence
      [{:suite :hal/modules
        :cases [:session/namespace-isolation

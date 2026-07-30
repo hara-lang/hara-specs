@@ -1,10 +1,17 @@
 {:document/id :hal/studio-runtime
  :document/type :runtime-spec
- :document/version "1.2.0-draft"
+ :document/version "1.3.0-draft"
  :document/status :draft
  :document/title "HAL programmable Studio and node runtime"
  :document/summary
  "Normative kernel, session, filesystem, editor, canvas, project, node, and wire contract."
+
+ :runtime/host-contract
+ {:spec :hal/host-runtime
+  :host-layer hara-web
+  :portable-substrate std.lib.substrate
+  :product-layer greenways.studio
+  :studio-role :consumer}
 
  :runtime/builtins
  {:co {:qualified-prefix "co/"

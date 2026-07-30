@@ -1,6 +1,6 @@
 {:document/id :hara/package
  :document/type :package-spec
- :document/version "0.1.1-draft"
+ :document/version "0.1.2-draft"
  :document/status :draft
  :document/title "Hara package and registry specification"
  :document/summary
@@ -108,7 +108,10 @@
      :requirement/text "Archives must not contain absolute paths, parent traversal, device paths, symbolic links, hard links, duplicate paths, or undeclared executable artifacts."}
     {:requirement/id :harp/read-only
      :requirement/level :must
-     :requirement/text "A successfully verified archive is mounted as a read-only package root."}]
+     :requirement/text "A successfully verified archive is mounted as a read-only package root."}
+    {:requirement/id :harp/resource-index
+     :requirement/level :must
+     :requirement/text "package.edn declares :resources as a unique HAL namespace-to-archive-path map and :extensions as descriptor paths; every referenced path is present in :files."}]
    :section/forms []}
   {:section/id :package/resolution
    :section/title "Resolution and mounting"
@@ -200,6 +203,9 @@
     {:requirement/id :wasm/browser-activation
      :requirement/level :must
      :requirement/text "Before project evaluation, a browser host resolves the locked graph, verifies signatures and archive digest, validates safe unique archive entries and package.edn, caches bytes by digest, mounts verified roots read-only, validates extension descriptors and assets, and registers required resources atomically."}
+    {:requirement/id :wasm/resource-batch
+     :requirement/level :must
+     :requirement/text "The browser stages the entire locked graph, rejects duplicate namespaces across packages, and invokes the raw runtime register-resources target exactly once after all archives and extension assets validate."}
     {:requirement/id :wasm/no-network-require
      :requirement/level :must-not
      :requirement/text "Extension require or project require must not fetch, resolve, verify, or mount packages; failure to activate the complete verified graph leaves no partial graph visible to evaluation."}]

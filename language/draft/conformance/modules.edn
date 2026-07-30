@@ -2,6 +2,19 @@
  :language "hal-modules"
  :description
  "Cross-runtime acceptance scenarios for namespace identity, transactional modules, lazy loading, macros, sessions, and retained REPL state."
+ :runtime/profiles
+ {:jvm-truffle
+  {:resource-order
+   [:loaded-native-namespace
+    :runtime-library
+    :project-source
+    :classpath-source
+    :extension-package]}
+  :rust
+  {:resource-order
+   [:loaded-native-namespace
+    :registered-resource
+    :registered-extension]}}
  :cases
  [{:id :namespace/alias-var-identity
    :area :namespace
