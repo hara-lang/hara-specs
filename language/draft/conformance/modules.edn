@@ -1,0 +1,101 @@
+{:suite/id :hal/modules
+ :suite/version 1
+ :suite/summary
+ "Machine-readable acceptance scenarios for namespace and module loading."
+ :cases
+ [{:id :module/require-source
+   :area :module
+   :scenario :require
+   :expect {:status :loaded :preserves-var-identity true}}
+  {:id :module/require-missing
+   :area :module
+   :scenario :require
+   :expect {:status :error :phase :resolve}}
+  {:id :module/require-cycle
+   :area :module
+   :scenario :require
+   :expect {:status :error :phase :load}}
+  {:id :module/transaction-vars
+   :area :transaction
+   :scenario :rollback
+   :expect {:partial-vars false}}
+  {:id :module/transaction-macros
+   :area :transaction
+   :scenario :rollback
+   :expect {:partial-macros false}}
+  {:id :module/transaction-aliases
+   :area :transaction
+   :scenario :rollback
+   :expect {:partial-aliases false}}
+  {:id :module/transaction-current-namespace
+   :area :transaction
+   :scenario :rollback
+   :expect {:caller-restored true}}
+  {:id :module/lazy-non-forcing
+   :area :lazy
+   :scenario :declare
+   :expect {:state :unloaded}}
+  {:id :module/lazy-first-lookup
+   :area :lazy
+   :scenario :resolve
+   :expect {:state :loaded}}
+  {:id :module/lazy-requires-alias
+   :area :lazy
+   :scenario :validate
+   :expect {:status :error}}
+  {:id :module/lazy-rejects-refer
+   :area :lazy
+   :scenario :validate
+   :expect {:status :error}}
+  {:id :module/lazy-failure-state
+   :area :lazy
+   :scenario :resolve
+   :expect {:state :failed}}
+  {:id :namespace/alias-var
+   :area :namespace
+   :scenario :alias
+   :expect {:preserves-var-identity true}}
+  {:id :namespace/refer-var
+   :area :namespace
+   :scenario :refer
+   :expect {:preserves-var-identity true}}
+  {:id :namespace/refer-macro
+   :area :namespace
+   :scenario :refer-macros
+   :expect {:macro-visible true}}
+  {:id :namespace/use-declaration
+   :area :namespace
+   :scenario :use
+   :expect {:vars-visible true :macros-visible true}}
+  {:id :namespace/state-unknown
+   :area :state
+   :scenario :inspect
+   :expect {:state :unknown}}
+  {:id :namespace/state-loading
+   :area :state
+   :scenario :inspect
+   :expect {:state :loading}}
+  {:id :namespace/state-loaded
+   :area :state
+   :scenario :inspect
+   :expect {:state :loaded}}
+  {:id :namespace/state-failed
+   :area :state
+   :scenario :inspect
+   :expect {:state :failed}}
+  {:id :namespace/alias-state-local
+   :area :state
+   :scenario :inspect
+   :expect {:scope :namespace}}
+  {:id :namespace/with-ns-success
+   :area :with-ns
+   :scenario :evaluate
+   :expect {:caller-restored true}}
+  {:id :namespace/with-ns-failure
+   :area :with-ns
+   :scenario :throw
+   :expect {:caller-restored true}}
+  {:id :namespace/with-ns-missing
+   :area :with-ns
+   :scenario :resolve
+   :expect {:status :error :creates-namespace false}}]}

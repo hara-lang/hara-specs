@@ -354,23 +354,23 @@
   {:dispatch IColl/end-string, :target :hidden}
   {:dispatch IColl/sep-string, :target :hidden}
   {:dispatch IColl/iterator, :target :hidden}
-  {:dispatch IComponent/props, :target std.foundation.component/props}
-  {:dispatch IComponent/status, :target std.foundation.component/status}
-  {:dispatch IComponent/started?, :target std.foundation.component/started?}
-  {:dispatch IComponent/stopped?, :target std.foundation.component/stopped?}
-  {:dispatch IComponent/start, :target std.foundation.component/start}
-  {:dispatch IComponent/stop, :target std.foundation.component/stop}
-  {:dispatch IComponent/kill, :target std.foundation.component/kill}
-  {:dispatch IComponent/remote?, :target std.foundation.component/remote?}
-  {:dispatch IContext/call, :target std.foundation.context/call}
+  {:dispatch IComponent/props, :target std.lib.component/props}
+  {:dispatch IComponent/status, :target std.lib.component/status}
+  {:dispatch IComponent/started?, :target std.lib.component/started?}
+  {:dispatch IComponent/stopped?, :target std.lib.component/stopped?}
+  {:dispatch IComponent/start, :target std.lib.component/start}
+  {:dispatch IComponent/stop, :target std.lib.component/stop}
+  {:dispatch IComponent/kill, :target std.lib.component/kill}
+  {:dispatch IComponent/remote?, :target std.lib.component/remote?}
+  {:dispatch IContext/call, :target std.lib.context/call}
   {:dispatch ICoroutine/status, :target std.foundation.coroutine/status}
   {:dispatch ICoroutine/resume, :target std.foundation.coroutine/resume}
-  {:dispatch IContextLifeCycle/has-module?, :target std.foundation.context/has-module?}
-  {:dispatch IContextLifeCycle/setup-module, :target std.foundation.context/setup-module}
-  {:dispatch IContextLifeCycle/teardown-module, :target std.foundation.context/teardown-module}
-  {:dispatch IContextLifeCycle/has-pointer?, :target std.foundation.context/has-pointer?}
-  {:dispatch IContextLifeCycle/setup-pointer, :target std.foundation.context/setup-pointer}
-  {:dispatch IContextLifeCycle/teardown-pointer, :target std.foundation.context/teardown-pointer}
+  {:dispatch IContextLifeCycle/has-module?, :target std.lib.context/has-module?}
+  {:dispatch IContextLifeCycle/setup-module, :target std.lib.context/setup-module}
+  {:dispatch IContextLifeCycle/teardown-module, :target std.lib.context/teardown-module}
+  {:dispatch IContextLifeCycle/has-pointer?, :target std.lib.context/has-pointer?}
+  {:dispatch IContextLifeCycle/setup-pointer, :target std.lib.context/setup-pointer}
+  {:dispatch IContextLifeCycle/teardown-pointer, :target std.lib.context/teardown-pointer}
   {:dispatch IDerefTimeout/deref-timeout, :target std.foundation/deref}
   {:dispatch IDisplay/display, :target std.foundation.display/display}
   {:dispatch IEquality/equality, :target std.foundation/=}
@@ -380,7 +380,7 @@
   {:dispatch IIndexed/index-of, :target std.foundation/index-of}
   {:dispatch IIndexedKV/index-of-key, :target std.foundation/index-of-key}
   {:dispatch IIndexedKV/index-of-val, :target std.foundation/index-of-val}
-  {:dispatch IInvokeIn/invoke-in, :target std.foundation.context/invoke-in}
+  {:dispatch IInvokeIn/invoke-in, :target std.lib.context/invoke-in}
   {:dispatch IIter/iter, :target std.foundation/iter}
   {:dispatch IIterator/iter-next?, :target std.foundation/iter-next?}
   {:dispatch IIterator/iter-next, :target std.foundation/iter-next}
@@ -394,24 +394,24 @@
   {:dispatch IPromise/catch, :target std.foundation.promise/catch}
   {:dispatch IPromise/finally, :target std.foundation.promise/finally}
   {:dispatch IPromise/cancel, :target std.foundation.promise/cancel}
-  {:dispatch IPointer/ptr-context, :target std.foundation.context/ptr-context}
-  {:dispatch IPointer/ptr-keys, :target std.foundation.context/ptr-keys}
-  {:dispatch IPointer/ptr-val, :target std.foundation.context/ptr-val}
+  {:dispatch IPointer/ptr-context, :target std.lib.context/ptr-context}
+  {:dispatch IPointer/ptr-keys, :target std.lib.context/ptr-keys}
+  {:dispatch IPointer/ptr-val, :target std.lib.context/ptr-val}
   {:dispatch IPopFirst/pop-first, :target std.foundation/pop-first}
   {:dispatch IPopLast/pop-last, :target std.foundation/pop-last}
   {:dispatch IPushFirst/push-first, :target std.foundation/push-first}
   {:dispatch IPushLast/push-last, :target std.foundation/push-last}
   {:dispatch IRealize/realize, :target std.foundation/realize}
-  {:dispatch ISpace/context-set, :target std.foundation.context/context-set}
-  {:dispatch ISpace/context-unset, :target std.foundation.context/context-unset}
-  {:dispatch ISpace/context-list, :target std.foundation.context/context-list}
-  {:dispatch ISpace/context-get, :target std.foundation.context/context-get}
-  {:dispatch ISpace/rt-active, :target std.foundation.context/rt-active}
-  {:dispatch ISpace/rt-get, :target std.foundation.context/rt-get}
-  {:dispatch ISpace/rt-start, :target std.foundation.context/rt-start}
-  {:dispatch ISpace/rt-started?, :target std.foundation.context/rt-started?}
-  {:dispatch ISpace/rt-stopped?, :target std.foundation.context/rt-stopped?}
-  {:dispatch ISpace/rt-stop, :target std.foundation.context/rt-stop}
+  {:dispatch ISpace/context-set, :target std.lib.context/context-set}
+  {:dispatch ISpace/context-unset, :target std.lib.context/context-unset}
+  {:dispatch ISpace/context-list, :target std.lib.context/context-list}
+  {:dispatch ISpace/context-get, :target std.lib.context/context-get}
+  {:dispatch ISpace/rt-active, :target std.lib.context/rt-active}
+  {:dispatch ISpace/rt-get, :target std.lib.context/rt-get}
+  {:dispatch ISpace/rt-start, :target std.lib.context/rt-start}
+  {:dispatch ISpace/rt-started?, :target std.lib.context/rt-started?}
+  {:dispatch ISpace/rt-stopped?, :target std.lib.context/rt-stopped?}
+  {:dispatch ISpace/rt-stop, :target std.lib.context/rt-stop}
   {:dispatch IToMutable/to-mutable, :target std.foundation/to-mutable}
   {:dispatch IToPersistent/to-persistent, :target std.foundation/to-persistent}
  ]
@@ -501,56 +501,56 @@
   {:protocol IComponent :method props :arity 1 :domain :component-lifecycle
    :dispatch IComponent/props
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.component
+                :namespace std.lib.component
                 :name props
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IComponent :method status :arity 1 :domain :component-lifecycle
    :dispatch IComponent/status
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.component
+                :namespace std.lib.component
                 :name status
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IComponent :method started? :arity 1 :domain :component-lifecycle
    :dispatch IComponent/started?
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.component
+                :namespace std.lib.component
                 :name started?
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IComponent :method stopped? :arity 1 :domain :component-lifecycle
    :dispatch IComponent/stopped?
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.component
+                :namespace std.lib.component
                 :name stopped?
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IComponent :method start :arity 1 :domain :component-lifecycle
    :dispatch IComponent/start
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.component
+                :namespace std.lib.component
                 :name start
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IComponent :method stop :arity 1 :domain :component-lifecycle
    :dispatch IComponent/stop
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.component
+                :namespace std.lib.component
                 :name stop
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IComponent :method kill :arity 1 :domain :component-lifecycle
    :dispatch IComponent/kill
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.component
+                :namespace std.lib.component
                 :name kill
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IComponent :method remote? :arity 1 :domain :component-lifecycle
    :dispatch IComponent/remote?
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.component
+                :namespace std.lib.component
                 :name remote?
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
@@ -571,7 +571,7 @@
   {:protocol IContext :method call :arity -1 :domain :execution-context
    :dispatch IContext/call
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name call
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
@@ -592,42 +592,42 @@
   {:protocol IContextLifeCycle :method has-module? :arity 2 :domain :execution-context
    :dispatch IContextLifeCycle/has-module?
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name has-module?
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IContextLifeCycle :method setup-module :arity 2 :domain :execution-context
    :dispatch IContextLifeCycle/setup-module
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name setup-module
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IContextLifeCycle :method teardown-module :arity 2 :domain :execution-context
    :dispatch IContextLifeCycle/teardown-module
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name teardown-module
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IContextLifeCycle :method has-pointer? :arity 2 :domain :execution-context
    :dispatch IContextLifeCycle/has-pointer?
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name has-pointer?
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IContextLifeCycle :method setup-pointer :arity 2 :domain :execution-context
    :dispatch IContextLifeCycle/setup-pointer
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name setup-pointer
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IContextLifeCycle :method teardown-pointer :arity 2 :domain :execution-context
    :dispatch IContextLifeCycle/teardown-pointer
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name teardown-pointer
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
@@ -747,7 +747,7 @@
   {:protocol IInvokeIn :method invoke-in :arity -1 :domain :execution-context
    :dispatch IInvokeIn/invoke-in
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name invoke-in
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
@@ -895,21 +895,21 @@
   {:protocol IPointer :method ptr-context :arity 1 :domain :runtime-pointer
    :dispatch IPointer/ptr-context
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name ptr-context
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IPointer :method ptr-keys :arity 1 :domain :runtime-pointer
    :dispatch IPointer/ptr-keys
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name ptr-keys
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IPointer :method ptr-val :arity 2 :domain :runtime-pointer
    :dispatch IPointer/ptr-val
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name ptr-val
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
@@ -973,70 +973,70 @@
   {:protocol ISpace :method context-set :arity 4 :domain :runtime-space
    :dispatch ISpace/context-set
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name context-set
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol ISpace :method context-unset :arity 2 :domain :runtime-space
    :dispatch ISpace/context-unset
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name context-unset
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol ISpace :method context-list :arity 1 :domain :runtime-space
    :dispatch ISpace/context-list
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name context-list
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol ISpace :method context-get :arity 2 :domain :runtime-space
    :dispatch ISpace/context-get
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name context-get
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol ISpace :method rt-active :arity 1 :domain :runtime-space
    :dispatch ISpace/rt-active
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name rt-active
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol ISpace :method rt-get :arity 2 :domain :runtime-space
    :dispatch ISpace/rt-get
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name rt-get
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol ISpace :method rt-start :arity 2 :domain :runtime-space
    :dispatch ISpace/rt-start
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name rt-start
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol ISpace :method rt-started? :arity 2 :domain :runtime-space
    :dispatch ISpace/rt-started?
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name rt-started?
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol ISpace :method rt-stopped? :arity 2 :domain :runtime-space
    :dispatch ISpace/rt-stopped?
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name rt-stopped?
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol ISpace :method rt-stop :arity 2 :domain :runtime-space
    :dispatch ISpace/rt-stop
    :foundation {:classification :direct-interface-wrapper
-                :namespace std.foundation.context
+                :namespace std.lib.context
                 :name rt-stop
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
