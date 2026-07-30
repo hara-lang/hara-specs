@@ -13,9 +13,13 @@
     :protocol-var "<namespace>/<Protocol>"
     :method-vars false
     :identity :same-protocol-object}}
-  :guest
+ :guest
   {:protocol-var "<current-namespace>/<Protocol>"
-   :method-var "<current-namespace>/<method>"}}
+   :method-var "<current-namespace>/<method>"
+   :alias-call "<alias>/<method>"
+   :legacy-prefixed-method-var false
+   :method-collision :reject-atomically
+   :same-protocol-reload :replace}}
  :visibility
  {:default :public
   :hidden-protocols [IColl IMetadata]
@@ -43,7 +47,7 @@
   :protocol-count 50
   :method-count 88
   :invocation :direct-canonical-method-var
-  :protocol-call false}
+  :legacy-special-form false}
  :functional-conformance
  {:fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
   :case-catalog "specs/language/draft/conformance/protocol-method-cases.edn"

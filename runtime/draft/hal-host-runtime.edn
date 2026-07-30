@@ -7,10 +7,10 @@
  "Product-neutral contract between a Hara evaluator and capabilities supplied by its embedding host."
 
  :host/ownership
- {:runtime-object std.native/Host
+ {:runtime-object std.native.Host
   :foundation-alias std.foundation/Host
   :startup-alias Host
-  :identity "(= Host std.native/Host std.foundation/Host)"
+  :identity "(= Host std.native.Host std.foundation/Host)"
   :portable-module std.foundation.host
   :consumer-prefix host/
   :product-shells [:greenways.studio]
@@ -18,18 +18,18 @@
   "Hara owns capability invocation, grants, kernels, sessions, package activation, and providers. Product shells own editors, REPL views, visualizations, and management interfaces."}
 
  :host/native-type
- {:qualified-var std.native/Host
+ {:qualified-var std.native.Host
   :qualified-methods
-  [{:symbol std.native.Host/call
+  [{:symbol Host/call
     :arguments [service method args-vector]
     :returns :promise}
-   {:symbol std.native.Host/describe
+   {:symbol Host/describe
     :arguments []
     :returns :promise/descriptor}
-   {:symbol std.native.Host/capabilities
+   {:symbol Host/capabilities
     :arguments []
     :returns :promise/vector}
-   {:symbol std.native.Host/capability?
+   {:symbol Host/capability?
     :arguments [capability]
     :returns :promise/boolean}]
   :raw-special-form nil
@@ -41,7 +41,7 @@
   :functions
   [{:symbol host/call
     :arguments [service method & args]
-    :implementation "(std.native.Host/call service method (vec args))"}
+    :implementation "(Host/call service method (vec args))"}
    {:symbol host/describe :arguments []}
    {:symbol host/capabilities :arguments []}
    {:symbol host/capability? :arguments [capability]}]}
@@ -108,7 +108,7 @@
 
  :host/conformance
  [{:id :host/type-identity
-   :assert "(= Host std.native/Host std.foundation/Host)"}
+   :assert "(= Host std.native.Host std.foundation/Host)"}
   {:id :host/session-local-facade
    :assert
    "Each session receives a distinct Host façade identity while all three Host names within that session resolve to that one identity."}

@@ -334,7 +334,6 @@
    [:hal.form/defstruct
     :hal.form/defprotocol
     :hal.form/extend-type
-    :hal.form/protocol-call
     :hal.form/defmulti
     :hal.form/defmethod]}
 
@@ -446,7 +445,7 @@
     {:requirement/id :std.foundation/startup-defaults
      :requirement/level :must
      :requirement/text
-     "Every non-blank startup namespace provides the edn alias for std.foundation.edn, global protocol aliases such as ICount, and simple native-type aliases such as Maths, Edn, and Json. Each native-type alias is the same Var visible through its canonical std.native/<Type> name and its std.foundation/<Type> referral; for example, (= Maths std.native/Maths std.foundation/Maths) is true."}
+     "Every namespace, including a blank namespace, provides native-type objects and method aliases such as Maths, Edn, Json, and Iter. Each native-type object is identical to its canonical dot-qualified std.native.<Type> object; for example, (= Maths std.native.Maths) is true, and methods are called through aliases such as Maths/sin. Non-blank startup namespaces additionally provide Foundation Vars, the edn alias, and global protocol aliases such as ICount."}
     {:requirement/id :std.foundation.json/api
      :requirement/level :must
      :requirement/text
@@ -577,12 +576,6 @@
    :form/class :special-form
    :form/shape (quote (extend-type type protocol method-implementation*))
    :form/semantics "Installs protocol implementations only for a defstruct descriptor."
-   :form/evaluation :special}
-  {:form/id :hal.form/protocol-call
-   :form/symbol protocol-call
-   :form/class :special-form
-   :form/shape (quote (protocol-call protocol method receiver argument*))
-   :form/semantics "Dispatches a protocol method through the current context."
    :form/evaluation :special}
   {:form/id :hal.form/defmulti
    :form/symbol defmulti

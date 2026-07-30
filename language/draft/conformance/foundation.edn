@@ -66,27 +66,27 @@
   :functions
   [{:name reset!
     :kind :direct-interface-wrapper
-    :protocol-call IReset/reset
+    :protocol-method IReset/reset
     :clojure-equivalent clojure.core/reset!}
    {:name cas!
     :kind :direct-interface-wrapper
-    :protocol-call ICas/cas
+    :protocol-method ICas/cas
     :clojure-equivalent clojure.core/compare-and-set!}
    {:name swap!
     :kind :derived-protocol-function
-    :protocol-calls [IDeref/deref ICas/cas]
+    :protocol-methods [IDeref/deref ICas/cas]
     :clojure-equivalent clojure.core/swap!}
    {:name watch-add
     :kind :direct-interface-wrapper
-    :protocol-call IWatch/watch-add
+    :protocol-method IWatch/watch-add
     :clojure-equivalent clojure.core/add-watch}
    {:name watch-remove
     :kind :direct-interface-wrapper
-    :protocol-call IWatch/watch-remove
+    :protocol-method IWatch/watch-remove
     :clojure-equivalent clojure.core/remove-watch}
    {:name watch-list
     :kind :direct-interface-wrapper
-    :protocol-call IWatch/watch-list
+    :protocol-method IWatch/watch-list
     :clojure-equivalent clojure.core/get-watches}]
   :excluded [compare:set! compare-and-set! add-watch remove-watch get-watches]}
 

@@ -161,7 +161,7 @@
    :expect {:value 42 :type :integer}}
   {:id :runtime/metadata
    :class :runtime
-   :source "(protocol-call ILookup lookup (protocol-call IObjType meta (protocol-call IObjType with-meta (Person \"Ada\") {:doc \"person\"})) :doc)"
+   :source "(ILookup/lookup (IObjType/meta (IObjType/with-meta (Person \"Ada\") {:doc \"person\"})) :doc)"
    :setup "(defstruct Person [name])"
    :expect {:value "person" :type :string}}
   {:id :runtime/dynamic-binding
@@ -223,7 +223,7 @@
    :expect {:value 8 :type :integer}}
   {:id :module/core-iterator-aliases
    :class :module
-   :source "(load-resource \"std/foundation.hal\") (+ (first (map inc [3])) (iter-next (filter (fn [x] (= x 2)) [1 2])) (nth (iter-next (partition-pair [4 5])) 1))"
+   :source "(load-resource \"std/foundation.hal\") (+ (first (map inc [3])) (first (filter (fn [x] (= x 2)) [1 2])) (nth (first (partition-pair [4 5])) 1))"
    :expect {:value 11 :type :integer}}
   {:id :module/core-predicate-reductions
    :class :module
@@ -247,11 +247,11 @@
    :expect {:value 9 :type :integer}}
   {:id :iterator/core-while-combinators
    :class :iterator
-   :source "(load-resource \"std/foundation.hal\") (+ (iter-next (take-while (fn [x] (< x 3)) [1 2 3])) (iter-next (drop-while (fn [x] (< x 3)) [1 2 3])))"
+   :source "(load-resource \"std/foundation.hal\") (+ (first (take-while (fn [x] (< x 3)) [1 2 3])) (first (drop-while (fn [x] (< x 3)) [1 2 3])))"
    :expect {:value 4 :type :integer}}
   {:id :iterator/core-partition
    :class :iterator
-   :source "(load-resource \"std/foundation.hal\") (+ (nth (iter-next (partition-all 2 [1 2 3])) 1) (nth (iter-next (partition 2 [1 2 3])) 0))"
+   :source "(load-resource \"std/foundation.hal\") (+ (nth (first (partition-all 2 [1 2 3])) 1) (nth (first (partition 2 [1 2 3])) 0))"
    :expect {:value 3 :type :integer}}
   {:id :iterator/core-multi-map
    :class :iterator
@@ -259,7 +259,7 @@
    :expect {:value 7 :type :integer}}
   {:id :iterator/core-composition
    :class :iterator
-   :source "(load-resource \"std/foundation.hal\") (+ (iter-next (interpose 0 [1 2])) (iter-next (interleave [1 2] [3 4])) (iter-next (iter-drop 1 (interleave [1 2] [3 4]))))"
+   :source "(load-resource \"std/foundation.hal\") (+ (first (interpose 0 [1 2])) (first (interleave [1 2] [3 4])) (iter-next (iter-drop 1 (interleave [1 2] [3 4]))))"
    :expect {:value 5 :type :integer}}
   {:id :iterator/reduce
    :class :iterator
@@ -275,7 +275,7 @@
    :expect {:value 42 :type :integer}}
   {:id :collection/bytes
    :class :collection
-   :source "(protocol-call INth nth (bytes 1 2 -3) 2)"
+   :source "(INth/nth (bytes 1 2 -3) 2)"
    :expect {:value -3 :type :byte}}
   {:id :collection/core-functions
    :class :collection
@@ -335,12 +335,12 @@
    :expect {:value 11 :type :integer}}
   {:id :protocol/struct-extension
    :class :protocol
-   :source "(protocol-call ICount count (Box 4))"
+   :source "(ICount/count (Box 4))"
    :setup "(defstruct Box [size]) (extend-type Box ICount (count [self] (field self :size)))"
    :expect {:value 4 :type :integer}}
   {:id :protocol/struct-inline-extension
    :class :protocol
-   :source "(protocol-call ICount count (InlineBox 5))"
+   :source "(ICount/count (InlineBox 5))"
    :setup "(defstruct InlineBox [size] ICount (count [self] (field self :size)))"
    :expect {:value 5 :type :integer}}
   {:id :protocol/multimethod
