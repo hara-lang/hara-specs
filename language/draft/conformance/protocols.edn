@@ -22,19 +22,15 @@
    :same-protocol-reload :replace}}
  :visibility
  {:default :public
-  :hidden-protocols [IColl IMetadata]
-  :hidden-methods [IColl/start-string
-                   IColl/end-string
-                   IColl/sep-string
-                   IColl/iterator
-                   IMetadata/metatype]}
+  :hidden-protocols []
+  :hidden-methods []}
  :inventory
- {:protocol-count 52
-  :method-count 93
-  :public-protocol-count 50
-  :public-method-count 88
-  :hidden-protocol-count 2
-  :hidden-method-count 5}
+ {:protocol-count 53
+  :method-count 103
+  :public-protocol-count 53
+  :public-method-count 103
+  :hidden-protocol-count 0
+  :hidden-method-count 0}
  :runtime-modules
  {:rust
   {:directory "rust/src/lang/protocol"
@@ -44,8 +40,8 @@
  :conformance
  {:fixture "lib/test-fixtures/std/foundation/protocol_conformance.hal"
   :platforms [:rust :truffle]
-  :protocol-count 50
-  :method-count 88
+  :protocol-count 53
+  :method-count 103
   :invocation :direct-canonical-method-var
   :legacy-special-form false}
  :functional-conformance
@@ -65,9 +61,6 @@
   {:name IAssoc :methods {assoc 3}}
   {:name ICas :methods {cas 3}}
   {:name IClose :methods {close 1}}
-  {:name IColl
-   :extends [IEquality IConj IEmpty ICount IHash IDisplay IIter]
-   :methods {start-string 1 end-string 1 sep-string 1 iterator 1}}
   {:name IComponent
    :methods {props 1 status 1 started? 1 stopped? 1 start 1 stop 1 kill 1 remote? 1}}
   {:name IConj :methods {conj 2}}
@@ -83,6 +76,22 @@
   {:name IDisplay :methods {display 1}}
   {:name IDissoc :methods {dissoc 2}}
   {:name IEmpty :methods {empty 1}}
+  {:name IEncodable :methods {encode-with 2}}
+  {:name IEncode :methods {encode 2}}
+  {:name IEncodeVisitor
+   :methods {visit-nil 1
+             visit-boolean 2
+             visit-number 2
+             visit-character 2
+             visit-string 2
+             visit-keyword 2
+             visit-symbol 2
+             visit-seq 2
+             visit-vector 2
+             visit-map 2
+             visit-set 2
+             visit-tagged 3
+             visit-unknown 2}}
   {:name IEquality :methods {equality 2}}
   {:name IExInfo :methods {data 1}}
   {:name IFind :methods {find 2}}
@@ -95,7 +104,6 @@
   {:name IIter :methods {iter 1}}
   {:name IIterator :extends [IIter] :methods {iter-next? 1 iter-next 1}}
   {:name ILookup :extends [IFind] :methods {lookup -1}}
-  {:name IMetadata :methods {metatype 1}}
   {:name IMutable :methods {}}
   {:name INamespaced :methods {name 1 namespace 1}}
   {:name INth :methods {nth 2}}
