@@ -466,8 +466,8 @@
   {:form/id :hal.form/defstruct
    :form/symbol defstruct
    :form/class :special-form
-   :form/shape (quote (defstruct name [field*]))
-   :form/semantics "Defines an immutable HAL struct descriptor and constructor."
+   :form/shape (quote (defstruct name [field*] protocol-implementation*))
+   :form/semantics "Defines the sole immutable, user-extensible HAL receiver descriptor and constructor; trailing protocol clauses install its initial implementations, while extend-type may add or replace implementations later. defrecord and deftype are unsupported."
    :form/evaluation :special}
   {:form/id :hal.form/defprotocol
    :form/symbol defprotocol
@@ -479,7 +479,7 @@
    :form/symbol extend-type
    :form/class :special-form
    :form/shape (quote (extend-type type protocol method-implementation*))
-   :form/semantics "Installs protocol implementations for a HAL dispatch category."
+   :form/semantics "Installs protocol implementations only for a defstruct descriptor."
    :form/evaluation :special}
   {:form/id :hal.form/protocol-call
    :form/symbol protocol-call
@@ -491,13 +491,13 @@
    :form/symbol defmulti
    :form/class :special-form
    :form/shape (quote (defmulti name dispatch-function))
-   :form/semantics "Defines a context-local multifunction."
+   :form/semantics "Defines a context-local multifunction whose dispatch function receives the invocation arguments."
    :form/evaluation :special}
   {:form/id :hal.form/defmethod
    :form/symbol defmethod
    :form/class :special-form
    :form/shape (quote (defmethod multifn dispatch-value [parameter*] body+))
-   :form/semantics "Installs a multifunction method keyed by HAL equality."
+   :form/semantics "Installs or replaces a method keyed by HAL equality; :default is the fallback when no exact key matches."
    :form/evaluation :special}
   {:form/id :hal.form/ns
    :form/symbol ns
