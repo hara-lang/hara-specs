@@ -260,11 +260,20 @@
     {:requirement/id :sequence/optional-non-empty
      :requirement/level :must
      :requirement/text
-     "A HAL Seq is a non-empty lazy sequence cell. seq and rest return nil when no cell exists, and every value satisfying seq? has a first element. There is no separate empty Seq value or next operation. nil, an empty persistent collection, and an exhausted iterator remain distinct representations of the same empty observable element stream; vec materializes each as an empty vector."
+     "A HAL Seq is a non-empty lazy sequence cell and a one-shot iterator. Every Seq satisfies both seq? and iter?, and every value satisfying seq? has a first element. seq and rest return nil when no cell exists; there is no separate empty Seq value or next operation. nil, an empty persistent collection, and an exhausted iterator remain distinct empty representations; iter converts nil to an exhausted iterator and vec materializes each as an empty vector."
      :requirement/evidence
      [{:suite :hal/l0
        :cases [:sequence/empty-is-nil
-               :sequence/non-empty-rest]}]}
+               :sequence/non-empty-rest
+               :sequence/is-iterator]}]}
+    {:requirement/id :sequence/prepend
+     :requirement/level :must
+     :requirement/text
+     "cons may prepend a value to a Seq without materializing its tail. conj is not defined for Seq values."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:sequence/lazy-cons
+               :sequence/reject-conj]}]}
     {:requirement/id :iterator/exact-observation
      :requirement/level :must
      :requirement/text
@@ -272,7 +281,15 @@
      :requirement/evidence
      [{:suite :hal/l0
        :cases [:iterator/exact-lookahead
-               :iterator/generated-exhaustion]}]}
+               :iterator/generated-exhaustion
+               :iterator/nil-requires-conversion]}]}
+    {:requirement/id :iterator/cycle-non-empty
+     :requirement/level :must
+     :requirement/text
+     "cycle requires a non-empty source, proves and buffers the first item without losing it, and rejects an empty source."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:iterator/empty-cycle-rejected]}]}
     {:requirement/id :iterator/shortest-source-finite
      :requirement/level :must
      :requirement/text

@@ -59,8 +59,9 @@ editor UX, and extension packaging are outside this language document.
 4. **Functions and bindings** — lexical closure, arity, destructuring, and
    left-to-right sequential `let` bindings.
 5. **Collections and iteration** — persistent updates, collection-family
-   preservation, nil-terminated non-empty sequences, exact iterator
-   observation, lazy acquisition, and iterator cleanup.
+   preservation, nil-terminated non-empty sequences that are also iterators,
+   lazy `cons`, exact iterator observation, non-empty cycles, terminal
+   draining, and iterator cleanup.
 6. **Numbers** — numeric categories, promotion, ratio-free division, and
    arithmetic errors.
 7. **Errors and cleanup** — guest values, catches, `finally`, and source
