@@ -349,7 +349,12 @@
   [{"+" Add} {"-" Subtract} {"*" Multiply} {"/" Divide}
    {"%" Remainder} {"mod" Remainder}
    {"=" Equal} {"<" Less} {"<=" LessOrEqual}
-   {">" Greater} {">=" GreaterOrEqual}]
+   {">" Greater} {">=" GreaterOrEqual}
+   {"count" Count} {"get" Get} {"meta" Meta}
+   {"nth" Nth} {"assoc" Assoc} {"first" First}
+   {"rest" Rest} {"second" Second}]
+  :literal-collections
+  "Vectors, maps, and sets containing only literal forms may be pooled as constants. Pure primitive calls over literal arguments may be folded when evaluation succeeds; failures retain runtime error behavior. first(rest x) may lower to second(x)."
   :error-spelling
   {"integer overflow" "checked arithmetic overflowed"
    "division by zero" "divide or remainder by zero"

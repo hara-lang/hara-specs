@@ -148,6 +148,9 @@
 
   ;; ---- shared benchmark workloads (verbatim from lib/bench/runtime/workloads.json) ----
   {:id :workload/function-call :source "(loop [i 0 acc 0] (if (< i 2500) (recur (+ i 1) ((fn [x] (+ x 1)) acc)) acc))" :expect {:display "2500"}}
+  {:id :workload/persistent-vector :source "(loop [i 0 acc 0] (if (< i 500) (recur (+ i 1) (+ acc (nth [1 2 3 4 5 6 7 8] (mod i 8)))) acc))" :expect {:display "2242"}}
+  {:id :workload/persistent-map :source "(loop [i 0 value {}] (if (< i 500) (recur (+ i 1) (assoc value i (+ i 1))) (get value 499)))" :expect {:display "500"}}
+  {:id :workload/sequence-navigation :source "(loop [i 0 acc 0] (if (< i 500) (recur (+ i 1) (+ acc (first (rest [1 2])))) acc))" :expect {:display "1000"}}
 
   ;; ---- function errors: both paths must fail in the same category ----
   {:id :error/fn-arity-high :source "((fn [x] x) 1 2)" :expect {:error-category "function arity"}}
