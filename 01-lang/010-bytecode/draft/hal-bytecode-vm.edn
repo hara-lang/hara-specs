@@ -42,6 +42,10 @@
    {:op Primitive :operand {:op :primitive :argc :u8}
     :pops :argc :pushes 1
     :meaning "pop argc arguments, apply the shared value-level primitive, push the result"}
+   {:op PrimitiveLocalConst
+    :operand {:op :primitive :local :u16-slot :constant :u32-constant-index}
+    :pops 0 :pushes 1
+    :meaning "apply a binary primitive to a local and pooled constant, then push the result"}
    {:op Jump :operand :u32-absolute-target :pops 0 :pushes 0
     :meaning "unconditional transfer"}
    {:op JumpIfFalse :operand :u32-absolute-target :pops 1 :pushes 0
