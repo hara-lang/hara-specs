@@ -30,7 +30,7 @@
    :lsp/package-installation
    :lsp/lossy-formatting]
   :scope/implementation-note
-  "The profile describes observable behaviour. Java, Truffle, std.typed, and std.logic are implementation choices except where their contracts are named explicitly."}
+  "The profile describes observable behaviour. Java, Truffle, std.typed, and std.logic.kanren are implementation choices except where their contracts are named explicitly."}
 
  :spec/invariants
  [{:requirement/id :hara.lsp/protocol-fidelity
@@ -172,7 +172,7 @@
     {:requirement/id :hara.lsp.analysis/std-logic
      :requirement/level :may
      :requirement/text
-     "std.logic may query normalized analysis relations for cross-file or relational features, but basic lookup and resolution do not require a logic engine."}
+     "std.logic.kanren may query normalized analysis relations for cross-file or relational features, but basic lookup and resolution do not require a logic engine."}
     {:requirement/id :hara.lsp.analysis/recovery
      :requirement/level :must
      :requirement/text "Reader recovery preserves every safe fact preceding or following a local syntax error and marks uncertain facts rather than inventing resolutions."}

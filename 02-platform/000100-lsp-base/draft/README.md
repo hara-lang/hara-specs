@@ -45,7 +45,7 @@ signatures, schemas or types, and diagnostics.
 
 `std.typed` is the preferred portable source of schema inference and checking
 facts. The base syntactic and namespace features still work before that layer
-is available. `std.logic` may provide relational queries over normalized facts,
+is available. `std.logic.kanren` may provide relational queries over normalized facts,
 especially for cross-file features, but basic lookup and resolution cannot
 depend on a logic engine.
 
