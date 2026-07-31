@@ -428,6 +428,24 @@
       "owner": "hara-lang"
     },
     {
+      "path": "01-lang/009-halc/draft/conformance/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/009-halc/draft/conformance/invalid-artifacts.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/009-halc/draft/conformance/values.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "01-lang/009-halc/draft/halc-format.md",
       "kind": "markdown",
       "classification": "hara",
