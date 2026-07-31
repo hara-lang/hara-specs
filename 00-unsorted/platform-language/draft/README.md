@@ -7,7 +7,7 @@ The authoritative document is
 [`hal-langspec.edn`](hal-langspec.edn). This README is its human-readable
 companion and must not introduce requirements absent from the EDN document.
 The document conforms to the draft
-[`HAL language metaspec`](../../../01-language-meta/001-language/metaspec/README.md).
+[`HAL language metaspec`](../../../01-lang/001-language/metaspec/README.md).
 
 ## Scope
 
