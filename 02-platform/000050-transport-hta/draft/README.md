@@ -1,5 +1,12 @@
 # Hara extension contract
 
+Status: **draft**  
+Contract version: **0.1.0**
+
+The authoritative machine-readable contract is
+[`hal-hta-contract.edn`](hal-hta-contract.edn). This README is its
+human-readable companion.
+
 This document describes the WASM provider boundary behind ordinary `:require` forms. A Hara
 program does not construct transport messages or call a WASM engine directly.
 
@@ -115,7 +122,8 @@ Hara call -> hta_start -> task
 ```
 
 The required exports are `hta_abi_version`, `hta_alloc`, `hta_dealloc`, `hta_start`,
-`hta_next_event`, `hta_deliver`, `hta_poll`, `hta_cancel`, `hta_drop_task`, and `hta_release`. Frames use the
+`hta_next_event`, `hta_deliver`, `hta_cancel`, `hta_drop_task`, and `hta_release`;
+`hta_poll` is optional. Frames use the
 canonical binary `HTA1` value encoding. Its portable value intersection is nil, booleans, signed
 64-bit integers, UTF-8 strings, bytes, keywords, symbols, lists, vectors, sets, maps, and opaque `{owner, type, id}` handles. Map and
 set elements are ordered by their encoded bytes so Rust, Java, and JavaScript produce identical
@@ -258,6 +266,19 @@ manifest requests capability
       |         |
  provider    stable denied error
 ```
+
+## Validation
+
+[`conformance/transport-hta.edn`](conformance/transport-hta.edn) defines the
+shared Truffle, Rust, and browser validation gates. The portable codec profile
+is tags 0–12 and includes an exact shared golden vector, cross-runtime
+round-trips, canonical map and set ordering, malformed-frame rejection,
+manifest parity, module export checks, handle lifecycle, task cancellation,
+host-call authorization, and path-containment fixtures.
+
+Rust and the browser additionally support tags 13–18 for runtime snapshots and
+binary64 values. Those tags form an extension profile and are not required of
+portable Truffle consumers.
 
 The runtime preserves distinct errors for missing or malformed manifests, unsupported providers,
 denied capabilities, crashes, timeouts, cancellation, and remote failures. The Hara namespace is

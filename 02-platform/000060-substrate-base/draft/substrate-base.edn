@@ -1,0 +1,126 @@
+{:document/id :hara/substrate-base
+ :document/type :substrate-spec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "Hara portable substrate base"
+ :document/summary
+ "Defines the shared vocabulary, identities, value boundary, errors, compatibility rules, and dependency order for Hara and XTalk substrate services."
+
+ :spec/conforms-to
+ {:spec/id :hara/substrate-metaspec
+  :spec/version "0.1.0"}
+ :spec/family :hara/substrate
+ :spec/depends-on []
+
+ :spec/scope
+ {:scope/includes
+  [:substrate/identity
+   :substrate/value-boundary
+   :substrate/error-boundary
+   :substrate/compatibility
+   :substrate/dependency-order]
+  :scope/excludes
+  [:substrate/host-authority
+   :substrate/product-ui
+   :substrate/physical-transport]
+  :scope/wire-version "substrate.v1"}
+
+ :spec/invariants
+ [{:requirement/id :hara.substrate.base/transport-neutral
+   :requirement/level :must
+   :requirement/text "Logical nodes, services, frames, requests, and streams do not depend on a physical transport."}
+  {:requirement/id :hara.substrate.base/no-host-authority
+   :requirement/level :must-not
+   :requirement/text "Possession of a substrate node, service descriptor, frame, or transport identifier grants host authority."}
+  {:requirement/id :hara.substrate.base/explicit-identities
+   :requirement/level :must
+   :requirement/text "Node, space, service, action, signal, frame, request, subscription, and transport identities are explicit non-empty strings."}
+  {:requirement/id :hara.substrate.base/portable-data
+   :requirement/level :must
+   :requirement/text "Values crossing a transport are immutable portable values or values encoded by an explicitly negotiated codec."}
+  {:requirement/id :hara.substrate.base/no-live-transfer
+   :requirement/level :must-not
+   :requirement/text "Runtime service instances, callbacks, promises, host façades, or live handles cross a transport unless another normative transport profile explicitly permits them."}]
+
+ :substrate/entities
+ [{:entity/id :substrate/node
+   :entity/identity :node/id}
+  {:entity/id :substrate/space
+   :entity/identity [:node/id :space/id]}
+  {:entity/id :substrate/service
+   :entity/identity [:node/id :service/id]}
+  {:entity/id :substrate/frame
+   :entity/identity :frame/id}
+  {:entity/id :substrate/request
+   :entity/identity :frame/id}
+  {:entity/id :substrate/subscription
+   :entity/identity
+   [:node/id :transport/id :space/id :signal/id :subscription/id]}
+  {:entity/id :substrate/transport
+   :entity/identity [:node/id :transport/id]}]
+
+ :substrate/identifiers
+ {:identifier/type :non-empty-string
+  :identifier/node-wide-space "__NODE__"
+  :identifier/generated-prefixes
+  {:identifier/request "req-"
+   :identifier/response "res-"
+   :identifier/event "evt-"
+   :identifier/subscription "sub-"}
+  :identifier/uniqueness
+  {:identifier/frame :within-node-retention-window
+   :identifier/service :within-node
+   :identifier/transport :within-node}}
+
+ :substrate/error
+ {:error/required
+  [:error/code :error/message]
+  :error/optional
+  [:error/data :error/cause :error/retryable]
+  :error/codes
+  [:substrate/invalid
+   :substrate/not-found
+   :substrate/already-exists
+   :substrate/not-running
+   :substrate/cancelled
+   :substrate/timeout
+   :substrate/capability-denied
+   :substrate/transport-closed
+   :substrate/internal]
+  :error/transport :portable-data}
+
+ :substrate/dependency-order
+ [:hara/substrate-base
+  :hara/substrate-frame
+  :hara/substrate-node
+  :hara/substrate-service
+  :hara/substrate-request
+  :hara/substrate-stream-router
+  :hara/substrate-transport
+  :hara/substrate-page-model
+  :hara/substrate-view-proxy
+  :hara/substrate-runtime-profiles]
+
+ :substrate/compatibility
+ {:compatibility/wire-version "substrate.v1"
+  :compatibility/unknown-fields :preserve-when-forwarding
+  :compatibility/unknown-frame-kind :reject
+  :compatibility/legacy-services :supported-by-profile
+  :compatibility/extensions :explicit-profile-only}
+
+ :spec/references
+ [{:reference/id :hara.substrate.base/host-boundary
+   :reference/kind :related-contract
+   :reference/path "../../../00-unsorted/runtime/draft/hal-host-runtime.edn"
+   :reference/authority :normative
+   :reference/description "Embedding-host authority remains outside substrate."}
+  {:reference/id :hara.substrate.base/conformance
+   :reference/kind :conformance
+   :reference/path "conformance/base.edn"
+   :reference/authority :evidence
+   :reference/description "Base identity, error, and dependency cases."}]
+
+ :spec/conformance
+ [{:conformance/id :hara.substrate/base-cases
+   :conformance/path "conformance/base.edn"
+   :conformance/required true}]}

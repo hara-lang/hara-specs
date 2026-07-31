@@ -1,0 +1,97 @@
+{:document/id :hara/substrate-page-model
+ :document/type :substrate-spec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "XTalk substrate page and model contract"
+ :document/summary
+ "Defines portable page, group, and model identities, lifecycle, state, input, output, snapshots, actions, and signals used by XTalk services."
+
+ :spec/conforms-to
+ {:spec/id :hara/substrate-metaspec
+  :spec/version "0.1.0"}
+ :spec/family :hara/substrate
+ :spec/depends-on
+ [:hara/substrate-base :hara/substrate-node :hara/substrate-service
+  :hara/substrate-request :hara/substrate-stream-router]
+
+ :spec/scope
+ {:scope/includes
+  [:page/identity :page/groups :page/models :page/lifecycle
+   :page/state :page/input :page/output :page/snapshot]
+  :scope/excludes
+  [:page/rendering :page/widget-library :page/storage]}
+
+ :spec/invariants
+ [{:requirement/id :hara.substrate.page/portable-description
+   :requirement/level :must
+   :requirement/text "Page, group, model, state, input, output, and snapshot descriptions contain portable data only."}
+  {:requirement/id :hara.substrate.page/stable-identity
+   :requirement/level :must
+   :requirement/text "Page, group, and model identities remain stable for the lifetime of their owning page."}
+  {:requirement/id :hara.substrate.page/model-before-group-close
+   :requirement/level :must
+   :requirement/text "Closing a group closes its models before publishing the group-close signal."}
+  {:requirement/id :hara.substrate.page/snapshot-consistent
+   :requirement/level :must
+   :requirement/text "A snapshot describes one logical revision and includes that revision identifier."}]
+
+ :page/descriptor
+ {:descriptor/required
+  [:page/id :page/version :page/groups :page/meta]
+  :descriptor/portable true}
+
+ :page/group
+ {:group/identity [:page/id :group/id]
+  :group/operations
+  ["@page/group-list" "@page/group-open" "@page/group-close"
+   "@page/group-update"]
+  :group/states
+  [:group.state/closed :group.state/opening :group.state/open
+   :group.state/closing :group.state/failed]}
+
+ :page/model
+ {:model/identity [:page/id :group/id :model/id]
+  :model/required
+  [:model/id :model/type :model/state :model/input :model/output
+   :model/revision :model/meta]
+  :model/operations
+  ["@page/model-update" "@page/model-set-input" "@page/model-trigger"
+   "@page/model-proxy-call"]
+  :model/revision-rule :monotonic-per-model}
+
+ :page/signals
+ [{:signal/id "page.model/input"
+   :signal/delivery :signal.delivery/latest}
+  {:signal/id "page.model/output"
+   :signal/delivery :signal.delivery/ordered}
+  {:signal/id "page.group/trigger"
+   :signal/delivery :signal.delivery/ordered}]
+
+ :page/snapshot
+ {:snapshot/required
+  [:page/id :page/revision :page/groups :page/models :page/meta]
+  :snapshot/order [:group/id-lexical :model/id-lexical]
+  :snapshot/runtime-values false}
+
+ :page/ownership
+ {:ownership/service-id "xt.page"
+  :ownership/stop-order
+  [:page/block-new-actions :page/close-models :page/close-groups
+   :page/remove-subscriptions :page/release-state]}
+
+ :spec/references
+ [{:reference/id :hara.substrate.page/xtalk
+   :reference/kind :implementation
+   :reference/path "../../../../../foundation-base/src-lang/xt/substrate/page_core.clj"
+   :reference/authority :evidence
+   :reference/description "XTalk page, group, and model behavior."}
+  {:reference/id :hara.substrate.page/conformance
+   :reference/kind :conformance
+   :reference/path "conformance/page-model.edn"
+   :reference/authority :evidence
+   :reference/description "Portable page-model cases."}]
+
+ :spec/conformance
+ [{:conformance/id :hara.substrate/page-model-cases
+   :conformance/path "conformance/page-model.edn"
+   :conformance/required true}]}

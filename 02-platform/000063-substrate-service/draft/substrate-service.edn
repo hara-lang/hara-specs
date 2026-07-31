@@ -1,0 +1,233 @@
+{:document/id :hara/substrate-service
+ :document/type :substrate-spec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "Hara substrate managed service contract"
+ :document/summary
+ "Defines portable service descriptors, runtime-local instances, dependency and capability checks, lifecycle states, declared actions and signals, and legacy registry compatibility."
+
+ :spec/conforms-to
+ {:spec/id :hara/substrate-metaspec
+  :spec/version "0.1.0"}
+ :spec/family :hara/substrate
+ :spec/depends-on
+ [:hara/substrate-base :hara/substrate-node]
+
+ :spec/scope
+ {:scope/includes
+  [:service/descriptor
+   :service/registry
+   :service/dependencies
+   :service/capabilities
+   :service/lifecycle
+   :service/actions
+   :service/signals
+   :service/legacy-profile]
+  :scope/excludes
+  [:service/domain-specific-api
+   :service/host-capability-grant
+   :service/direct-remote-instance-access]}
+
+ :spec/invariants
+ [{:requirement/id :hara.substrate.service/descriptor-is-data
+   :requirement/level :must
+   :requirement/text "A portable service descriptor contains data only and may cross transports."}
+  {:requirement/id :hara.substrate.service/instance-local
+   :requirement/level :must
+   :requirement/text "A service instance and its lifecycle callbacks remain local to the owning node runtime."}
+  {:requirement/id :hara.substrate.service/dependencies-first
+   :requirement/level :must
+   :requirement/text "Managed services start after their required services and stop before their required services."}
+  {:requirement/id :hara.substrate.service/activation-atomic
+   :requirement/level :must
+   :requirement/text "Missing dependencies, dependency cycles, duplicate identities, invalid descriptors, or denied capabilities fail before a service becomes running."}
+  {:requirement/id :hara.substrate.service/no-direct-remote-instance
+   :requirement/level :must-not
+   :requirement/text "A remote peer retrieves or invokes a runtime service instance directly."}
+  {:requirement/id :hara.substrate.service/declared-boundary
+   :requirement/level :must
+   :requirement/text "Remote behavior uses explicitly declared request actions and stream signals."}]
+
+ :service/descriptor
+ {:descriptor/required
+  [:service/id
+   :service/version
+   :service/requires
+   :service/capabilities
+   :service/actions
+   :service/signals
+   :service/meta]
+  :descriptor/field-rules
+  [{:field/id :service/id
+    :field/type :non-empty-string}
+   {:field/id :service/version
+    :field/type :version-string}
+   {:field/id :service/requires
+    :field/type :vector-of-service-ids
+    :field/unique true}
+   {:field/id :service/capabilities
+    :field/type :vector-of-capability-ids
+    :field/unique true}
+   {:field/id :service/actions
+    :field/type :map-of-action-descriptors}
+   {:field/id :service/signals
+    :field/type :map-of-signal-descriptors}
+   {:field/id :service/meta
+    :field/type :portable-map}]}
+
+ :service/action-descriptor
+ {:action/required
+  [:action/id :action/arguments :action/returns :action/async]
+  :action/optional
+  [:action/documentation :action/capabilities]
+  :action/id-rule
+  "Action identifiers are explicit globally unique non-empty strings within a node. Existing identifiers such as @xt.db/kernel-init, @page/group-open, @/ping, and sum remain valid."}
+
+ :service/signal-descriptor
+ {:signal/required
+  [:signal/id :signal/payload :signal/delivery]
+  :signal/deliveries
+  [:signal.delivery/ordered
+   :signal.delivery/latest
+   :signal.delivery/best-effort]}
+
+ :service/runtime
+ {:runtime/required
+  [:runtime/descriptor :runtime/instance]
+  :runtime/local-only
+  [:runtime/instance
+   :runtime/install
+   :runtime/start
+   :runtime/stop
+   :runtime/status]
+  :runtime/hook-semantics
+  [{:hook/id :service/install
+    :hook/when :before-registration
+    :hook/idempotent true}
+   {:hook/id :service/start
+    :hook/when :after-dependencies-running
+    :hook/returns :value-or-promise}
+   {:hook/id :service/stop
+    :hook/when :after-new-invocations-blocked
+    :hook/returns :value-or-promise}
+   {:hook/id :service/status
+    :hook/when :read-only
+    :hook/returns :portable-data}]}
+
+ :service/states
+ [{:state/id :service.state/registered
+   :state/accepts-actions false}
+  {:state/id :service.state/starting
+   :state/accepts-actions false}
+  {:state/id :service.state/running
+   :state/accepts-actions true}
+  {:state/id :service.state/stopping
+   :state/accepts-actions false}
+  {:state/id :service.state/stopped
+   :state/accepts-actions false}
+  {:state/id :service.state/failed
+   :state/accepts-actions false}]
+
+ :service/transitions
+ [{:transition/from :service.state/registered
+   :transition/operation :service/start
+   :transition/to :service.state/starting}
+  {:transition/from :service.state/starting
+   :transition/operation :service/start-succeeded
+   :transition/to :service.state/running}
+  {:transition/from :service.state/starting
+   :transition/operation :service/start-failed
+   :transition/to :service.state/failed}
+  {:transition/from :service.state/running
+   :transition/operation :service/stop
+   :transition/to :service.state/stopping}
+  {:transition/from :service.state/stopping
+   :transition/operation :service/stop-succeeded
+   :transition/to :service.state/stopped}
+  {:transition/from :service.state/stopping
+   :transition/operation :service/stop-failed
+   :transition/to :service.state/failed}]
+
+ :service/operations
+ [{:operation/id :service/register
+   :operation/arguments
+   [:substrate/node :service/descriptor :service/runtime]
+   :operation/error-on-existing :substrate/already-exists}
+  {:operation/id :service/get
+   :operation/arguments [:substrate/node :service/id]
+   :operation/returns :runtime/instance-or-nil
+   :operation/local-only true}
+  {:operation/id :service/describe
+   :operation/arguments [:substrate/node :service/id]
+   :operation/returns :service/portable-description}
+  {:operation/id :service/list
+   :operation/arguments [:substrate/node]
+   :operation/returns :service/portable-descriptions
+   :operation/order :dependency-then-lexical}
+  {:operation/id :service/start
+   :operation/arguments [:substrate/node :service/id]
+   :operation/returns :promise/service-status}
+  {:operation/id :service/stop
+   :operation/arguments [:substrate/node :service/id :stop/reason]
+   :operation/returns :promise/service-status}
+  {:operation/id :service/remove
+   :operation/arguments [:substrate/node :service/id]
+   :operation/precondition :service/stopped-or-legacy}
+  {:operation/id :service/status
+   :operation/arguments [:substrate/node :service/id]
+   :operation/returns :service/portable-status}]
+
+ :service/dependencies
+ {:dependency/graph :service/requires
+  :dependency/order :stable-topological
+  :dependency/tie-break :service-id-lexical
+  :dependency/start :forward
+  :dependency/stop :reverse
+  :dependency/missing-error :service/dependency-missing
+  :dependency/cycle-error :service/dependency-cycle}
+
+ :service/capabilities
+ {:capability/source :embedding-session-grants
+  :capability/check-time :before-start
+  :capability/denied-error :substrate/capability-denied
+  :capability/loading-descriptor-grants-authority false}
+
+ :service/stop-sequence
+ [:service/block-new-actions
+  :service/cancel-owned-pending-requests
+  :service/remove-owned-subscriptions
+  :service/unregister-owned-handlers-and-triggers
+  :service/invoke-stop-hook
+  :service/release-instance
+  :service/mark-stopped]
+
+ :service/legacy-profile
+ {:legacy/operations
+  [:service/get-legacy
+   :service/set-legacy
+   :service/remove-legacy]
+  :legacy/set-semantics
+  "Stores an arbitrary runtime-local value as an implicit running service with version 0.0.0-legacy, no dependencies, capabilities, actions, signals, or lifecycle hooks."
+  :legacy/get-returns :runtime/instance-or-nil
+  :legacy/remove-semantics :immediate
+  :legacy/remote-description
+  {:legacy/managed false
+   :legacy/state :service.state/running}
+  :legacy/portable-instance false}
+
+ :spec/references
+ [{:reference/id :hara.substrate.service/hara-protocol
+   :reference/kind :implementation
+   :reference/path "../../../../lib/src/std/lib/substrate/protocol.hal"
+   :reference/authority :evidence
+   :reference/description "Current Hara IService registry operations."}
+  {:reference/id :hara.substrate.service/conformance
+   :reference/kind :conformance
+   :reference/path "conformance/service.edn"
+   :reference/authority :evidence
+   :reference/description "Managed lifecycle and legacy compatibility cases."}]
+
+ :spec/conformance
+ [{:conformance/id :hara.substrate/service-cases
+   :conformance/path "conformance/service.edn"
+   :conformance/required true}]}

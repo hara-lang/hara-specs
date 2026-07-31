@@ -1,0 +1,146 @@
+{:document/id :hara/substrate-transport
+ :document/type :substrate-spec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "Hara substrate transport contract"
+ :document/summary
+ "Defines logical transport identity, lifecycle, attachment, receive context, codec boundaries, capability negotiation, and portable transport profiles."
+
+ :spec/conforms-to
+ {:spec/id :hara/substrate-metaspec
+  :spec/version "0.1.0"}
+ :spec/family :hara/substrate
+ :spec/depends-on
+ [:hara/substrate-base :hara/substrate-frame :hara/substrate-node
+  :hara/substrate-request :hara/substrate-stream-router]
+
+ :spec/scope
+ {:scope/includes
+  [:transport/descriptor :transport/lifecycle :transport/interface
+   :transport/attachment :transport/receive :transport/codecs
+   :transport/negotiation :transport/profiles]
+  :scope/excludes
+  [:transport/socket-api :transport/browser-api :transport/tls-policy]}
+
+ :spec/invariants
+ [{:requirement/id :hara.substrate.transport/logical-frame
+   :requirement/level :must
+   :requirement/text "All transport profiles deliver the same normalized logical substrate frame to the node."}
+  {:requirement/id :hara.substrate.transport/physical-encoding-owned
+   :requirement/level :must
+   :requirement/text "The transport profile, not request or stream semantics, owns physical encoding and transfer."}
+  {:requirement/id :hara.substrate.transport/receive-context
+   :requirement/level :must
+   :requirement/text "A received frame carries local transport identity without serializing the runtime transport instance."}
+  {:requirement/id :hara.substrate.transport/stop-settles
+   :requirement/level :must
+   :requirement/text "Stopping a transport rejects its pending requests and removes its subscriptions before releasing the transport instance."}]
+
+ :transport/descriptor
+ {:descriptor/required
+  [:transport/id :transport/profile :transport/capabilities
+   :transport/codecs :transport/meta]
+  :descriptor/id-rule :node-local-unique-non-empty-string
+  :descriptor/portable true}
+
+ :transport/interface
+ {:interface/required
+  [:transport/start :transport/send :transport/stop]
+  :interface/start-arguments
+  [:transport/receive-listener :transport/error-listener]
+  :interface/send-arguments [:frame/normalized]
+  :interface/stop-arguments [:stop/reason]
+  :interface/returns :value-or-promise}
+
+ :transport/states
+ [{:state/id :transport.state/created}
+  {:state/id :transport.state/starting}
+  {:state/id :transport.state/running}
+  {:state/id :transport.state/stopping}
+  {:state/id :transport.state/stopped}
+  {:state/id :transport.state/failed}]
+
+ :transport/transitions
+ [{:transition/from :transport.state/created
+   :transition/operation :transport/start
+   :transition/to :transport.state/starting}
+  {:transition/from :transport.state/starting
+   :transition/operation :transport/start-succeeded
+   :transition/to :transport.state/running}
+  {:transition/from :transport.state/starting
+   :transition/operation :transport/start-failed
+   :transition/to :transport.state/failed}
+  {:transition/from :transport.state/running
+   :transition/operation :transport/stop
+   :transition/to :transport.state/stopping}
+  {:transition/from :transport.state/stopping
+   :transition/operation :transport/stop-succeeded
+   :transition/to :transport.state/stopped}]
+
+ :transport/attachment
+ {:attachment/operations
+  [:transport/attach :transport/get :transport/list :transport/detach]
+  :attachment/precondition :transport.state/running
+  :attachment/list-order :transport-id-lexical
+  :attachment/detach-order
+  [:transport/block-send :transport/reject-pending
+   :transport/remove-subscriptions :transport/stop-instance
+   :transport/remove-from-node]}
+
+ :transport/receive
+ {:receive/pipeline
+  [:transport/decode :frame/normalize :frame/validate
+   :transport/add-local-context :node/dispatch]
+  :receive/local-context
+  [:frame/transport-id :frame/received-at-ms]
+  :receive/invalid-frame :transport/reject-and-diagnose}
+
+ :transport/negotiation
+ {:negotiation/action "@/node-info"
+  :negotiation/returns
+  [:node/id :substrate/version :transport/profile
+   :transport/capabilities :transport/codecs]
+  :negotiation/required-before-non-control-send false}
+
+ :transport/profiles
+ [{:profile/id :substrate.transport/direct
+   :profile/encoding :runtime-value
+   :profile/portable-wire false}
+  {:profile/id :substrate.transport/memory
+   :profile/encoding :normalized-frame
+   :profile/portable-wire true}
+  {:profile/id :substrate.transport/hta1
+   :profile/encoding :hta1
+   :profile/spec :hara/transport-hta
+   :profile/portable-wire true}
+  {:profile/id :substrate.transport/structured-clone
+   :profile/encoding :browser-structured-clone
+   :profile/portable-wire true}
+  {:profile/id :substrate.transport/transferable
+   :profile/encoding :browser-transfer-list
+   :profile/portable-wire true}
+  {:profile/id :substrate.transport/websocket
+   :profile/encoding :negotiated-text-or-binary
+   :profile/portable-wire true}]
+
+ :spec/references
+ [{:reference/id :hara.substrate.transport/hara
+   :reference/kind :implementation
+   :reference/path "../../../../lib/src/std/lib/substrate.hal"
+   :reference/authority :evidence
+   :reference/description "Current Hara function-backed transport registry."}
+  {:reference/id :hara.substrate.transport/hta
+   :reference/kind :specification
+   :reference/path "../../000050-transport-hta/draft/hal-hta-contract.edn"
+   :reference/authority :normative
+   :reference/description "HTA/1 physical transport profile."}
+  {:reference/id :hara.substrate.transport/conformance
+   :reference/kind :conformance
+   :reference/path "conformance/transport.edn"
+   :reference/authority :evidence
+   :reference/description "Logical transport profile matrix."}]
+
+ :spec/conformance
+ [{:conformance/id :hara.substrate/transport-cases
+   :conformance/path "conformance/transport.edn"
+   :conformance/required true}]}

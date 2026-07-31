@@ -442,7 +442,7 @@
    :reference/description "Language Server Protocol 3.18 specification."}
   {:reference/id :hara.lsp.reference/hal-language
    :reference/kind :language-contract
-   :reference/path "../../001-language/draft/hal-langspec.edn"
+   :reference/path "../../../01-lang/001-language/draft/hal-langspec.edn"
    :reference/authority :normative
    :reference/description "Portable HAL data and source reader contract."}
   {:reference/id :hara.lsp.reference/conformance

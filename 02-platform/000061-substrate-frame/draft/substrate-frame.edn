@@ -1,0 +1,130 @@
+{:document/id :hara/substrate-frame
+ :document/type :substrate-spec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "Hara substrate frame contract"
+ :document/summary
+ "Defines substrate.v1 logical frames, validation, canonical JSON, request correlation, and portable forwarding."
+
+ :spec/conforms-to
+ {:spec/id :hara/substrate-metaspec
+  :spec/version "0.1.0"}
+ :spec/family :hara/substrate
+ :spec/depends-on [:hara/substrate-base]
+
+ :spec/scope
+ {:scope/includes
+  [:frame/schema :frame/kinds :frame/validation
+   :frame/correlation :frame/json]
+  :scope/excludes [:frame/routing :frame/delivery :frame/physical-codec]}
+
+ :spec/invariants
+ [{:requirement/id :hara.substrate.frame/version
+   :requirement/level :must
+   :requirement/text "Every normalized frame has version substrate.v1."}
+  {:requirement/id :hara.substrate.frame/identity
+   :requirement/level :must
+   :requirement/text "Every frame has a non-empty string id and one supported kind."}
+  {:requirement/id :hara.substrate.frame/string-keys
+   :requirement/level :must
+   :requirement/text "The canonical logical wire map uses the declared string field names."}
+  {:requirement/id :hara.substrate.frame/preserve-false
+   :requirement/level :must
+   :requirement/text "Normalization preserves false, zero, empty collections, and empty strings as values rather than treating them as absent."}
+  {:requirement/id :hara.substrate.frame/deterministic-errors
+   :requirement/level :must
+   :requirement/text "Invalid shapes produce stable ordered error codes."}]
+
+ :frame/kinds
+ [:frame.kind/request
+  :frame.kind/response
+  :frame.kind/stream
+  :frame.kind/subscribe
+  :frame.kind/unsubscribe
+  :frame.kind/cancel
+  :frame.kind/error]
+
+ :frame/schema
+ {:frame/field-order
+  ["version" "kind" "id" "source" "target" "space" "meta"
+   "action" "args" "reply_to" "status" "data" "error"
+   "signal" "cause"]
+  :frame/required
+  ["version" "kind" "id"]
+  :frame/defaults
+  {:frame/version "substrate.v1"
+   :frame/source nil
+   :frame/target nil
+   :frame/space nil
+   :frame/meta {}
+   :frame/action nil
+   :frame/args nil
+   :frame/reply-to nil
+   :frame/status nil
+   :frame/data nil
+   :frame/error nil
+   :frame/signal nil
+   :frame/cause nil}
+  :frame/kind-rules
+  [{:frame/kind "request"
+    :frame/requires ["action"]
+    :frame/default-values {:frame/args []}}
+   {:frame/kind "response"
+    :frame/requires ["reply_to" "status"]
+    :frame/statuses ["ok" "error"]}
+   {:frame/kind "stream"
+    :frame/requires ["signal"]}
+   {:frame/kind "subscribe"
+    :frame/requires ["signal"]}
+   {:frame/kind "unsubscribe"
+    :frame/requires ["signal"]}
+   {:frame/kind "cancel"
+    :frame/requires ["reply_to"]}
+   {:frame/kind "error"
+    :frame/requires ["error"]}]}
+
+ :frame/correlation
+ {:correlation/request-id "id"
+  :correlation/response-request "reply_to"
+  :correlation/causal-parent "cause"
+  :correlation/response-unique true
+  :correlation/unknown-response :ignore-with-diagnostic}
+
+ :frame/json
+ {:json/encoding :utf-8
+  :json/top-level :object
+  :json/field-order :frame/field-order
+  :json/keyword-value :unqualified-name
+  :json/map-keys :string
+  :json/binary
+  {:binary/type "hara.bytes.v1"
+   :binary/encoding "base64"
+   :binary/array-field "array"}
+  :json/round-trip :logical-value-equivalence}
+
+ :frame/validation
+ {:validation/errors
+  [:frame/invalid
+   :frame/version
+   :frame/kind
+   :frame/id
+   :frame/required-field
+   :frame/status
+   :frame/value]}
+
+ :spec/references
+ [{:reference/id :hara.substrate.frame/hara-source
+   :reference/kind :implementation
+   :reference/path "../../../../lib/src/std/lib/substrate/frame.hal"
+   :reference/authority :evidence
+   :reference/description "Current Hara normalizer and JSON codec."}
+  {:reference/id :hara.substrate.frame/conformance
+   :reference/kind :conformance
+   :reference/path "conformance/frame.edn"
+   :reference/authority :evidence
+   :reference/description "Canonical frame and validation cases."}]
+
+ :spec/conformance
+ [{:conformance/id :hara.substrate/frame-cases
+   :conformance/path "conformance/frame.edn"
+   :conformance/required true}]}

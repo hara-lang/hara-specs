@@ -1,0 +1,27 @@
+{:document/id :hara.substrate.conformance/page-model
+ :document/type :substrate-conformance
+ :document/version "0.1.0"
+ :document/status :draft
+ :conformance/spec :hara/substrate-page-model
+ :conformance/cases
+ [{:case/id :hara.substrate.page/open-group
+   :case/given [:page/registered :group/closed]
+   :case/when :group/open
+   :case/then [:group/open :models/available]}
+  {:case/id :hara.substrate.page/update-model
+   :case/given [:group/open :model/revision-n]
+   :case/when :model/update
+   :case/then [:model/revision-incremented :output/signal-emitted]}
+  {:case/id :hara.substrate.page/set-input
+   :case/given [:model/available]
+   :case/when :model/set-input
+   :case/then [:input/value-updated :input/signal-emitted]}
+  {:case/id :hara.substrate.page/snapshot
+   :case/given [:group/two-models :page/revision]
+   :case/when :page/snapshot
+   :case/then [:snapshot/portable :snapshot/stable-order
+               :snapshot/revision-present]}
+  {:case/id :hara.substrate.page/close-group
+   :case/given [:group/open :models/open]
+   :case/when :group/close
+   :case/then [:models/closed-before-group :group/close-signal-last]}]}

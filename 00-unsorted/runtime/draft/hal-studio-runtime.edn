@@ -10,6 +10,8 @@
  {:spec :hal/host-runtime
   :host-layer hara-web
   :portable-substrate std.lib.substrate
+  :substrate-spec :hara/substrate-base
+  :substrate-profile :substrate.profile/hara
   :product-layer greenways.studio
   :studio-role :consumer}
 
@@ -18,15 +20,8 @@
        :availability :all-runtime-contexts}
   :node {:qualified-prefix "node/"
          :availability :node-bound-document-contexts
-         :operations
-         [{:symbol node/start :arguments [function] :returns :node/task-handle}
-          {:symbol node/in :arguments [signal] :returns :promise/value}
-          {:symbol node/in-frame :arguments [signal] :returns :promise/substrate-frame}
-          {:symbol node/emit :arguments [signal value & [meta]] :returns :promise/acceptance}
-          {:symbol node/call :arguments [target action args & [opts]] :returns :promise/response-value}
-          {:symbol node/handle :arguments [action function & [meta]] :returns :node/handler-handle}
-          {:symbol node/stop :arguments [task] :returns :boolean}
-          {:symbol node/info :arguments [] :returns :node/public-info}]}}
+         :contract :hara/substrate-runtime-profiles
+         :profile :substrate.profile/hara}}
 
  :runtime/kernel
  {:role :process-or-wasm-runtime-container
@@ -344,7 +339,8 @@
     :release-private-module]}}
 
  :runtime/node-module-ownership
- {:public-identity :workspace/node-id
+ {:substrate-contract :hara/substrate-node
+  :public-identity :workspace/node-id
   :binding
   {:workspace-node :one-active-document-generation
    :document-generation :one-private-ns+-module
@@ -430,45 +426,17 @@
    :serialization :canonical-edn}}
 
  :runtime/wire
- {:logical-model :xt.substrate
-  :implementation :hara-native
+ {:frame-spec :hara/substrate-frame
+  :request-spec :hara/substrate-request
+  :stream-spec :hara/substrate-stream-router
+  :transport-spec :hara/substrate-transport
+  :runtime-profile :substrate.profile/hara
   :compatibility :existing-json-frames-remain-valid
   :version "substrate.v1"
-  :hta-mailbox
-  {:abi-version 2
-   :value-codec :hta1
-   :host-call-event
-   [:host-call :call/id :task/id :session/id
-    :filesystem/mount-id-or-nil :service :method :arguments]}
-  :json
-  {:required true
-   :role :portable-control-and-ordinary-data
-   :binary-descriptor
-   {:$hara/type "hara.bytes.v1"
-    :encoding "base64"
-    :optional-array-type true}}
-  :frame-fields
-  [:version :kind :id :source :target :space :signal :action :args
-   :reply_to :status :data :error :cause :meta]
-  :workflows
-  {:request-response [:node/call :node/handle]
-   :streams [:node/emit :node/in :node/in-frame]
-   :subscriptions :workspace-connections
-   :fan-out :router
-   :correlation [:id :reply_to :cause]
-   :pending-promises :runtime-owned}
-  :transport-negotiation
-  {:metadata-handler "@/node-info"
-   :transports
-   [{:id :direct :frame :logical}
-    {:id :hta1 :frame :binary}
-    {:id :structured-clone :frame :logical}
-    {:id :transferable :frame :logical :payload :array-buffer}
-    {:id :websocket :frame :json-text}
-    {:id :shared-audio-ring :payload :shared-array-buffer
-     :constraint :cross-origin-isolated}
-    {:id :audio-block-batch :payload :transferable-array-buffer
-     :fallback-for :shared-audio-ring}]}
+  :studio-adapters
+  [:substrate.transport/direct :substrate.transport/hta1
+   :substrate.transport/structured-clone :substrate.transport/transferable
+   :substrate.transport/websocket]
   :realtime-audio
   {:uses-json false
    :waits-for-visualizer false

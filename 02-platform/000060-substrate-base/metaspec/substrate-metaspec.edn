@@ -1,0 +1,127 @@
+{:document/id :hara/substrate-metaspec
+ :document/type :hara/metaspec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "Hara substrate family meta-specification"
+ :document/summary
+ "Defines the common document shape, dependency rules, requirement levels, references, and conformance linkage for the 00006x substrate family."
+
+ :spec/conforms-to
+ {:spec/id :hara/metaspec-metaspec
+  :spec/version "0.1.0"}
+ :spec/artifact-kind :hara/substrate-spec
+
+ :meta/document-schema
+ {:schema/id :hara.substrate/document
+  :schema/type :map
+  :schema/closed false
+  :schema/required
+  [:document/id
+   :document/type
+   :document/version
+   :document/status
+   :document/title
+   :document/summary
+   :spec/conforms-to
+   :spec/family
+   :spec/depends-on
+   :spec/scope
+   :spec/invariants
+   :spec/references
+   :spec/conformance]
+  :schema/properties
+  {:document/id {:schema/type :keyword :schema/constraint :qualified}
+   :document/type {:schema/value :substrate-spec}
+   :document/version {:schema/type :string}
+   :document/status {:schema/type :enum
+                     :schema/values [:draft :candidate :stable :deprecated]}
+   :document/title {:schema/type :string}
+   :document/summary {:schema/type :string}
+   :spec/conforms-to {:schema/type :map}
+   :spec/family {:schema/value :hara/substrate}
+   :spec/depends-on {:schema/type :vector}
+   :spec/scope {:schema/type :map}
+   :spec/invariants {:schema/type :vector}
+   :spec/references {:schema/type :vector}
+   :spec/conformance {:schema/type :vector}}}
+
+ :meta/schemas
+ [{:schema/id :hara.substrate/requirement
+   :schema/type :map
+   :schema/required
+   [:requirement/id :requirement/level :requirement/text]}
+  {:schema/id :hara.substrate/reference
+   :schema/type :map
+   :schema/required
+   [:reference/id :reference/kind :reference/path
+    :reference/authority]}
+  {:schema/id :hara.substrate/conformance-link
+   :schema/type :map
+   :schema/required
+   [:conformance/id :conformance/path :conformance/required]}]
+
+ :meta/cross-references
+ [{:reference/id :hara.substrate/dependency-reference
+   :reference/from :spec/depends-on
+   :reference/to :document/id}
+  {:reference/id :hara.substrate/conformance-reference
+   :reference/from :conformance/path
+   :reference/to :document-relative-path}]
+
+ :meta/requirements
+ [{:requirement/id :hara.substrate/qualified-keys
+   :requirement/level :must
+   :requirement/text "Every map key in a substrate specification is a qualified keyword."}
+  {:requirement/id :hara.substrate/stable-identifiers
+   :requirement/level :must
+   :requirement/text "Document, requirement, reference, case, entity, operation, state, and profile identifiers are stable qualified keywords."}
+  {:requirement/id :hara.substrate/acyclic-dependencies
+   :requirement/level :must
+   :requirement/text "The substrate specification dependency graph is acyclic."}
+  {:requirement/id :hara.substrate/no-runtime-values
+   :requirement/level :must-not
+   :requirement/text "Normative documents contain executable callbacks, host handles, promises, or runtime instances."}
+  {:requirement/id :hara.substrate/conformance-linked
+   :requirement/level :must
+   :requirement/text "Every observable requirement names or links portable conformance evidence."}]
+
+ :meta/checkers
+ [{:checker/id :hara.substrate.rule/qualified-keys
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/qualified-map-keys
+   :checker/requirement :hara.substrate/qualified-keys}
+  {:checker/id :hara.substrate.rule/unique-identifiers
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/unique-field-values
+   :checker/requirement :hara.substrate/stable-identifiers
+   :checker/fields
+   [:document/id :requirement/id :reference/id :case/id :entity/id
+    :operation/id :state/id :profile/id]}
+  {:checker/id :hara.substrate.rule/no-runtime-values
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/no-host-values
+   :checker/requirement :hara.substrate/no-runtime-values}]
+
+ :metaspec/generation
+ {:generation/input
+  {:input/type :hara.substrate/spec-request
+   :input/required
+   [:request/id :request/title :request/summary :request/scope
+    :request/invariants :request/conformance]}
+  :generation/output
+  {:output/type :substrate-spec
+   :output/format :edn
+   :output/required
+   [:document/id :document/type :document/version :document/status
+    :document/title :document/summary :spec/conforms-to :spec/family
+    :spec/depends-on :spec/scope :spec/invariants :spec/references
+    :spec/conformance]}
+  :generation/process
+  [:generate-draft :lint :repair :verify-dependencies
+   :verify-conformance-links :emit-canonical-edn]
+  :generation/acceptance
+  {:acceptance/status :pass
+   :acceptance/no-unresolved-references true
+   :acceptance/acyclic true}}
+
+ :spec/conformance []}

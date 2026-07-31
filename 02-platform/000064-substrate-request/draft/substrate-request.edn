@@ -1,0 +1,112 @@
+{:document/id :hara/substrate-request
+ :document/type :substrate-spec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "Hara substrate request contract"
+ :document/summary
+ "Defines handler registration, local and routed invocation, promise normalization, response settlement, cancellation, timeouts, and shutdown behavior."
+
+ :spec/conforms-to
+ {:spec/id :hara/substrate-metaspec
+  :spec/version "0.1.0"}
+ :spec/family :hara/substrate
+ :spec/depends-on
+ [:hara/substrate-base :hara/substrate-frame :hara/substrate-node
+  :hara/substrate-service]
+
+ :spec/scope
+ {:scope/includes
+  [:request/handlers :request/local :request/routed :request/pending
+   :request/response :request/cancellation :request/timeout]
+  :scope/excludes
+  [:request/physical-transport :request/application-retry]}
+
+ :spec/invariants
+ [{:requirement/id :hara.substrate.request/promise-result
+   :requirement/level :must
+   :requirement/text "Every portable request operation returns a logical promise, including a local handler that returns synchronously."}
+  {:requirement/id :hara.substrate.request/settle-once
+   :requirement/level :must
+   :requirement/text "A pending request settles at most once and is removed before user continuation code runs."}
+  {:requirement/id :hara.substrate.request/correlated-response
+   :requirement/level :must
+   :requirement/text "A routed response uses the request id of its originating request."}
+  {:requirement/id :hara.substrate.request/close-rejects
+   :requirement/level :must
+   :requirement/text "Stopping an owning service, transport, or node rejects affected pending requests with a stable structured error."}]
+
+ :request/handler
+ {:handler/identity [:handler/space :handler/id]
+  :handler/signature
+  [:handler/space :handler/arguments :handler/request-context :handler/node]
+  :handler/operations
+  [:handler/register :handler/get :handler/list :handler/unregister]
+  :handler/list-order :space-then-id-lexical
+  :handler/duplicate-error :substrate/already-exists
+  :handler/missing-error :substrate/not-found}
+
+ :request/context
+ {:context/portable
+  [:request/id :request/space :request/op :request/origin
+   :request/metadata :request/deadline-ms]
+  :context/local-only
+  [:request/transport-instance :request/cancellation-token]}
+
+ :request/invocation
+ {:invocation/local
+  [:request/resolve-handler :request/invoke :request/normalize-promise]
+  :invocation/routed
+  [:request/allocate-id :request/register-pending :request/send-frame
+   :request/await-response]
+  :invocation/request-kind :frame.kind/request
+  :invocation/success-kind :frame.kind/response
+  :invocation/failure-kind :frame.kind/error}
+
+ :request/pending
+ {:pending/key :frame/request-id
+  :pending/required
+  [:pending/resolve :pending/reject :pending/owner
+   :pending/transport-id :pending/deadline-ms]
+  :pending/settlement-order
+  [:pending/remove :pending/cancel-timeout :pending/resolve-or-reject]
+  :pending/duplicate-response :request/ignore-and-diagnose
+  :pending/unknown-response :request/ignore-and-diagnose}
+
+ :request/cancellation
+ {:cancellation/local
+  [:request/mark-cancelled :request/reject-pending]
+  :cancellation/routed
+  [:request/send-cancel-frame :request/reject-pending]
+  :cancellation/kind :frame.kind/cancel
+  :cancellation/error :request/cancelled
+  :cancellation/idempotent true}
+
+ :request/timeout
+ {:timeout/source :monotonic-clock
+  :timeout/behavior
+  [:request/remove-pending :request/send-cancel-when-supported
+   :request/reject-timeout]
+  :timeout/error :request/timeout
+  :timeout/non-positive :request/immediate-timeout}
+
+ :request/errors
+ [:request/cancelled :request/timeout :request/handler-failed
+  :request/transport-stopped :request/service-stopped
+  :request/node-closed]
+
+ :spec/references
+ [{:reference/id :hara.substrate.request/hara
+   :reference/kind :implementation
+   :reference/path "../../../../lib/src/std/lib/substrate.hal"
+   :reference/authority :evidence
+   :reference/description "Current Hara request, handler, and pending-promise implementation."}
+  {:reference/id :hara.substrate.request/conformance
+   :reference/kind :conformance
+   :reference/path "conformance/request.edn"
+   :reference/authority :evidence
+   :reference/description "Portable request lifecycle cases."}]
+
+ :spec/conformance
+ [{:conformance/id :hara.substrate/request-cases
+   :conformance/path "conformance/request.edn"
+   :conformance/required true}]}

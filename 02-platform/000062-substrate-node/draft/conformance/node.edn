@@ -1,0 +1,23 @@
+{:suite/id :hara.substrate/node
+ :suite/version "0.1.0"
+ :suite/spec :hara/substrate-node
+ :suite/cases
+ [{:case/id :substrate.node/isolation
+   :case/given [:node/a :node/b]
+   :case/when {:space/set-state [:node/a "main" {:counter/value 1}]}
+   :case/expect {:node/a {:counter/value 1}
+                 :node/b {}}}
+  {:case/id :substrate.node/node-wide-space
+   :case/given {:space/id nil}
+   :case/expect {:space/id "__NODE__"}}
+  {:case/id :substrate.node/ensure-idempotent
+   :case/given [:node/a "main"]
+   :case/when [:space/ensure :space/ensure]
+   :case/expect :space/same-identity}
+  {:case/id :substrate.node/close
+   :case/given :node/running-with-owned-resources
+   :case/when :node/close
+   :case/expect
+   [:node/state-closed
+    :node/resources-released
+    :node/new-mutation-rejected]}]}

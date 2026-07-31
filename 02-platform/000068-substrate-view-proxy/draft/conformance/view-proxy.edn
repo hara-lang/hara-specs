@@ -1,0 +1,31 @@
+{:document/id :hara.substrate.conformance/view-proxy
+ :document/type :substrate-conformance
+ :document/version "0.1.0"
+ :document/status :draft
+ :conformance/spec :hara/substrate-view-proxy
+ :conformance/cases
+ [{:case/id :hara.substrate.view/valid-install
+   :case/given :view/valid-portable-tree
+   :case/when :view/install
+   :case/then [:view/observable :view/revision-present]}
+  {:case/id :hara.substrate.view/invalid-atomic
+   :case/given :view/duplicate-node-id
+   :case/when :view/install
+   :case/then [:view/rejected-invalid :view/not-observable]}
+  {:case/id :hara.substrate.view/declared-page-action
+   :case/given [:proxy/open :action/declared]
+   :case/when :proxy/dispatch
+   :case/then [:request/promise-returned :result/portable]}
+  {:case/id :hara.substrate.view/undeclared-action
+   :case/given [:proxy/open :action/undeclared]
+   :case/when :proxy/dispatch
+   :case/then [:request/not-sent :error/action-undeclared]}
+  {:case/id :hara.substrate.view/signal-forward
+   :case/given [:proxy/subscribed :page/model-output]
+   :case/when :stream/receive
+   :case/then [:view/state-updated :frame/cause-id-preserved]}
+  {:case/id :hara.substrate.view/proxy-close
+   :case/given [:proxy/pending-request :proxy/subscription]
+   :case/when :proxy/close
+   :case/then [:request/cancelled :subscription/removed
+               :proxy/state-released]}]}

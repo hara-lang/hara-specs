@@ -1,6 +1,11 @@
 # Hara RESP protocol
 
-Status: draft (0.1.0-draft)
+Status: **draft**  
+Contract version: **0.1.0**
+
+The authoritative machine-readable contract is
+[`hal-resp-protocol.edn`](hal-resp-protocol.edn). This README is its
+human-readable companion.
 
 The Hara native runtime can expose its evaluation broker over TCP using the
 RESP wire protocol. A client connects, optionally negotiates a protocol
@@ -141,3 +146,17 @@ strings by default and can be preserved as bytes with
   even when the streaming dialect is negotiated.
 - Cross-process namespace transactions beyond the shared broker semantics
   described above.
+
+## Validation and parity
+
+[`conformance/transport-resp.edn`](conformance/transport-resp.edn) defines
+shared codec corpora and client transcripts for Truffle and Rust. Candidate
+status requires identical normalized outcomes for RESP2 values, malformed
+frames, resource limits, default legacy evaluation, protocol-4 envelopes,
+errors, shared sessions, completion, command discovery, detach, and quit.
+
+The current implementations are not yet transport-equivalent. The conformance
+document records open differences in HELLO keys, protocol-3 interpretation,
+array limits, detach and quit behavior, and completion/command result shapes.
+These are validation failures to resolve, not fields that a parity harness may
+silently normalize.

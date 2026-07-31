@@ -1,0 +1,104 @@
+{:document/id :hara/substrate-stream-router
+ :document/type :substrate-spec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "Hara substrate stream and router contract"
+ :document/summary
+ "Defines triggers, publication, subscriptions, routed fan-out, delivery modes, overflow behavior, and ownership cleanup."
+
+ :spec/conforms-to
+ {:spec/id :hara/substrate-metaspec
+  :spec/version "0.1.0"}
+ :spec/family :hara/substrate
+ :spec/depends-on
+ [:hara/substrate-base :hara/substrate-frame :hara/substrate-node
+  :hara/substrate-service]
+
+ :spec/scope
+ {:scope/includes
+  [:stream/triggers :stream/publication :stream/subscriptions
+   :stream/router :stream/delivery :stream/cleanup]
+  :scope/excludes
+  [:stream/physical-buffer :stream/durable-log :stream/global-order]}
+
+ :spec/invariants
+ [{:requirement/id :hara.substrate.stream/single-local-trigger
+   :requirement/level :must
+   :requirement/text "One publication invokes its matching local trigger no more than once."}
+  {:requirement/id :hara.substrate.stream/stable-fanout
+   :requirement/level :must
+   :requirement/text "Router fan-out visits matching transports in lexical transport-id order."}
+  {:requirement/id :hara.substrate.stream/cause-preserved
+   :requirement/level :must
+   :requirement/text "A derived publication preserves the originating frame id as its cause id."}
+  {:requirement/id :hara.substrate.stream/owned-cleanup
+   :requirement/level :must
+   :requirement/text "Stopping a transport, service, or node removes all subscriptions owned by it."}]
+
+ :stream/trigger
+ {:trigger/identity [:trigger/space :trigger/signal]
+  :trigger/signature
+  [:trigger/space :trigger/signal :trigger/value :trigger/context
+   :trigger/node]
+  :trigger/operations
+  [:trigger/register :trigger/get :trigger/list :trigger/unregister]
+  :trigger/list-order :space-then-signal-lexical}
+
+ :stream/subscription
+ {:subscription/identity
+  [:subscription/space :subscription/signal :subscription/transport-id
+   :subscription/id]
+  :subscription/operations
+  [:subscription/add :subscription/remove :subscription/list
+   :subscription/remove-owner]
+  :subscription/add-kind :frame.kind/subscribe
+  :subscription/remove-kind :frame.kind/unsubscribe
+  :subscription/list-order :space-signal-transport-id}
+
+ :stream/publication
+ {:publication/kind :frame.kind/stream
+  :publication/order
+  [:publication/invoke-local-trigger :publication/route-subscribers]
+  :publication/context
+  [:frame/id :frame/cause-id :frame/origin :frame/transport-id]}
+
+ :stream/router
+ {:router/key [:frame/space :frame/op]
+  :router/fanout-order :transport-id-lexical
+  :router/self-echo-default false
+  :router/unknown-subscription :router/ignore-and-diagnose
+  :router/send-failure :router/continue-and-diagnose}
+
+ :stream/delivery
+ [{:delivery/id :signal.delivery/ordered
+   :delivery/guarantee :per-subscription-emission-order
+   :delivery/overflow :stream/fail-subscription}
+  {:delivery/id :signal.delivery/latest
+   :delivery/guarantee :latest-observable-value
+   :delivery/overflow :stream/replace-pending}
+  {:delivery/id :signal.delivery/best-effort
+   :delivery/guarantee :none
+   :delivery/overflow :stream/drop-and-diagnose}]
+
+ :stream/cleanup-order
+ [:stream/block-new-publications
+  :stream/remove-owned-subscriptions
+  :stream/unregister-owned-triggers
+  :stream/release-buffers]
+
+ :spec/references
+ [{:reference/id :hara.substrate.stream/hara
+   :reference/kind :implementation
+   :reference/path "../../../../lib/src/std/lib/substrate.hal"
+   :reference/authority :evidence
+   :reference/description "Current Hara trigger, stream, and router implementation."}
+  {:reference/id :hara.substrate.stream/conformance
+   :reference/kind :conformance
+   :reference/path "conformance/stream-router.edn"
+   :reference/authority :evidence
+   :reference/description "Portable stream and router cases."}]
+
+ :spec/conformance
+ [{:conformance/id :hara.substrate/stream-router-cases
+   :conformance/path "conformance/stream-router.edn"
+   :conformance/required true}]}

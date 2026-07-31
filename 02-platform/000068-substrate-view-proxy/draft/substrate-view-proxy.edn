@@ -1,0 +1,114 @@
+{:document/id :hara/substrate-view-proxy
+ :document/type :substrate-spec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "XTalk substrate view and proxy contract"
+ :document/summary
+ "Defines portable view descriptions, validation, state projection, action dispatch, page proxies, signal forwarding, and proxy cleanup."
+
+ :spec/conforms-to
+ {:spec/id :hara/substrate-metaspec
+  :spec/version "0.1.0"}
+ :spec/family :hara/substrate
+ :spec/depends-on
+ [:hara/substrate-base :hara/substrate-frame :hara/substrate-request
+  :hara/substrate-stream-router :hara/substrate-transport
+  :hara/substrate-page-model]
+
+ :spec/scope
+ {:scope/includes
+  [:view/descriptor :view/validation :view/state :view/actions
+   :view/snapshot :proxy/page :proxy/signals :proxy/cleanup]
+  :scope/excludes
+  [:view/dom :view/native-widget :view/css :view/render-loop]}
+
+ :spec/invariants
+ [{:requirement/id :hara.substrate.view/portable-tree
+   :requirement/level :must
+   :requirement/text "View trees, action descriptors, snapshots, and proxy messages contain portable data only."}
+  {:requirement/id :hara.substrate.view/validate-before-install
+   :requirement/level :must
+   :requirement/text "A view is validated completely before it becomes observable through a proxy."}
+  {:requirement/id :hara.substrate.view/declared-dispatch
+   :requirement/level :must
+   :requirement/text "A proxy dispatches only actions declared by the view or page-model descriptor."}
+  {:requirement/id :hara.substrate.view/cleanup
+   :requirement/level :must
+   :requirement/text "Closing a proxy cancels its pending requests and removes its subscriptions before releasing local state."}]
+
+ :view/descriptor
+ {:descriptor/required
+  [:view/id :view/version :view/root :view/actions :view/state :view/meta]
+  :descriptor/portable true}
+
+ :view/node
+ {:node/required [:view.node/id :view.node/type :view.node/props]
+  :node/optional [:view.node/children :view.node/actions :view.node/bindings]
+  :node/id-unique :within-view
+  :node/children-order :declared}
+
+ :view/action
+ {:action/required
+  [:view.action/id :view.action/target :view.action/operation
+   :view.action/arguments]
+  :action/targets [:view.target/local-state :view.target/page-proxy
+                   :view.target/service]
+  :action/undeclared-error :view/action-undeclared}
+
+ :view/validation
+ {:validation/checks
+  [:view/portable-data :view/unique-node-ids :view/known-node-types
+   :view/declared-actions :view/valid-bindings :view/acyclic-tree]
+  :validation/failure-atomic true
+  :validation/error :view/invalid}
+
+ :view/state
+ {:state/operations [:view/get-state :view/set-state :view/snapshot]
+  :state/revision-rule :monotonic-per-view
+  :state/update-signal "view.state/update"
+  :state/snapshot-order :view-tree-preorder}
+
+ :proxy/page-actions
+ ["@page/group-list" "@page/group-open" "@page/group-close"
+  "@page/group-update" "@page/model-update" "@page/model-set-input"
+  "@page/model-trigger" "@page/model-proxy-call"]
+
+ :proxy/page-signals
+ ["page.model/input" "page.model/output" "page.group/trigger"]
+
+ :proxy/dispatch
+ {:dispatch/pipeline
+  [:proxy/validate-action :proxy/authorize :request/invoke
+   :proxy/normalize-result]
+  :dispatch/returns :promise/portable-value
+  :dispatch/preserve-cause-id true}
+
+ :proxy/lifecycle
+ {:lifecycle/states
+  [:proxy.state/created :proxy.state/open :proxy.state/closing
+   :proxy.state/closed :proxy.state/failed]
+  :lifecycle/close-order
+  [:proxy/block-actions :proxy/cancel-pending :proxy/unsubscribe
+   :proxy/release-state :proxy/mark-closed]}
+
+ :spec/references
+ [{:reference/id :hara.substrate.view/xtalk-proxy
+   :reference/kind :implementation
+   :reference/path "../../../../../foundation-base/src-lang/xt/substrate/page_proxy.clj"
+   :reference/authority :evidence
+   :reference/description "XTalk page proxy actions and signals."}
+  {:reference/id :hara.substrate.view/xtalk-view
+   :reference/kind :implementation
+   :reference/path "../../../../../foundation-base/src-lang/xt/substrate/view.clj"
+   :reference/authority :evidence
+   :reference/description "XTalk view catalogs and demos."}
+  {:reference/id :hara.substrate.view/conformance
+   :reference/kind :conformance
+   :reference/path "conformance/view-proxy.edn"
+   :reference/authority :evidence
+   :reference/description "Portable view and page-proxy cases."}]
+
+ :spec/conformance
+ [{:conformance/id :hara.substrate/view-proxy-cases
+   :conformance/path "conformance/view-proxy.edn"
+   :conformance/required true}]}

@@ -1,0 +1,33 @@
+{:suite/id :hara.substrate/frame
+ :suite/version "0.1.0"
+ :suite/spec :hara/substrate-frame
+ :suite/cases
+ [{:case/id :substrate.frame/canonical-request
+   :case/given
+   {:frame/kind :request
+    :frame/id "req-1"
+    :frame/source "client/a"
+    :frame/target "server/b"
+    :frame/space "workspace/main"
+    :frame/action "math/add"
+    :frame/args [19 23]
+    :frame/meta {:trace/id "trace-1"}}
+   :case/expect
+   "{\"version\":\"substrate.v1\",\"kind\":\"request\",\"id\":\"req-1\",\"source\":\"client/a\",\"target\":\"server/b\",\"space\":\"workspace/main\",\"meta\":{\"trace\":\"trace-1\"},\"action\":\"math/add\",\"args\":[19,23],\"reply_to\":null,\"status\":null,\"data\":null,\"error\":null,\"signal\":null,\"cause\":null}"}
+  {:case/id :substrate.frame/preserve-false
+   :case/given {:frame/kind :response
+                :frame/id "res-1"
+                :frame/reply-to "req-1"
+                :frame/status :ok
+                :frame/data false}
+   :case/expect {:frame/data false}}
+  {:case/id :substrate.frame/invalid
+   :case/given
+   [{:case/value {:frame/kind :unknown :frame/id "evt-1"}}
+    {:case/value {:frame/kind :stream}}
+    {:case/value [1]}]
+   :case/expect
+   [[:frame/kind] [:frame/id] [:frame/invalid]]}
+  {:case/id :substrate.frame/json-round-trip
+   :case/given :frame/every-kind
+   :case/expect :frame/logically-equivalent}]}

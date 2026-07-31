@@ -1,0 +1,129 @@
+{:document/id :hara/substrate-node
+ :document/type :substrate-spec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "Hara substrate node and space contract"
+ :document/summary
+ "Defines node identity, lifecycle, section ownership, named spaces, isolated state, and deterministic registry primitives."
+
+ :spec/conforms-to
+ {:spec/id :hara/substrate-metaspec
+  :spec/version "0.1.0"}
+ :spec/family :hara/substrate
+ :spec/depends-on [:hara/substrate-base]
+
+ :spec/scope
+ {:scope/includes
+  [:node/identity :node/lifecycle :node/sections
+   :space/lifecycle :space/state]
+  :scope/excludes
+  [:service/lifecycle :request/dispatch :stream/routing :transport/io]}
+
+ :spec/invariants
+ [{:requirement/id :hara.substrate.node/isolation
+   :requirement/level :must
+   :requirement/text "Mutating one node or space does not mutate another node or space unless they explicitly share the same state provider."}
+  {:requirement/id :hara.substrate.node/section-ownership
+   :requirement/level :must
+   :requirement/text "A node owns its spaces, services, handlers, triggers, pending requests, router, transports, and metadata."}
+  {:requirement/id :hara.substrate.node/deterministic-listing
+   :requirement/level :must
+   :requirement/text "All public node and space listing operations return identifiers in ascending lexical order."}
+  {:requirement/id :hara.substrate.node/close
+   :requirement/level :must
+   :requirement/text "Node close rejects pending work, stops managed services and transports, clears subscriptions, and becomes terminal."}
+  {:requirement/id :hara.substrate.node/closed-mutation
+   :requirement/level :must-not
+   :requirement/text "A closed node accepts new spaces, services, handlers, triggers, requests, subscriptions, or transports."}]
+
+ :node/states
+ [:node.state/created
+  :node.state/running
+  :node.state/closing
+  :node.state/closed
+  :node.state/failed]
+
+ :node/shape
+ {:node/required [:node/id :node/state]
+  :node/sections
+  [:node/spaces
+   :node/services
+   :node/handlers
+   :node/triggers
+   :node/pending
+   :node/router
+   :node/transports
+   :node/meta]
+  :node/defaults
+  {:node/spaces {}
+   :node/services {}
+   :node/handlers {}
+   :node/triggers {}
+   :node/pending {}
+   :node/router {}
+   :node/transports {}
+   :node/meta {}}}
+
+ :node/operations
+ [{:operation/id :node/create
+   :operation/arguments [:node/id :node/options]
+   :operation/returns :substrate/node}
+  {:operation/id :node/info
+   :operation/arguments [:substrate/node]
+   :operation/returns :node/portable-description}
+  {:operation/id :node/close
+   :operation/arguments [:substrate/node :close/reason]
+   :operation/returns :node/close-summary}]
+
+ :space/shape
+ {:space/required [:space/id :space/state :space/meta]
+  :space/defaults {:space/state {} :space/meta {}}
+  :space/node-wide-id "__NODE__"}
+
+ :space/operations
+ [{:operation/id :space/get
+   :operation/arguments [:substrate/node :space/id]}
+  {:operation/id :space/create
+   :operation/arguments [:substrate/node :space/id :space/options]
+   :operation/error-on-existing :substrate/already-exists}
+  {:operation/id :space/ensure
+   :operation/arguments [:substrate/node :space/id :space/options]
+   :operation/atomic true}
+  {:operation/id :space/remove
+   :operation/arguments [:substrate/node :space/id]
+   :operation/returns :space/previous-or-nil}
+  {:operation/id :space/list
+   :operation/arguments [:substrate/node]
+   :operation/order :lexical}
+  {:operation/id :space/get-state
+   :operation/arguments [:substrate/node :space/id]}
+  {:operation/id :space/set-state
+   :operation/arguments [:substrate/node :space/id :space/state]}
+  {:operation/id :space/update-state
+   :operation/arguments [:substrate/node :space/id :space/updater]
+   :operation/atomic :within-node-state-provider}]
+
+ :node/handler-entry
+ {:handler/required [:handler/id :handler/function :handler/meta]
+  :handler/runtime-local [:handler/function]}
+
+ :node/trigger-entry
+ {:trigger/required [:trigger/id :trigger/function :trigger/meta]
+  :trigger/runtime-local [:trigger/function]}
+
+ :spec/references
+ [{:reference/id :hara.substrate.node/hara-source
+   :reference/kind :implementation
+   :reference/path "../../../../lib/src/std/lib/substrate.hal"
+   :reference/authority :evidence
+   :reference/description "Atom-backed Hara node implementation."}
+  {:reference/id :hara.substrate.node/conformance
+   :reference/kind :conformance
+   :reference/path "conformance/node.edn"
+   :reference/authority :evidence
+   :reference/description "Node and space lifecycle cases."}]
+
+ :spec/conformance
+ [{:conformance/id :hara.substrate/node-cases
+   :conformance/path "conformance/node.edn"
+   :conformance/required true}]}

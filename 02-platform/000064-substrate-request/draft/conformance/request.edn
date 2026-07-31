@@ -1,0 +1,38 @@
+{:document/id :hara.substrate.conformance/request
+ :document/type :substrate-conformance
+ :document/version "0.1.0"
+ :document/status :draft
+ :conformance/spec :hara/substrate-request
+ :conformance/cases
+ [{:case/id :hara.substrate.request/local-sync-normalized
+   :case/given [:node/running :handler/synchronous]
+   :case/when :request/invoke-local
+   :case/then [:request/returns-promise :request/resolves-value]}
+  {:case/id :hara.substrate.request/local-async
+   :case/given [:node/running :handler/asynchronous]
+   :case/when :request/invoke-local
+   :case/then [:request/returns-promise :request/adopts-handler-result]}
+  {:case/id :hara.substrate.request/remote-settlement
+   :case/given [:request/pending :response/matching-id]
+   :case/when :response/receive
+   :case/then [:pending/removed-before-continuation :request/settled-once]}
+  {:case/id :hara.substrate.request/missing-handler
+   :case/given [:handler/absent]
+   :case/when :request/invoke
+   :case/then [:request/rejected :error/code-not-found]}
+  {:case/id :hara.substrate.request/duplicate-response
+   :case/given [:request/already-settled]
+   :case/when :response/receive-again
+   :case/then [:response/ignored :diagnostic/emitted]}
+  {:case/id :hara.substrate.request/cancel
+   :case/given [:request/pending]
+   :case/when :request/cancel
+   :case/then [:request/rejected-cancelled :cancel/idempotent]}
+  {:case/id :hara.substrate.request/timeout
+   :case/given [:request/deadline-expired]
+   :case/when :clock/advance
+   :case/then [:pending/removed :request/rejected-timeout]}
+  {:case/id :hara.substrate.request/node-close
+   :case/given [:request/pending]
+   :case/when :node/close
+   :case/then [:request/rejected-node-closed :pending/empty]}]}

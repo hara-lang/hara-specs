@@ -12,7 +12,7 @@
   :startup-alias Host
   :identity "(= Host std.native.Host std.foundation/Host)"
   :portable-module std.foundation.host
-  :consumer-prefix host/
+  :consumer-prefix "host/"
   :product-shells [:greenways.studio]
   :rule
   "Hara owns capability invocation, grants, kernels, sessions, package activation, and providers. Product shells own editors, REPL views, visualizations, and management interfaces."}
@@ -47,13 +47,14 @@
    {:symbol host/capability? :arguments [capability]}]}
 
  :host/substrate
- {:namespace std.lib.substrate
-  :protocol-namespace std.lib.substrate.protocol
-  :frame-namespace std.lib.substrate.frame
+ {:spec :hara/substrate-base
+  :service-spec :hara/substrate-service
+  :transport-spec :hara/substrate-transport
+  :runtime-profile :hara/substrate-runtime-profiles
   :layer :portable-above-host
   :host-authority false
   :role
-  "Defines transport-neutral nodes, frames, request/response, streams, and routing. Host capabilities are used only by adapters that cross an embedding boundary."}
+  "Normative substrate behavior is defined by 02-platform/000060 through 000069. This host contract only supplies capabilities to adapters that cross an embedding boundary."}
 
  :host/descriptor
  {:version-key :host/version

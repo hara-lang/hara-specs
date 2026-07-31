@@ -1,0 +1,32 @@
+{:document/id :hara.substrate.conformance/transport
+ :document/type :substrate-conformance
+ :document/version "0.1.0"
+ :document/status :draft
+ :conformance/spec :hara/substrate-transport
+ :conformance/profiles
+ [:substrate.transport/direct :substrate.transport/memory
+  :substrate.transport/hta1 :substrate.transport/structured-clone
+  :substrate.transport/transferable :substrate.transport/websocket]
+ :conformance/cases
+ [{:case/id :hara.substrate.transport/logical-frame-parity
+   :case/given :frame/same-normalized-request
+   :case/when :transport/profile-roundtrip
+   :case/then :frame/same-logical-result}
+  {:case/id :hara.substrate.transport/local-context
+   :case/given :frame/decoded
+   :case/when :transport/receive
+   :case/then [:frame/transport-id-present :runtime/instance-not-serialized]}
+  {:case/id :hara.substrate.transport/invalid-frame
+   :case/given :frame/schema-invalid
+   :case/when :transport/receive
+   :case/then [:frame/not-dispatched :diagnostic/emitted]}
+  {:case/id :hara.substrate.transport/detach
+   :case/given [:request/pending :subscription/owned]
+   :case/when :transport/detach
+   :case/then [:request/rejected-transport-stopped
+               :subscription/removed :transport/instance-released]}
+  {:case/id :hara.substrate.transport/node-info
+   :case/given :transport/running
+   :case/when :request/node-info
+   :case/then [:node/id-returned :substrate/version-returned
+               :transport/capabilities-returned]}]}
