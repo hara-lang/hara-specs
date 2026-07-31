@@ -39,6 +39,10 @@ editor UX, and extension packaging are outside this language document.
   an explicit mutable constructor is used.
 - **`:hal/iterator-first`** — sequence operations use HAL's iterator boundary,
   not a host sequence abstraction.
+- **`:sequence/optional-non-empty`** — a `Seq` is a guaranteed non-empty lazy
+  cell; `seq` and `rest` return `nil` when no such cell exists.
+- **`:iterator/exact-observation`** — `iter-has?` observes and buffers the next
+  item without logically consuming it or confusing exhaustion with failure.
 - **`:hal/context-local`** — namespace, Var, macro, protocol, module, and
   capability state belongs to a HAL runtime context.
 - **`:hal/no-ambient-authority`** — loading code or an extension grants no
@@ -55,7 +59,8 @@ editor UX, and extension packaging are outside this language document.
 4. **Functions and bindings** — lexical closure, arity, destructuring, and
    left-to-right sequential `let` bindings.
 5. **Collections and iteration** — persistent updates, collection-family
-   preservation, lazy acquisition, and iterator cleanup.
+   preservation, nil-terminated non-empty sequences, exact iterator
+   observation, lazy acquisition, and iterator cleanup.
 6. **Numbers** — numeric categories, promotion, ratio-free division, and
    arithmetic errors.
 7. **Errors and cleanup** — guest values, catches, `finally`, and source

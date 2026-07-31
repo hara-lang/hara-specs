@@ -257,6 +257,29 @@
      :requirement/level :must
      :requirement/text
      "Collection operations preserve the concrete family where that family declares the operation."}
+    {:requirement/id :sequence/optional-non-empty
+     :requirement/level :must
+     :requirement/text
+     "A HAL Seq is a non-empty lazy sequence cell. seq and rest return nil when no cell exists, and every value satisfying seq? has a first element. There is no separate empty Seq value or next operation. nil, an empty persistent collection, and an exhausted iterator remain distinct representations of the same empty observable element stream; vec materializes each as an empty vector."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:sequence/empty-is-nil
+               :sequence/non-empty-rest]}]}
+    {:requirement/id :iterator/exact-observation
+     :requirement/level :must
+     :requirement/text
+     "iter-has? exactly observes whether iter-next can produce an item without logically consuming that item. Repeated successful observations are stable, the following iter-next returns the observed item, exhaustion returns false, and failures other than exhaustion propagate."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:iterator/exact-lookahead
+               :iterator/generated-exhaustion]}]}
+    {:requirement/id :iterator/shortest-source-finite
+     :requirement/level :must
+     :requirement/text
+     "Iterator combinators that stop at the shortest source, including iter-zip and iter-interleave, are finite when any source is finite and may be materialized without consuming an unbounded source."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:iterator/shortest-source-finite]}]}
     {:requirement/id :iterator/lazy
      :requirement/level :must
      :requirement/text
