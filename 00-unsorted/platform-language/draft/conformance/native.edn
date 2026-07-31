@@ -101,7 +101,7 @@
              index-of last-index-of join split split-lines repeat replace
              replace-first trim trim-left trim-right upper lower capitalize
              decapitalize pad-left pad-right reverse encode-utf8 decode-utf8
-             comp lt? gt? to-fixed]
+             to-fixed]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation/string.hal"}
   {:name Bytes
