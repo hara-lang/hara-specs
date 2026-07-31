@@ -11,7 +11,7 @@ shared Hara process without embedding it.
 The reference implementation is `rust/src/resp.rs` in the hara-lang
 repository. The CLI routes `hara listen` (start a ROOT RESP listener) and
 `hara connect` (attach a terminal to a remote listener) are declared in
-`specs/00-unsorted/cli/draft/hara-cli.edn`.
+`specs/02-platform/000001-cli/draft/hara-cli.edn`.
 
 ## Wire format
 

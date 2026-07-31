@@ -14,42 +14,6 @@
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/cli/draft/README.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "00-unsorted/cli/draft/conformance/options.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "00-unsorted/cli/draft/conformance/outcomes.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "00-unsorted/cli/draft/conformance/routes.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "00-unsorted/cli/draft/hal-cli-app-metaspec.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "00-unsorted/cli/draft/hara-cli.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
       "path": "00-unsorted/contrib/README.md",
       "kind": "markdown",
       "classification": "contribution",
@@ -382,6 +346,60 @@
     {
       "path": "01-lang/010-bytecode/draft/hal-bytecode-vm.edn",
       "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000001-cli/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000001-cli/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000001-cli/draft/conformance/options.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000001-cli/draft/conformance/outcomes.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000001-cli/draft/conformance/routes.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000001-cli/draft/hara-cli.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000001-cli/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000001-cli/metaspec/hal-cli-app-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/README.md",
+      "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
