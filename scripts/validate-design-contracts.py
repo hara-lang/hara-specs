@@ -7,8 +7,8 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-THEME = ROOT / "design/draft/hal-theme.edn"
-LANGUAGE = ROOT / "design/draft/hal-design-language.edn"
+THEME = ROOT / "00-unsorted/design/draft/hal-theme.edn"
+LANGUAGE = ROOT / "00-unsorted/design/draft/hal-design-language.edn"
 
 def parse_edn(path: Path) -> None:
     source = json.dumps(path.as_posix())

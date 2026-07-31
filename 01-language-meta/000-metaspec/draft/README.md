@@ -36,7 +36,7 @@ without expanding or weakening the HAL language contract.
 The language-spec EDN document is normative. Its rendered README is
 informative. Conformance corpora provide executable evidence for named
 requirements, while implementation profiles describe backend constraints.
-Files below `archive/planning/` are historical input and cannot be normative
+Files below `99-archive/planning/` are historical input and cannot be normative
 dependencies of an active specification.
 
 ## Required language-spec structure

@@ -187,7 +187,7 @@
 
   :paths
   ["Repository-local references resolve relative to the containing document."
-   "Active normative documents must not depend on files below archive/planning."
+   "Active normative documents must not depend on files below 99-archive/planning."
    "Archive references may be listed only as :historical provenance."]}
 
  :metaspec/rendering

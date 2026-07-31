@@ -9,5 +9,5 @@ provenance, but cannot depend on them for current language requirements.
 
 Current draft authority lives in:
 
-- [`../../metaspec/draft/hal-metaspec.edn`](../../metaspec/draft/hal-metaspec.edn)
-- [`../../language/draft/hal-langspec.edn`](../../language/draft/hal-langspec.edn)
+- [`../../01-language-meta/000-metaspec/draft/hal-metaspec.edn`](../../01-language-meta/000-metaspec/draft/hal-metaspec.edn)
+- [`../../01-language-meta/001-language/draft/hal-langspec.edn`](../../01-language-meta/001-language/draft/hal-langspec.edn)

@@ -1,58 +1,30 @@
 # Hara specifications
 
-The specification repository is organised around Hara-owned machine-readable
-documents and separately attributed contributions.
+The specification repository is being reorganised into numbered architectural
+layers. Only the language/meta layer is classified in this first pass.
 
-- [`metaspec/draft/hal-metaspec-metaspec.edn`](metaspec/draft/hal-metaspec-metaspec.edn)
+- [`01-language-meta/000-metaspec/draft/hal-metaspec-metaspec.edn`](01-language-meta/000-metaspec/draft/hal-metaspec-metaspec.edn)
    defines the self-describing contract used to lint and verify metaspecs.
-- [`metaspec/draft/hal-artifact-metaspec.edn`](metaspec/draft/hal-artifact-metaspec.edn)
+- [`01-language-meta/000-metaspec/draft/hal-artifact-metaspec.edn`](01-language-meta/000-metaspec/draft/hal-artifact-metaspec.edn)
    defines the shape of deterministic artifact-format specifications.
-- [`metaspec/draft/hal-metaspec.edn`](metaspec/draft/hal-metaspec.edn)
+- [`01-language-meta/000-metaspec/draft/hal-metaspec.edn`](01-language-meta/000-metaspec/draft/hal-metaspec.edn)
    defines the shape and authority rules for a HAL language specification.
-- [`language/draft/hal-langspec.edn`](language/draft/hal-langspec.edn)
-   is the first HAL language specification written to that contract.
-- [`package/draft/hal-packagespec.edn`](package/draft/hal-packagespec.edn)
-   defines Hara package manifests, locked dependency graphs, deterministic
-   `.harp` archives, GitHub publication, and verified package loading.
-- [`cli/draft/hara-cli.edn`](cli/draft/hara-cli.edn) defines the public CLI
-   applications, routes, options, handlers and outcomes shared by the Rust and
-   Truffle runtimes.
+- [`01-language-meta/001-language/draft/hal-langspec.edn`](01-language-meta/001-language/draft/hal-langspec.edn)
+   defines the small EDN-oriented HAL data and reader contract.
 
 Each EDN document has an adjacent rendered `README.md` for human readers. The
 EDN source remains authoritative.
 
-## Contributions
+## Unsorted material
 
-[`contrib/greenways/`](contrib/greenways/README.md) publishes verified snapshots
-of Greenways-owned formats, including the Build DSL and Supersonic audio graph.
-These documents remain Greenways contributions: Hara hosting and verification
-do not make their domain vocabulary part of the HAL language contract. Each
-snapshot includes an owner-qualified contribution envelope and content digest.
+Platform, ecosystem, design, package, CLI, runtime, contribution, and the
+previous broad language/runtime documents remain under [`00-unsorted/`](00-unsorted/)
+until their numbered homes are settled.
 
-## What the language spec allows
+## Language boundary
 
-The HAL language spec allows portable Hara programs to:
+The active language specification covers data forms, the reader, immutable
+values, structural identity, metadata, and canonical readable representations.
+Evaluation and runtime behaviour are explicitly outside its scope.
 
-- read and evaluate HAL forms;
-- define functions, lexical bindings, closures, macros, namespaces, and modules;
-- work with immutable values and persistent collections;
-- use iteration, lazy sequences, numbers, structs, protocols, and multimethods;
-- handle errors, cleanup, diagnostics, and tail-position `recur`;
-- use portable standard libraries such as JSON and pretty-printing;
-- run across different runtimes while preserving the same observable semantics;
-- interact with the host environment only through explicit adapters or capabilities.
-
-The spec does not prescribe a specific editor, compiler, storage engine, UI,
-filesystem access, network access, or runtime implementation. Those are outside
-the portable language contract.
-
-The EDN spec is normative; the README explains it, and the conformance files
-provide executable tests for the permitted behavior.
-
-Executable language and parity corpora live with the draft language
-specification under [`language/draft/conformance/`](language/draft/conformance/).
-The package draft has a non-normative
-[`GitHub architecture companion`](package/draft/architecture.md).
-Earlier prose, data models, implementation mappings, and product contracts are
-preserved as non-normative source material under
-[`archive/planning/`](archive/planning/).
+Historical material remains under [`99-archive/`](99-archive/).
