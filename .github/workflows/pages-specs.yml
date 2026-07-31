@@ -1,4 +1,4 @@
-name: Deploy specs.hara-long.org
+name: Deploy specs.hara-lang.org
 
 on:
   push:
@@ -21,14 +21,14 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Deploy main to specs.testing.hara-long.org
+      - name: Deploy main to specs.testing.hara-lang.org
         if: github.ref_name == 'main'
         run: npx --yes netlify-cli deploy --prod --dir . --message "main ${GITHUB_SHA}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTING_SITE_ID }}
 
-      - name: Deploy production to specs.hara-long.org
+      - name: Deploy production to specs.hara-lang.org
         if: github.ref_name == 'production'
         run: npx --yes netlify-cli deploy --prod --dir . --message "production ${GITHUB_SHA}"
         env:
