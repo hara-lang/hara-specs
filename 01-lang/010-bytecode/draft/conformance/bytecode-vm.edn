@@ -103,7 +103,10 @@
   {:id :compile/recur-empty :source "(loop [i 0] (recur))" :expect {:compile-error "recur expects values"}}
   {:id :compile/unbound-symbol :source "unknown" :expect {:compile-error "unbound symbol"}}
   {:id :compile/unbound-in-let :source "(let [x 1] (+ x y))" :expect {:compile-error "unbound symbol"}}
-  {:id :compile/unsupported-def :source "(def x 1)" :expect {:compile-error "unsupported operator: def"}}
+  {:id :def/basic :source "(def answer 42)" :expect {:display "42"}}
+  {:id :def/readback :source "(do (def answer 42) answer)" :expect {:display "42"}}
+  {:id :def/redefine :source "(do (def answer 19) (def answer (+ answer 23)) answer)" :expect {:display "42"}}
+  {:id :def/result-is-value :source "(do (def inc1 (fn [x] (+ x 1))) (inc1 41))" :expect {:display "42"}}
   {:id :compile/if-arity-low :source "(if)" :expect {:compile-error "if expects 2 or 3 arguments"}}
   {:id :compile/if-arity-high :source "(if 1 2 3 4)" :expect {:compile-error "if expects 2 or 3 arguments"}}
   {:id :compile/let-empty :source "(let)" :expect {:compile-error "let expects bindings and a body"}}
@@ -133,12 +136,15 @@
   {:id :defn/self-recursion :source "(do (defn f [n] (if (< n 1) 0 (f (- n 1)))) (f 100))" :expect {:display "0"}}
   {:id :defn/recursion-accumulator :source "(do (defn f [n acc] (if (< n 1) acc (f (- n 1) (+ acc 1)))) (f 1000 0))" :expect {:display "1000"}}
   {:id :defn/redefinition-shadows :source "(do (defn f [x] 1) (defn f [x] 2) (f 0))" :expect {:display "2"}}
-  {:id :defn/redefinition-captured :source "(do (defn f [x] 1) (defn g [] (f 0)) (defn f [x] 2) (g))" :expect {:display "1"}}
+  ;; Canonical redefinition resets the shared var cell (late binding),
+  ;; matching the JVM runtime; the tree evaluator agreed once local var
+  ;; cells were created namespace-qualified (issue #223).
+  {:id :defn/redefinition-captured :source "(do (defn f [x] 1) (defn g [] (f 0)) (defn f [x] 2) (g))" :expect {:display "2"}}
 
   ;; ---- declare: explicit opt-in to replacing a std.foundation builtin ----
   {:id :declare/alone :source "(declare count)" :expect {:display "nil"}}
   {:id :declare/multi-name :source "(declare count first)" :expect {:display "nil"}}
-  {:id :defn/declared-replacement :source "(do (declare count) (defn count [n] 42) (count 5))" :expect {:vm-display "42"}}
+  {:id :defn/declared-replacement :source "(do (declare count) (defn count [n] 42) (count 5))" :expect {:display "42"}}
 
   ;; ---- shared benchmark workloads (verbatim from lib/bench/runtime/workloads.json) ----
   {:id :workload/function-call :source "(loop [i 0 acc 0] (if (< i 2500) (recur (+ i 1) ((fn [x] (+ x 1)) acc)) acc))" :expect {:display "2500"}}
@@ -151,13 +157,27 @@
   {:id :error/defn-forward-reference :source "(do (defn g [x] (f x)) (defn f [x] (+ x 1)) (g 41))" :expect {:error-category "unbound symbol"}}
 
   ;; ---- function compile errors: VM-only canonical behavior ----
-  {:id :compile/fn-variadic :source "(fn [x & rest] x)" :expect {:compile-error "fn variadic parameters are not supported"}}
+  ;; Variadic fn (issue #223): the rest parameter binds a list.
+  {:id :fn/variadic-rest :source "((fn [left & more] left) 42 1 2)" :expect {:display "42"}}
+  {:id :fn/variadic-rest-value :source "((fn [left & more] more) 42 1 2)" :expect {:display "(1 2)"}}
+  {:id :fn/variadic-empty-rest :source "((fn [left & more] more) 42)" :expect {:display "()"}}
+  {:id :error/fn-variadic-min-arity :source "((fn [left right & more] left) 1)" :expect {:error-category "primitive arity"}}
   {:id :compile/fn-multi-arity :source "(fn ([x] x) ([x y] x))" :expect {:compile-error "fn multi-arity is not supported"}}
+  ;; defn multi-arity and variadic defn (issue #223).
+  {:id :defn/multi-arity :source "(do (defn choose ([value] value) ([left right] (+ left right))) (+ (choose 19) (choose 20 3)))" :expect {:display "42"}}
+  {:id :defn/multi-arity-variadic :source "(do (defn sum3 ([a b] (+ a b)) ([a b c & more] (+ a b c))) (sum3 19 20 3))" :expect {:display "42"}}
+  {:id :defn/variadic :source "(do (defn rest-args [first & rest] rest) (rest-args 42 1 2))" :expect {:display "(1 2)"}}
   {:id :compile/fn-destructuring :source "(fn [[a b]] a)" :expect {:compile-error "fn destructuring is not supported"}}
-  {:id :compile/defn-result-position :source "(defn f [x] x)" :expect {:compile-error "defn in result position requires var semantics"}}
+  ;; defn interns a real var and evaluates to it (issue #223); display
+  ;; is namespace-qualified, matching the JVM runtime.
+  {:id :defn/result-is-var :source "(defn f [x] x)" :expect {:display "#'user/f"}}
   {:id :compile/defn-nested :source "(let [x 1] (defn f [y] y) x)" :expect {:compile-error "defn is only supported as a top-level statement"}}
-  {:id :compile/defn-value-self-reference :source "(do (defn f [] f) 1)" :expect {:compile-error "defn self-reference in value position is not supported"}}
-  {:id :compile/var-form :source "(do (defn f [x] x) #'f)" :expect {:compile-error "unsupported operator: var"}}
+  ;; Value-position self-reference reads the var (late binding).
+  {:id :defn/value-self-reference :source "(do (defn f [] f) (= f (f)))" :expect {:display "true"}}
+  {:id :var/form :source "(do (defn f [x] x) #'f)" :expect {:display "#'user/f"}}
+  {:id :var/identity :source "(do (defn f [x] 1) (def v (var f)) (defn f [x] 2) (= v (var f)))" :expect {:display "true"}}
+  {:id :set/global :source "(do (def cleaned 0) (set! cleaned (+ cleaned 42)) cleaned)" :expect {:display "42"}}
+  {:id :set/result :source "(do (def cleaned 0) (set! cleaned 42))" :expect {:display "42"}}
 
   ;; ---- foundation replacement: declare-or-error (VM canonical; the
   ;; evaluator still gives builtins precedence and converges later) ----

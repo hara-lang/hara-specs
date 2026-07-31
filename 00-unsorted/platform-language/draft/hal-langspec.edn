@@ -277,12 +277,21 @@
     {:requirement/id :iterator/exact-observation
      :requirement/level :must
      :requirement/text
-     "iter-has? exactly observes whether iter-next can produce an item without logically consuming that item. Repeated successful observations are stable, the following iter-next returns the observed item, exhaustion returns false, and failures other than exhaustion propagate."
+     "iter-next? exactly observes whether iter-next can produce an item without logically consuming that item. Repeated successful observations are stable, the following iter-next returns the observed item, exhaustion returns false, and failures other than exhaustion propagate."
      :requirement/evidence
      [{:suite :hal/l0
        :cases [:iterator/exact-lookahead
                :iterator/generated-exhaustion
                :iterator/nil-requires-conversion]}]}
+    {:requirement/id :iterator/public-surface
+     :requirement/level :must
+     :requirement/text
+     "std.foundation exports exactly iter, iter?, iter-next?, and iter-next from the iterator family. Every other iter-* operation is a host-native operation of Iter and must be invoked through the startup type alias as Iter/iter-* (or an explicit namespace alias); it is not a root Foundation binding."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:iterator/root-surface
+               :iterator/native-combinator-qualified
+               :iterator/root-combinator-unbound]}]}
     {:requirement/id :iterator/cycle-non-empty
      :requirement/level :must
      :requirement/text

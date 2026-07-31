@@ -1,19 +1,20 @@
 {:document/id :hal/bytecode-vm
  :document/type :runtime-spec
- :document/version "0.4.0-draft"
+ :document/version "0.5.0-draft"
  :document/status :draft
- :document/title "HAL staged bytecode VM (milestones 1-3: synchronous core, closures, exceptions)"
+ :document/title "HAL staged bytecode VM (milestones 1-4: synchronous core, closures, exceptions, globals)"
  :document/summary
- "Normative contract for the experimental, feature-gated bytecode VM in the Rust runtime: execution model, instruction set, program representation, validation, lexical slots, form lowering, function values and calls, defn lowering, exception handling, primitive dispatch, diagnostics, and conformance. The VM is synchronous; milestone 2 adds closures, upvalues, and direct calls; milestone 3 adds try/catch/finally and guest throw. Replacing a std.foundation builtin through defn requires an explicit declare. The non-normative design narrative lives in notes/rust-bytecode-vm.md; where the two disagree for covered areas, this document wins."
+ "Normative contract for the experimental, feature-gated bytecode VM in the Rust runtime: execution model, instruction set, program representation, validation, lexical slots, form lowering, function values and calls, defn lowering, exception handling, globals and namespaces, primitive dispatch, diagnostics, and conformance. The VM is synchronous; milestone 2 adds closures, upvalues, and direct calls; milestone 3 adds try/catch/finally and guest throw; milestone 4 adds registry-direct globals (def, set!, var, defstruct) and variadic/multi-arity functions. Replacing a std.foundation builtin through defn requires an explicit declare. The non-normative design narrative lives in notes/rust-bytecode-vm.md; where the two disagree for covered areas, this document wins."
 
  :vm/stage
- {:milestone 3
+ {:milestone 4
   :pipeline [:parse :compile :validate :execute :display]
   :execution-model :synchronous-stack-machine
   :entry-arity 0
   :closures true
   :defn :lowered-to-direct-bindings
   :exceptions true
+  :globals :registry-direct
   :suspension false
   :rule
   "Source is parsed into forms, compiled into a typed instruction program, validated by abstract interpretation, executed on an operand-stack machine, and the resulting value is displayed. Execution is fully synchronous; there are no suspension, resumption, or yield variants. Unsupported forms are compile errors, never silent fallback into the tree-walking evaluator."
@@ -58,6 +59,24 @@
     :meaning "pop one value and raise it as a guest exception via core::thrown_error; unwinds to the innermost covering try entry"}
    {:op Rethrow :terminal true :pops 1
     :meaning "pop a string and raise that exact message without touching the thrown-value side channel; only emitted in finally resume sequences"}
+   {:op GetGlobal :operand :u32-constant-index :pops 0 :pushes 1
+    :meaning "push the dereferenced value of the var named by the string constant; resolves through the namespace registry at execution time (current namespace, aliases, qualified names); raises \"unbound symbol: {name}\" when unresolvable"}
+   {:op DefGlobal :operand {:name :u32-constant-index :metadata :optional-u32-constant-index}
+    :pops 1 :pushes 1
+    :meaning "pop the value, intern it as a Var in the current namespace (qualified from the start; optional metadata map constant), push the value back (def returns the value)"}
+   {:op SetGlobal :operand :u32-constant-index :pops 1 :pushes 1
+    :meaning "pop the value, reset the root of the var named by the string constant, push the value; raises \"unbound var: {name}\" when unresolvable"}
+   {:op VarGlobal :operand :u32-constant-index :pops 0 :pushes 1
+    :meaning "push the Var itself (var / #') named by the string constant"}
+   {:op DefStruct :operand {:name :u32-constant-index :fields :u32-constant-index}
+    :pops 0 :pushes 1
+    :meaning "create the struct type qualified to the current namespace, intern the constructor vars (Name, ->Name, map->Name), push the type value; fields is a vector constant of field-name strings"}
+   {:op StructField :operand :u32-constant-index :pops 1 :pushes 1
+    :meaning "pop a struct instance, push the positional field value named by the keyword constant (the field special form)"}
+   {:op InstanceOf :pops 2 :pushes 1
+    :meaning "pop the value then the struct type; push whether the value is an instance (the instance? special form)"}
+   {:op MakeMultiArity :operand :u8-count :pops :count :pushes 1
+    :meaning "pop count function values and push the arity dispatcher built through the shared core::multi_arity_function/select_clause boundary"}
    {:op Return :terminal true
     :meaning "return the top of stack; requires stack height exactly 1"}]}
 
@@ -69,6 +88,7 @@
   :function-prototype
   {:name :optional-string
    :arity :u16
+   :variadic "boolean; when true, arity counts the fixed parameters and calls bind the remaining arguments into a Value::List in the rest slot"
    :capture-count :u16
    :local-count :u16
    :max-stack :u16
@@ -121,7 +141,11 @@
    :handler-slot-out-of-range
    :handler-depth-disagrees-with-computed-height
    :pending-slots-absent-with-finally-or-present-without
-   :try-ranges-partially-overlap]
+   :try-ranges-partially-overlap
+   :global-name-constant-not-a-string
+   :defstruct-fields-constant-not-a-string-vector
+   :defglobal-metadata-constant-not-a-map
+   :make-multi-arity-with-empty-stack]
   :join-rule
   "Every control-flow join must be reached with exactly one operand-stack height; the validator computes the unique height per instruction and rejects disagreement."}
 
@@ -166,34 +190,56 @@
    :destructured-params :rejected-at-compile-time
    :multi-arity :rejected-at-compile-time}}
 
- :vm/defn-lowering
+ :vm/namespaces
+ {:model :registry-direct
+  :rule
+  "The VM talks to kernel::NamespaceRegistry directly. DefGlobal interns a Var into the current namespace with the qualified name from the start; GetGlobal/SetGlobal/VarGlobal resolve through NamespaceRegistry::resolve at execution time. The tree evaluator's flat env plus save_namespace/refresh_qualified_bindings bridge is not joined: there is no snapshot/restore, no env cloning, and no qualified-name materialization on the VM path. A failed execution leaves successfully interned vars in place, the same observable state the evaluator produces after save_namespace."
+  :visibility
+  {:rule
+   "Name checking is two-phase. The compiler tracks program-declared globals (top-level declare, def, defn, defstruct in the same source) and queries the compilation registry for pre-existing globals. An unqualified symbol that is neither lexical, nor a primitive, nor a visible global is the compile error \"unbound symbol: {name}\" — closed-program behavior is unchanged. A visible global compiles to GetGlobal and resolves at runtime, so same-program def-then-use works and redefinition between compile and execute is observed. Qualified symbols (a/b) always compile to GetGlobal with runtime resolution; alias loading and load-failure retention are runtime concerns."
+   :compile-registry
+   "compile_source_with takes a registry reference; the milestone-1 compile_source compiles against an empty registry, preserving every closed-program compile error."}
+  :host-boundary
+  "ns, require, in-ns, alias, refer, and use remain compile errors in the VM. Namespace selection and module loading are the host boundary: Runtime::eval_forms intercepts top-level ns/require before evaluation, and that interception is where a future default-VM world routes them. The VM never grows module-loading instructions."
+  :set-global
+  "set! targets globals only. The evaluator's promotion of a lexical local into a var is not reproduced; set! on a lexical name is the compile error \"set! targets a global var\"."
+  :deferred
+  [:binding-and-dynamic-vars
+   :defstruct-protocol-clauses
+   :protocol-based-struct-metadata
+   :module-and-namespace-config-forms
+   :destructuring-parameters]
+  :entry-points
+  {:runtime-methods [Runtime::compile_bytecode Runtime::eval_bytecode_native]
+   :free-functions
+   "compile_bytecode / execute_bytecode / eval_bytecode_native keep compiling closed programs against an empty registry"}}
+
+ :vm/globals
  {:rule
-  "A defn whose var is never accessed directly is lowered to a direct slot binding and direct calls. This is a compile-time analysis result, not var semantics; any observable var behavior is a compile error."
-  :lowering
-  [:defn-is-supported-only-as-a-non-final-top-level-statement
-   :the-name-is-declared-as-an-ordinary-entry-scope-slot-after-its-fn-body-is-compiled
-   :references-resolve-sequentially-against-that-slot
-   :redefinition-declares-a-fresh-shadowing-slot
-   :operator-position-self-reference-compiles-to-callstatic]
-  :evidence
-  "The evaluator binds early (symbols resolve against the environment captured at fn creation): (do (defn g [x] (f x)) (defn f [x] (+ x 1)) (g 41)) fails with \"unbound symbol: f\", redefinition shadows for closures created between definitions, and self-recursion works. Slot lowering reproduces each behavior exactly."
-  :rejects
-  [:defn-in-result-position "the Var result value would be observable: \"defn in result position requires var semantics\""
-   :defn-nested-below-the-top-level "\"defn is only supported as a top-level statement\""
-   :self-reference-in-value-position "\"defn self-reference in value position is not supported\""
-   :self-reference-from-a-nested-fn "unbound; late binding through the var is future work"
-   :direct-var-access "(var f) and #'f remain unsupported forms"]
-  :forward-references
-  "References to not-yet-defined names fail as \"unbound symbol\" at compile time; the evaluator fails the same way when the capturing fn is created. Both paths agree and the conformance corpus pins it."
+  "Top-level defn interns a real Var (value, doc/:arglists/attr-map/private metadata, defn- as private) via DefGlobal. References and self-recursive calls compile to GetGlobal + Call — through the var, like the evaluator, so redefinition between compile and execute is observed. def returns the value; defn returns the Var."
+  :supersedes
+  "Milestone 2's slot lowering and CallStatic emission are superseded: the compiler no longer emits CallStatic (the instruction and its validation remain in the set). Closed-program corpus cases keep their displayed values and pass unchanged; defn in final top-level position now returns the Var (display #'user/f), and defn below the top level remains a compile error."
+  :metadata
+  "Docstrings, ^:private, attr maps, and computed :arglists are assembled into a literal map constant at compile time and materialized into VarMetadata by DefGlobal through a shared core helper, so the :definition/* corpus cases read them through #' + meta exactly as on the evaluator."
+  :arity
+  {:variadic
+   "Parameters [a b & rest] compile with arity 2 and the prototype variadic flag; calls require at least arity arguments and bind the remainder into a Value::List in the rest slot. Applies to fn, defn, and closure calls."
+   :multi-arity
+   "Multi-clause defn compiles each clause as its own prototype and combines them with MakeMultiArity before DefGlobal. Bare multi-arity fn remains a compile error, matching the evaluator's fn arm."
+   :dispatch-errors
+   "Dispatcher arity failures phrase as \"{name} has no arity accepting {n} arguments\" through the shared select_clause boundary."}
+  :defstruct
+  {:rule
+   "defstruct executes the evaluator's construction through a registry-based helper: validate name/fields, create the StructType qualified to the current namespace, intern Name, ->Name, and map->Name. Trailing protocol clauses are the compile error \"defstruct protocol clauses are not supported\"."
+   :catch-interaction
+   "catch_matches matches struct type names with the /{class} suffix rule (milestone 3), so the L0 error/catch-order, error/unmatched-catch, error/finally-normal, and error/finally-unwind cases run verbatim."}
   :foundation-replacement
   {:rule
-   "A defn whose name collides with a std.foundation builtin (the evaluator's CORE_SPECIAL_FORMS inventory: the names runtime builtins take precedence over) is a compile error unless the name was explicitly declared first: \"defn replaces std.foundation var: <name> (declare the name at the start of the namespace to replace it)\"."
+   "A defn whose name collides with a std.foundation builtin (the evaluator's CORE_SPECIAL_FORMS inventory) is a compile error unless the name was explicitly declared first: \"defn replaces std.foundation var: <name> (declare the name at the start of the namespace to replace it)\". def over a foundation name stays allowed, matching the evaluator; the ruling is defn-specific."
    :declare
-   "(declare name ...) is a top-level statement that marks names for explicit replacement and evaluates to nil. A declared builtin's later defn lowers to a slot binding exactly like any other defn, and subsequent calls resolve to the replacement. declare below the top level or with non-symbol arguments is a compile error."
+   "(declare name ...) is a top-level statement that marks names for explicit replacement and evaluates to nil. declare below the top level or with non-symbol arguments is a compile error."
    :canonical-path
-   "The VM behavior is canonical. The evaluator still gives builtins precedence over redefinition (declared or not) and converges later; the corpus pins declared replacement with :vm-display, which consults only the VM."
-   :known-limitation
-   "Declared replacement of one of the ten VM primitives (e.g. mod) binds the slot, but operator-position calls still compile to the primitive instruction; the replacement is only observable through the slot value."}}
+   "The VM behavior is canonical. The evaluator still gives builtins precedence over redefinition (declared or not) and converges later; the corpus pins declared replacement with :vm-display, which consults only the VM."}}
 
  :vm/lowering
  {:if
@@ -383,7 +429,15 @@
   {:id :vm/simultaneous-recur
    :assert "No recur argument observes a partially updated loop binding set."}
   {:id :vm/defn-lowering-faithful
-   :assert "Lowered defns reproduce the evaluator's early binding: sequential resolution, shadowing redefinition, and direct self-recursion; observable var behavior is rejected at compile time."}
+   :assert "Superseded by :vm/globals-in-registry in milestone 4: defn now interns a real Var. The closed-program corpus cases keep their displayed values and continue to pass."}
+  {:id :vm/globals-in-registry
+   :assert "def/defn/defstruct intern Vars directly into the namespace registry with qualified names; no env bridge, snapshot/restore, or refresh runs on the VM path."}
+  {:id :vm/global-late-binding
+   :assert "Global references resolve through the registry at execution time; same-program def-then-use and redefinition between compile and execute behave exactly as on the evaluator."}
+  {:id :vm/closed-programs-unchanged
+   :assert "Compiling against an empty registry reproduces every milestone 1-3 behavior, including all unbound-symbol compile errors."}
+  {:id :vm/arity-dispatch-shared
+   :assert "Variadic rest binding and multi-arity dispatch errors are defined exactly once in the shared core boundary."}
   {:id :vm/foundation-replacement-declared
    :assert "Replacing a std.foundation builtin through defn is a compile error unless the name was first declared at the top level."}
   {:id :vm/exception-identity

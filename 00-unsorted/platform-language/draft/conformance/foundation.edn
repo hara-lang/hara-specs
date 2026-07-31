@@ -285,7 +285,7 @@
    :private-hal
    [comp2 comp3 map-transform partition-transform
     partition-all-transform]
-   :allowed-iterator-surface [iter-next? iter-next]}}
+   :allowed-iterator-surface [iter iter? iter-next? iter-next]}}
 
  :counts
  {:protocols 52

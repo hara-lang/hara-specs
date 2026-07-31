@@ -195,21 +195,20 @@
    :method-classification {:foundation-primitive :all}}
   {:name Iter
    :availability :implemented
-   :methods [iter iter? iter-finite? iter-materialize iter-has? iter-next
+   :methods [iter iter? iter-finite? iter-materialize iter-next? iter-next
              iter-close iter-map iter-filter iter-take-while iter-drop-while
              iter-mapcat iter-keep iter-interpose iter-interleave iter-every?
              iter-any? iter-take iter-drop iter-zip iter-cycle
              iter-partition-pair iter-partition-all iter-partition iter-range
              iter-constantly iter-repeatedly iter-iterate]
    :method-classification
-   {:foundation-primitive [iter iter? iter-finite? iter-materialize
-                           iter-has? iter-next iter-close]
-    :hal-wrapper [iter-map iter-filter iter-take-while iter-drop-while
-                  iter-mapcat iter-keep iter-interpose iter-interleave
-                  iter-every? iter-any? iter-take iter-drop iter-zip iter-cycle
+   {:foundation-primitive [iter iter? iter-next? iter-next]
+    :native-only [iter-finite? iter-materialize iter-close iter-map
+                  iter-filter iter-take-while iter-drop-while iter-mapcat
+                  iter-keep iter-interpose iter-interleave iter-every?
+                  iter-any? iter-take iter-drop iter-zip iter-cycle
                   iter-partition-pair iter-partition-all iter-partition
-                  iter-range iter-constantly iter-repeatedly iter-iterate]}
-   :wrapper-source "lib/src/std/foundation.hal"}]
+                  iter-range iter-constantly iter-repeatedly iter-iterate]}]
 
  :deferred
  [{:type Random :reason :no-agreed-portable-surface}
