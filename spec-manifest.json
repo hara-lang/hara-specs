@@ -140,14 +140,20 @@
       "label": "Greenways contribution"
     },
     {
-      "path": "00-unsorted/design/draft/hal-design-language.edn",
+      "path": "00-unsorted/design/draft/design-language.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/design/draft/hal-theme.edn",
+      "path": "00-unsorted/design/draft/theme.edn",
       "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/package/README.md",
+      "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
@@ -164,7 +170,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/package/draft/hal-packagespec.edn",
+      "path": "00-unsorted/package/draft/package-spec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -254,13 +260,13 @@
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/runtime/draft/hal-host-runtime.edn",
+      "path": "00-unsorted/runtime/draft/host-runtime.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/runtime/draft/hal-studio-runtime.edn",
+      "path": "00-unsorted/runtime/draft/studio-runtime.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -278,7 +284,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/000-metaspec/draft/hal-metaspec.edn",
+      "path": "01-lang/000-metaspec/draft/metaspec-metaspec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -314,14 +320,98 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/007-resp/draft/hal-resp-protocol.md",
+      "path": "01-lang/002-protocol/draft/README.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/008-hta/draft/hal-hta-contract.md",
+      "path": "01-lang/002-protocol/draft/protocol-spec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/002-protocol/metaspec/README.md",
       "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/002-protocol/metaspec/protocol-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/003-native/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/003-native/draft/native-spec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/003-native/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/003-native/metaspec/native-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/004-foundation/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/004-foundation/draft/foundation-spec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/004-foundation/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/004-foundation/metaspec/foundation-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/005-foundation-annex/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/005-foundation-annex/draft/foundation-annex.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/005-foundation-annex/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/005-foundation-annex/metaspec/foundation-annex-metaspec.edn",
+      "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
@@ -350,49 +440,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/050-lsp-base/draft/README.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "01-lang/050-lsp-base/draft/conformance/lsp-base.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "01-lang/050-lsp-base/draft/hara-lsp-base.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "01-lang/100-chip-base/draft/README.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "01-lang/100-chip-base/draft/conformance/matcher.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "01-lang/100-chip-base/draft/hal-chip-base.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "01-lang/100-chip-base/metaspec/README.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "01-lang/100-chip-base/metaspec/chip-base-metaspec.edn",
+      "path": "01-lang/platform-language-migration.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -440,7 +488,577 @@
       "owner": "hara-lang"
     },
     {
-      "path": "02-platform/000001-cli/metaspec/hal-cli-app-metaspec.edn",
+      "path": "02-platform/000001-cli/metaspec/cli-app-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000002-tap/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000002-tap/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000002-tap/draft/conformance/discovery.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000002-tap/draft/conformance/trust.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000002-tap/draft/hara-tap.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000002-tap/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000002-tap/metaspec/conformance/canonical-edn.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000002-tap/metaspec/conformance/documents.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000002-tap/metaspec/hal-tap-protocol-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000003-identity/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000003-identity/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000003-identity/draft/conformance/authorization.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000003-identity/draft/conformance/enrollment.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000003-identity/draft/hara-identity.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000004-artifact/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000004-artifact/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000004-artifact/draft/conformance/objects.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000004-artifact/draft/hara-artifact.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000005-harp/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000005-harp/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000005-harp/draft/conformance/archives.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000005-harp/draft/hara-harp.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000006-package/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000006-package/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000006-package/draft/conformance/coordinates.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000006-package/draft/conformance/releases.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000006-package/draft/hara-package.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000007-extension/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000007-extension/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000007-extension/draft/conformance/descriptors.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000007-extension/draft/hara-extension.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000008-asset/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000008-asset/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000008-asset/draft/conformance/collections.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000008-asset/draft/conformance/delivery.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000008-asset/draft/hara-asset.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000009-publishing/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000009-publishing/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000009-publishing/draft/conformance/finalization.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000009-publishing/draft/conformance/intents.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000009-publishing/draft/hara-publishing.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000010-distribution/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000010-distribution/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000010-distribution/draft/conformance/resolution.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000010-distribution/draft/hara-distribution.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000011-mirroring/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000011-mirroring/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000011-mirroring/draft/conformance/mirrors.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000011-mirroring/draft/hara-mirroring.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000050-transport-hta/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000050-transport-hta/draft/conformance/transport-hta.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000050-transport-hta/draft/transport-hta.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000051-transport-resp/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000051-transport-resp/draft/conformance/transport-resp.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000051-transport-resp/draft/transport-resp.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000060-substrate-base/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000060-substrate-base/draft/conformance/base.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000060-substrate-base/draft/substrate-base.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000060-substrate-base/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000060-substrate-base/metaspec/substrate-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000061-substrate-frame/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000061-substrate-frame/draft/conformance/frame.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000061-substrate-frame/draft/substrate-frame.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000062-substrate-node/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000062-substrate-node/draft/conformance/node.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000062-substrate-node/draft/substrate-node.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000063-substrate-service/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000063-substrate-service/draft/conformance/service.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000063-substrate-service/draft/substrate-service.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000064-substrate-request/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000064-substrate-request/draft/conformance/request.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000064-substrate-request/draft/substrate-request.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000065-substrate-stream-router/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000065-substrate-stream-router/draft/conformance/stream-router.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000065-substrate-stream-router/draft/substrate-stream-router.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000066-substrate-transport/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000066-substrate-transport/draft/conformance/transport.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000066-substrate-transport/draft/substrate-transport.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000067-substrate-page-model/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000067-substrate-page-model/draft/conformance/page-model.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000067-substrate-page-model/draft/substrate-page-model.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000068-substrate-view-proxy/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000068-substrate-view-proxy/draft/conformance/view-proxy.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000068-substrate-view-proxy/draft/substrate-view-proxy.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000069-substrate-runtime-profiles/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000069-substrate-runtime-profiles/draft/conformance/runtime-profiles.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000069-substrate-runtime-profiles/draft/substrate-runtime-profiles.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000100-lsp-base/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000100-lsp-base/draft/conformance/lsp-base.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000100-lsp-base/draft/hara-lsp-base.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000200-chip-base/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000200-chip-base/draft/chip-base.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000200-chip-base/draft/conformance/matcher.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000200-chip-base/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000200-chip-base/metaspec/chip-base-metaspec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"

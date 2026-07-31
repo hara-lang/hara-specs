@@ -1,7 +1,11 @@
-{:spec/version "1.0.0-draft"
+{:spec/version "1.1.0-draft"
  :language "hara"
- :protocol "substrate.v1"
- :runtimes [:rust :truffle :browser :xtalk]
+ :runtimes [:rust :truffle :browser]
+ :substrate/conformance
+ {:spec :xt/substrate-runtime-profiles
+  :path "../../../../02-platform/000069-substrate-runtime-profiles/draft/conformance/runtime-profiles.edn"
+  :authority :related-evidence
+  :conformance-claim false}
  :cases
  [{:id :anonymous/first-form
    :operation :eval-document
@@ -22,7 +26,9 @@
   {:id :anonymous/rollback
    :steps
    [{:operation :eval-document :document "document/a" :source "(ns+) (def value 42)"}
-    {:operation :eval-document :document "document/a" :source "(ns+) (def value 0) (throw \"bad\")"
+    {:operation :eval-document
+     :document "document/a"
+     :source "(ns+) (def value 0) (throw \"bad\")"
      :expect {:error :eval/error}}
     {:operation :eval-form :document "document/a" :source "value" :expect 42}]}
   {:id :anonymous/node-binding
@@ -30,54 +36,4 @@
    :node "node/visualizer"
    :document "document/visualizer"
    :source "(ns+) (node/info)"
-   :expect {:node/id "node/visualizer" :private-module true}}
-  {:id :node/stream
-   :connections [{:from ["node/a" "out"] :to ["node/b" "in"]}]
-   :steps
-   [{:operation :emit :node "node/a" :signal "out" :value 42}
-    {:operation :in :node "node/b" :signal "in" :expect 42}]}
-  {:id :node/request-response
-   :handler {:node "node/b" :action "double" :function "(fn [x] (* x 2))"}
-   :operation :call
-   :source "node/a"
-   :target "node/b"
-   :action "double"
-   :args [21]
-   :expect 42}
-  {:id :node/latest
-   :connection {:from ["node/a" "out"] :to ["node/b" "in"]
-                :delivery :latest :capacity 1}
-   :emits [1 2 3]
-   :expect {:next 3 :dropped 2}}
-  {:id :node/ordered-overflow
-   :connection {:from ["node/a" "out"] :to ["node/b" "in"]
-                :delivery :ordered :capacity 1}
-   :emits [1 2]
-   :expect {:error :queue/overflow}}
-  {:id :wire/json-round-trip
-   :frame
-   {:version "substrate.v1"
-    :kind "stream"
-    :id "evt-123"
-    :source "node/fft"
-    :target nil
-    :space "workspace/hara-amp"
-    :signal "fft/bins"
-    :data [0.0 0.5 1.0]
-    :cause "evt-122"
-    :meta {}}
-   :expect :equal}
-  {:id :wire/json-binary
-   :logical-value {:type :float32-array :values [0.0 0.5 1.0]}
-   :json-value
-   {:$hara/type "hara.bytes.v1"
-    :encoding "base64"
-    :array "Float32Array"}
-   :expect :equal-bytes}
-  {:id :wire/correlation
-   :request {:kind "request" :id "req-1" :action "transform" :args [42]}
-   :response {:kind "response" :id "res-1" :reply_to "req-1" :cause "req-1"}
-   :expect {:correlated true}}
-  {:id :wire/transports
-   :transports [:direct :hta1 :structured-clone :transferable :websocket]
-   :expect :same-logical-frame}]}
+   :expect {:node/id "node/visualizer" :private-module true}}]}

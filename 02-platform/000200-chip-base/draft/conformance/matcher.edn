@@ -1,0 +1,214 @@
+{:conformance/id :chip-base/matcher-cases
+ :conformance/version "0.1.0"
+ :conformance/spec
+ {:spec/id :hara/chip-base
+  :spec/version "0.1.0-draft"}
+ :conformance/encoding
+ {:encoding/note
+  "Cases use decoded fields for readability; an implementation must also test the normative little-endian binary encodings."
+  :encoding/node-reference-unit :byte-offset
+  :encoding/op-shape
+  [:op/name :op/destination :op/source :op/binding :op/immediate]}
+
+ :conformance/cases
+ [{:case/id :matcher/capture
+   :case/summary "Match (+ ?x 0) against (+ a 0) and return a's node reference."
+   :case/constants
+   [{:constant/tag :symbol :constant/aux 0 :constant/payload 1}
+    {:constant/tag :integer :constant/aux 0 :constant/payload 0}]
+   :case/program
+   [{:op/name :test-tag :op/source 0 :op/immediate 16}
+    {:op/name :load-child :op/destination 1 :op/source 0 :op/immediate 0}
+    {:op/name :test-literal :op/source 1 :op/immediate 0}
+    {:op/name :load-child :op/destination 2 :op/source 0 :op/immediate 1}
+    {:op/name :test-tag :op/source 2 :op/immediate 4}
+    {:op/name :load-child :op/destination 3 :op/source 2 :op/immediate 0}
+    {:op/name :bind :op/source 3 :op/binding 0}
+    {:op/name :load-child :op/destination 4 :op/source 2 :op/immediate 1}
+    {:op/name :test-literal :op/source 4 :op/immediate 1}
+    {:op/name :accept}]
+   :case/binding-count 1
+   :case/root-node 0
+   :case/arena
+   [{:node/ref 0 :node/tag :call :node/aux 2
+     :node/child-0 16 :node/child-1 32 :node/payload 0}
+    {:node/ref 16 :node/tag :symbol :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 1}
+    {:node/ref 32 :node/tag :vector :node/aux 2
+     :node/child-0 48 :node/child-1 64 :node/payload 0}
+    {:node/ref 48 :node/tag :symbol :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 2}
+    {:node/ref 64 :node/tag :integer :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 0}]
+   :case/expected
+   {:result/status :match
+    :result/binding-count 1
+    :result/bindings [48]}}
+
+  {:case/id :matcher/literal-mismatch
+   :case/summary "A literal test mismatch is no-match rather than a fault."
+   :case/constants
+   [{:constant/tag :integer :constant/aux 0 :constant/payload 1}]
+   :case/program
+   [{:op/name :test-literal :op/source 0 :op/immediate 0}
+    {:op/name :accept}]
+   :case/binding-count 0
+   :case/root-node 0
+   :case/arena
+   [{:node/ref 0 :node/tag :integer :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 0}]
+   :case/expected
+   {:result/status :no-match
+    :result/binding-count 0
+    :result/bindings []}}
+
+  {:case/id :matcher/repeated-binding-same-reference
+   :case/summary "Binding the same slot twice succeeds when both operands name the same node."
+   :case/constants []
+   :case/program
+   [{:op/name :load-child :op/destination 1 :op/source 0 :op/immediate 0}
+    {:op/name :bind :op/source 1 :op/binding 0}
+    {:op/name :load-child :op/destination 2 :op/source 0 :op/immediate 1}
+    {:op/name :bind :op/source 2 :op/binding 0}
+    {:op/name :accept}]
+   :case/binding-count 1
+   :case/root-node 0
+   :case/arena
+   [{:node/ref 0 :node/tag :vector :node/aux 2
+     :node/child-0 16 :node/child-1 16 :node/payload 0}
+    {:node/ref 16 :node/tag :symbol :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 2}]
+   :case/expected
+   {:result/status :match
+    :result/binding-count 1
+    :result/bindings [16]}}
+
+  {:case/id :matcher/repeated-binding-distinct-reference
+   :case/summary
+   "Reference equality is intentional: separately encoded equal-looking nodes do not satisfy a repeated binding."
+   :case/constants []
+   :case/program
+   [{:op/name :load-child :op/destination 1 :op/source 0 :op/immediate 0}
+    {:op/name :bind :op/source 1 :op/binding 0}
+    {:op/name :load-child :op/destination 2 :op/source 0 :op/immediate 1}
+    {:op/name :test-bound :op/source 2 :op/binding 0}
+    {:op/name :accept}]
+   :case/binding-count 1
+   :case/root-node 0
+   :case/arena
+   [{:node/ref 0 :node/tag :vector :node/aux 2
+     :node/child-0 16 :node/child-1 32 :node/payload 0}
+    {:node/ref 16 :node/tag :symbol :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 2}
+    {:node/ref 32 :node/tag :symbol :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 2}]
+   :case/expected
+   {:result/status :no-match
+    :result/binding-count 0
+    :result/bindings []}}
+
+  {:case/id :matcher/tail-child
+   :case/summary "LOAD_CHILD reads indices two and above from the bounded child tail."
+   :case/constants
+   [{:constant/tag :integer :constant/aux 0 :constant/payload 42}]
+   :case/program
+   [{:op/name :load-child :op/destination 1 :op/source 0 :op/immediate 2}
+    {:op/name :test-literal :op/source 1 :op/immediate 0}
+    {:op/name :accept}]
+   :case/binding-count 0
+   :case/root-node 0
+   :case/arena-size 68
+   :case/arena
+   [{:node/ref 0 :node/tag :vector :node/aux 3
+     :node/child-0 16 :node/child-1 32 :node/payload 64}
+    {:node/ref 16 :node/tag :integer :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 1}
+    {:node/ref 32 :node/tag :integer :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 2}
+    {:node/ref 48 :node/tag :integer :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 42}]
+   :case/child-tail
+   [{:tail/offset 64 :tail/references [48]}]
+   :case/expected
+   {:result/status :match
+    :result/binding-count 0
+    :result/bindings []}}
+
+  {:case/id :matcher/invalid-child-index
+   :case/summary "An out-of-arity child access faults without returning partial bindings."
+   :case/constants []
+   :case/program
+   [{:op/name :bind :op/source 0 :op/binding 0}
+    {:op/name :load-child :op/destination 1 :op/source 0 :op/immediate 2}
+    {:op/name :accept}]
+   :case/binding-count 1
+   :case/root-node 0
+   :case/arena
+   [{:node/ref 0 :node/tag :vector :node/aux 2
+     :node/child-0 16 :node/child-1 32 :node/payload 0}]
+   :case/expected
+   {:result/status :fault
+    :result/error :invalid-child-index
+    :result/binding-count 0
+    :result/bindings []}}
+
+  {:case/id :matcher/invalid-node-reference
+   :case/summary "An unaligned root reference faults before a node read."
+   :case/constants []
+   :case/program
+   [{:op/name :test-tag :op/source 0 :op/immediate 1}
+    {:op/name :accept}]
+   :case/binding-count 0
+   :case/root-node 4
+   :case/arena []
+   :case/expected
+   {:result/status :fault
+    :result/error :invalid-node-reference
+    :result/binding-count 0
+    :result/bindings []}}
+
+  {:case/id :matcher/nonzero-reserved-bits
+   :case/summary "A set reserved instruction bit faults before opcode execution."
+   :case/constants []
+   :case/program
+   [{:op/name :accept :op/reserved 1}]
+   :case/binding-count 0
+   :case/root-node 0
+   :case/arena
+   [{:node/ref 0 :node/tag :integer :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 0}]
+   :case/expected
+   {:result/status :fault
+    :result/error :nonzero-reserved-bits
+    :result/binding-count 0
+    :result/bindings []}}
+
+  {:case/id :matcher/instruction-budget
+   :case/summary "A backward jump cannot execute beyond the submitted instruction budget."
+   :case/constants []
+   :case/program
+   [{:op/name :jump :op/immediate -1}]
+   :case/instruction-budget 8
+   :case/binding-count 0
+   :case/root-node 0
+   :case/arena
+   [{:node/ref 0 :node/tag :integer :node/aux 0
+     :node/child-0 4294967295 :node/child-1 4294967295
+     :node/payload 0}]
+   :case/expected
+   {:result/status :fault
+    :result/error :instruction-budget-exhausted
+    :result/executed-instructions 8
+    :result/binding-count 0
+    :result/bindings []}}]}

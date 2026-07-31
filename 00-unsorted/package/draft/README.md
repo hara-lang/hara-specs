@@ -4,7 +4,7 @@ Status: **draft**
 Target version: **0.1.0**
 
 The authoritative document is
-[`hal-packagespec.edn`](hal-packagespec.edn). This README is its informative
+[`package-spec.edn`](package-spec.edn). This README is its informative
 companion and adds no requirements.
 
 ## Purpose

@@ -25,6 +25,8 @@ def files() -> list[dict[str, str]]:
     for path in sorted(tracked):
         if path in EXCLUDED:
             continue
+        if not (ROOT / path).is_file():
+            continue
         kind = EXTENSIONS.get(Path(path).suffix.lower())
         if kind is None:
             continue
