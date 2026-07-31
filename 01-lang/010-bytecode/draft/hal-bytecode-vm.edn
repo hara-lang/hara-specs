@@ -1,14 +1,14 @@
 {:document/id :hal/bytecode-vm
  :document/type :runtime-spec
- :document/version "0.5.0-draft"
+ :document/version "0.6.0-draft"
  :document/status :draft
- :document/title "HAL staged bytecode VM (milestones 1-4: synchronous core, closures, exceptions, globals)"
+ :document/title "HAL staged bytecode VM (milestones 1-5: synchronous core through persistent artifacts)"
  :document/summary
- "Normative contract for the experimental, feature-gated bytecode VM in the Rust runtime: execution model, instruction set, program representation, validation, lexical slots, form lowering, function values and calls, defn lowering, exception handling, globals and namespaces, primitive dispatch, diagnostics, and conformance. The VM is synchronous; milestone 2 adds closures, upvalues, and direct calls; milestone 3 adds try/catch/finally and guest throw; milestone 4 adds registry-direct globals (def, set!, var, defstruct) and variadic/multi-arity functions. Replacing a std.foundation builtin through defn requires an explicit declare. The non-normative design narrative lives in notes/rust-bytecode-vm.md; where the two disagree for covered areas, this document wins."
+ "Normative contract for the experimental, feature-gated bytecode VM in the Rust runtime: execution model, instruction set, persistent program representation, validation, lexical slots, stackless function calls, exception handling, globals and namespaces, primitive dispatch, diagnostics, and conformance. Milestone 5 adds compact runtime slots, reusable in-machine call frames, and checksummed HBC1 artifacts that are validated before execution. Replacing a std.foundation builtin through defn requires an explicit declare. The non-normative design narrative lives in notes/rust-bytecode-vm.md; where the two disagree for covered areas, this document wins."
 
  :vm/stage
- {:milestone 4
-  :pipeline [:parse :compile :validate :execute :display]
+ {:milestone 5
+  :pipeline [:parse :compile :validate :encode :decode :validate :execute :display]
   :execution-model :synchronous-stack-machine
   :entry-arity 0
   :closures true
@@ -17,7 +17,7 @@
   :globals :registry-direct
   :suspension false
   :rule
-  "Source is parsed into forms, compiled into a typed instruction program, validated by abstract interpretation, executed on an operand-stack machine, and the resulting value is displayed. Execution is fully synchronous; there are no suspension, resumption, or yield variants. Unsupported forms are compile errors, never silent fallback into the tree-walking evaluator."
+  "Source is parsed into forms, compiled into a typed instruction program, and validated by abstract interpretation. A program may execute directly or be encoded as an HBC1 artifact; decoded artifacts pass checksum verification and the same structural validation before execution. Execution is fully synchronous; unsupported forms are compile errors, never silent fallback into the tree-walking evaluator."
   :reference-implementation
   {:module rust/src/vm
    :feature "bytecode-vm"
@@ -42,6 +42,10 @@
    {:op Primitive :operand {:op :primitive :argc :u8}
     :pops :argc :pushes 1
     :meaning "pop argc arguments, apply the shared value-level primitive, push the result"}
+   {:op PrimitiveLocalConst
+    :operand {:op :primitive :local :u16-slot :constant :u32-constant-index}
+    :pops 0 :pushes 1
+    :meaning "apply a binary primitive to a local and pooled constant, then push the result"}
    {:op Jump :operand :u32-absolute-target :pops 0 :pushes 0
     :meaning "unconditional transfer"}
    {:op JumpIfFalse :operand :u32-absolute-target :pops 1 :pushes 0
@@ -103,9 +107,14 @@
    :max-primitive-arguments 255
    :max-call-arguments 255
    :max-captures-per-closure 255}
-  :persistence :none
-  :persistence-note
-  "Programs are in-memory only. HIR remains the form serializer; it is not bytecode and is unchanged by this specification."}
+  :persistence
+  {:format :HBC1
+   :header "four-byte HBC1 magic followed by a big-endian u32 payload length"
+   :integrity "SHA-256 of the complete payload"
+   :payload "entry index, HTA-encoded constant pool, var metadata, prototypes, typed instructions, source positions, and exception handlers"
+   :decode-rule "reject bad magic, length, checksum, tags, UTF-8, or trailing bytes, then run normal VM validation before returning a Program"
+   :constant-rule "constants use the portable HTA value codec; runtime-only values unsupported by HTA are rejected during encoding"
+   :compatibility "the version is carried by the magic; incompatible encodings use a new magic rather than guessing"}}
 
  :vm/validation
  {:timing :before-execution
@@ -163,7 +172,7 @@
 
  :vm/functions
  {:representation
-  "A VM function value is a plain core::Value::Function whose native callback runs a nested machine over the shared Rc<Program>. There is no VM-specific value variant: arity errors (\"function expects N arguments\"), \"<fn>\" display, and pointer identity come from the shared value model unchanged."
+  "Inside the VM, scalar values and closures use compact VmSlot variants and calls push reusable in-machine frames. A closure converts to core::Value::Function only when it escapes through the public value or Var boundary; display and host-call semantics remain shared with the core value model."
   :slot-layout
   {:params "slots 0..arity-1, declared first"
    :captures "slots arity..arity+capture-count-1, appended as discovered during body compilation"
@@ -180,9 +189,10 @@
    :dynamic "Call pops the arguments, then the callee, and dispatches through the shared core::call_function boundary; calling a non-function value reports \"value is not callable\""
    :static-direct "CallStatic (defn self-recursion only) calls a known prototype directly, copying the current frame's capture slots as the callee's captures"}
   :execution
-  {:model :nested-machine-per-call
-   :note
-   "Every Call/CallStatic runs a fresh machine for the callee. Call depth is therefore bounded by the host stack; the tree evaluator trampolines through its fiber and survives deeper recursion (verified to depth 10000). Programs compiled for this milestone must keep recursion shallow; the conformance corpus stays at or below depth 1000. An in-machine frame stack or trampolined calls are future performance work."}
+  {:model :single-machine-explicit-frame-stack
+   :locals "completed local vectors and argument vectors are retained for reuse by later calls"
+   :exceptions "unwinding searches the current handler table, then restores caller frames until a handler matches or the program fails"
+   :depth "guest call depth is independent of the native stack; recursive global calls are verified at depth 10000"}
   :fn-shapes
   {:params "a vector of plain symbols; anything else reports \"function parameters must be a vector\""
    :body "one or more forms sequenced like do; the last form is the result"
@@ -339,7 +349,12 @@
   [{"+" Add} {"-" Subtract} {"*" Multiply} {"/" Divide}
    {"%" Remainder} {"mod" Remainder}
    {"=" Equal} {"<" Less} {"<=" LessOrEqual}
-   {">" Greater} {">=" GreaterOrEqual}]
+   {">" Greater} {">=" GreaterOrEqual}
+   {"count" Count} {"get" Get} {"meta" Meta}
+   {"nth" Nth} {"assoc" Assoc} {"first" First}
+   {"rest" Rest} {"second" Second}]
+  :literal-collections
+  "Vectors, maps, and sets containing only literal forms may be pooled as constants. Pure primitive calls over literal arguments may be folded when evaluation succeeds; failures retain runtime error behavior. first(rest x) may lower to second(x)."
   :error-spelling
   {"integer overflow" "checked arithmetic overflowed"
    "division by zero" "divide or remainder by zero"
