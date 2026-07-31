@@ -1,18 +1,19 @@
 {:document/id :hal/bytecode-vm
  :document/type :runtime-spec
- :document/version "0.3.0-draft"
+ :document/version "0.4.0-draft"
  :document/status :draft
- :document/title "HAL staged bytecode VM (milestones 1-2: synchronous core, closures)"
+ :document/title "HAL staged bytecode VM (milestones 1-3: synchronous core, closures, exceptions)"
  :document/summary
- "Normative contract for the experimental, feature-gated bytecode VM in the Rust runtime: execution model, instruction set, program representation, validation, lexical slots, form lowering, function values and calls, defn lowering, primitive dispatch, diagnostics, and conformance. The VM is synchronous; milestone 2 adds closures, upvalues, and direct calls. Replacing a std.foundation builtin through defn requires an explicit declare. The non-normative design narrative lives in notes/rust-bytecode-vm.md; where the two disagree for covered areas, this document wins."
+ "Normative contract for the experimental, feature-gated bytecode VM in the Rust runtime: execution model, instruction set, program representation, validation, lexical slots, form lowering, function values and calls, defn lowering, exception handling, primitive dispatch, diagnostics, and conformance. The VM is synchronous; milestone 2 adds closures, upvalues, and direct calls; milestone 3 adds try/catch/finally and guest throw. Replacing a std.foundation builtin through defn requires an explicit declare. The non-normative design narrative lives in notes/rust-bytecode-vm.md; where the two disagree for covered areas, this document wins."
 
  :vm/stage
- {:milestone 2
+ {:milestone 3
   :pipeline [:parse :compile :validate :execute :display]
   :execution-model :synchronous-stack-machine
   :entry-arity 0
   :closures true
   :defn :lowered-to-direct-bindings
+  :exceptions true
   :suspension false
   :rule
   "Source is parsed into forms, compiled into a typed instruction program, validated by abstract interpretation, executed on an operand-stack machine, and the resulting value is displayed. Execution is fully synchronous; there are no suspension, resumption, or yield variants. Unsupported forms are compile errors, never silent fallback into the tree-walking evaluator."
@@ -53,6 +54,10 @@
    {:op CallStatic :operand {:prototype :u16 :argc :u8}
     :pops :argc :pushes 1
     :meaning "direct call to a known prototype (defn self-recursion); the callee's captures are copied from the current frame's capture slots"}
+   {:op Throw :terminal true :pops 1
+    :meaning "pop one value and raise it as a guest exception via core::thrown_error; unwinds to the innermost covering try entry"}
+   {:op Rethrow :terminal true :pops 1
+    :meaning "pop a string and raise that exact message without touching the thrown-value side channel; only emitted in finally resume sequences"}
    {:op Return :terminal true
     :meaning "return the top of stack; requires stack height exactly 1"}]}
 
@@ -68,7 +73,8 @@
    :local-count :u16
    :max-stack :u16
    :code "vector of instructions"
-   :source-map "one source position entry per instruction"}
+   :source-map "one source position entry per instruction"
+   :handlers "vector of try entries; see :vm/exceptions"}
   :limits
   {:max-constants 16777216
    :max-instructions-per-function 16777216
@@ -107,7 +113,15 @@
    :inconsistent-stack-heights-at-join
    :unreachable-instruction
    :control-falls-off-end-without-return
-   :declared-max-stack-disagrees-with-computed]
+   :declared-max-stack-disagrees-with-computed
+   :throw-or-rethrow-with-empty-stack
+   :try-range-out-of-bounds-or-empty
+   :catch-target-out-of-range
+   :finally-target-out-of-range
+   :handler-slot-out-of-range
+   :handler-depth-disagrees-with-computed-height
+   :pending-slots-absent-with-finally-or-present-without
+   :try-ranges-partially-overlap]
   :join-rule
   "Every control-flow join must be reached with exactly one operand-stack height; the validator computes the unique height per instruction and rejects disagreement."}
 
@@ -224,6 +238,53 @@
   :recur-as-value :never
   :recur-as-exception :never}
 
+ :vm/exceptions
+ {:error-model
+  "Errors in flight are plain message strings; the guest-thrown value rides the ACTIVE_THROWN_VALUE side channel in core.rs. The machine reuses core::thrown_error, core::catch_matches, and core::caught_error verbatim, so catch binding identity (thrown values restored verbatim, runtime errors bound as strings) is defined exactly once for both evaluators."
+  :handler-representation
+  {:model :static-try-table-per-prototype
+   :entry
+   {:start :u32 :end :u32
+    :depth "operand height at try entry; patched after analysis, verified by the validator"
+    :catches "vector of {:class string, :binding u16-slot, :target u32} in source order, first match wins"
+    :finally :optional-u32-target
+    :pending-slots "two hidden slots (value, error-flag) present exactly when finally is present; allocated without names so no user symbol can resolve them"}
+   :unwind-search :innermost-first
+   :rule
+   "Handlers are table entries, not a dynamic handler stack. Control may leave a protected range through ordinary jumps (including recur through a catch-only try) with no runtime bookkeeping."}
+  :unwind-semantics
+  [:on-failure-find-the-innermost-entry-covering-the-failing-ip
+   :try-catches-in-source-order-first-catch-matches-win
+   :on-match-truncate-stack-to-entry-depth-store-caught-error-into-the-binding-slot-jump-to-the-clause-target
+   :the-side-channel-is-consumed-only-after-a-match-is-decided
+   :no-match-with-finally-store-message-and-error-flag-into-the-pending-slots-jump-to-the-finally-region
+   :no-match-without-finally-propagate-the-original-message-with-the-original-failing-position]
+  :catch-clause-shapes
+  {:implicit "(catch name body), exactly 3 elements with a symbol name: class Exception"
+   :class-dispatch "(catch Class name body...): Exception and Throwable match every error; any other class matches only a thrown struct by type name or /-suffix"
+   :ordering "clauses must follow the body; clause groups (catch, finally) may appear in any order; multiple finally clauses concatenate"
+   :malformed :compile-error
+   :canonical-note
+   "Malformed clauses (non-symbol class or name, wrong arity, forms after clauses) are compile errors with the fiber evaluator's message spellings. Compile-time rejection is canonical: the tree evaluator only inspects clauses on the throwing path and treats non-symbol classes as non-matching; it converges later. Corpus pins use :compile-error."}
+  :finally-semantics
+  [:finally-runs-on-the-normal-path-the-caught-path-and-the-unmatched-rethrow-path
+   :the-finally-value-is-discarded
+   :a-finally-body-that-throws-replaces-the-pending-result
+   :finally-code-lies-outside-its-protected-range-so-a-throw-there-unwinds-outward
+   :semantics-follow-the-fiber-evaluator-first-finally-error-short-circuits
+   :the-sync-fallbacks-last-error-wins-behavior-is-not-reproduced]
+  :throw
+  {:instruction "Throw pops one value and raises it via core::thrown_error; terminal"
+   :rethrow-instruction
+   "Rethrow pops a string and raises that exact message without touching the side channel, preserving error identity across unmatched finally boundaries for outer catches; terminal; only emitted in finally resume sequences"
+   :arity-error "\"throw expects one value\"; a runtime error in the tree evaluator, a compile error in the VM"}
+  :recur-interaction
+  {:recur-through-catch-only-try :supported
+   :evidence "(loop [i 0] (try (if (< i 3) (recur (+ i 1)) i) (catch Exception e -1))) evaluates to 3 on both paths"
+   :recur-across-a-finally-boundary :compile-error
+   :divergence
+   "The tree evaluator runs finally on every recur crossing. The general protocol (resume actions chained through nested finally regions and multiple enclosing loops) belongs to the frame-stack milestone; the VM rejects the crossing with \"recur cannot cross a finally boundary\" rather than skipping finally silently."}}
+
  :vm/primitives
  {:boundary "core::apply_primitive shared by the tree-walking evaluator and the VM"
   :rule
@@ -277,7 +338,8 @@
   :error-categories
   ["division by zero" "integer overflow" "expects numbers"
    "primitive arity" "reader"
-   "function arity" "not callable" "fn params shape"]
+   "function arity" "not callable" "fn params shape"
+   "thrown" "throw arity"]
   :rule
   "Display expectations pin exact rendered values on both paths. Error-category expectations pin the failure class on both paths while allowing phrasing to differ. Compile-error expectations pin VM-only behavior where the specification makes the VM canonical (recur misuse, unbound symbols, unsupported forms, defn-lowering boundaries); the tree evaluator converges later. Vm-display expectations pin canonical VM behavior the evaluator has not yet converged to (declared foundation replacement)."}
 
@@ -300,7 +362,6 @@
    :namespace-aware-execution "real Vars, def/defn result values, var/#' access, set!, require; defn lowering becomes an optimization over late binding instead of a subset restriction"
    :mutual-recursion "late-bound references between lowered defns, including from nested fn bodies"
    :first-class-invocation "keywords, maps, and sets as functions"
-   :exceptions "try/catch/finally and guest exception propagation (issue #203)"
    :suspension "promises, await, yielding, and resumability; instruction dispatch must accept suspension variants without rewriting (issue #204)"
    :encoding "optional packed instruction encoding; stack effects and validation stay normative"}
   :default-promotion-conditions
@@ -325,5 +386,9 @@
    :assert "Lowered defns reproduce the evaluator's early binding: sequential resolution, shadowing redefinition, and direct self-recursion; observable var behavior is rejected at compile time."}
   {:id :vm/foundation-replacement-declared
    :assert "Replacing a std.foundation builtin through defn is a compile error unless the name was first declared at the top level."}
+  {:id :vm/exception-identity
+   :assert "A thrown value crosses try boundaries unchanged: outer catches match its class and bind the original value; runtime errors bind their bare message string, including across closure calls."}
+  {:id :vm/finally-always-runs
+   :assert "Finally runs on the normal, caught, and unmatched-rethrow paths; its value is discarded; a throwing finally replaces the pending result."}
   {:id :vm/corpus-green
    :assert "Every corpus case passes on native and wasm32 with the feature enabled."}]}
