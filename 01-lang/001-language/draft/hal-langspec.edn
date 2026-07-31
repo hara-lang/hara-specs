@@ -7,19 +7,19 @@
  "Portable contract for the immutable data forms shared by HAL source and the Hara EDN profile."
 
  :spec/conforms-to
- {:document "../metaspec/language-metaspec.edn"
-  :version "0.1.0-draft"}
+ {:spec/id :hal/metaspec
+  :spec/version "0.1.0"}
 
  :spec/scope
- {:language "HAL data"
-  :data-notation
-  {:name "EDN"
-   :extension ".edn"
-   :profile :hara
-   :encoding :utf-8}
-  :includes
+ {:scope/language "HAL data"
+  :scope/data-notation
+  {:notation/name "EDN"
+   :notation/extension ".edn"
+   :notation/profile :hara
+   :notation/encoding :utf-8}
+  :scope/includes
   #{:reader :scalar-values :collection-values :metadata :canonical-reading}
-  :excludes
+  :scope/excludes
   #{:evaluation :functions :bindings :iteration :protocols :modules
     :standard-libraries :host-capabilities :runtime-implementation}}
 
@@ -37,8 +37,9 @@
    :requirement/text
    "Every readable data value has a canonical representation accepted by the shared reader."
    :requirement/evidence
-   [{:suite :hal/reader
-     :cases [:nil :booleans :numbers :collections :empty-collections]}]}]
+   [{:conformance/suite :hal/reader
+     :conformance/cases
+     [:nil :booleans :numbers :collections :empty-collections]}]}]
 
  :spec/section-order
  [:hal.data/reader
@@ -57,24 +58,27 @@
      :requirement/text
      "The reader accepts nil, booleans, strings, characters, symbols, keywords, signed 64-bit integers, binary64 floating-point numbers, lists, vectors, maps, and sets."
      :requirement/evidence
-     [{:suite :hal/reader
-       :cases [:nil :booleans :escaped-string :named-characters
-               :symbols-and-keywords :numbers :collections]}]}
+     [{:conformance/suite :hal/reader
+       :conformance/cases
+       [:nil :booleans :escaped-string :named-characters
+        :symbols-and-keywords :numbers :collections]}]}
     {:requirement/id :reader/restricted-numbers
      :requirement/level :must-not
      :requirement/text
      "The Hara EDN profile does not accept ratios, arbitrary-precision integer suffixes, or exact-decimal suffixes."
      :requirement/evidence
-     [{:suite :hal/reader
-       :cases [:unsupported-ratio :explicit-bigint-unsupported
-               :big-decimal-unsupported]}]}
+     [{:conformance/suite :hal/reader
+       :conformance/cases
+       [:unsupported-ratio :explicit-bigint-unsupported
+        :big-decimal-unsupported]}]}
     {:requirement/id :reader/delimiters
      :requirement/level :must
      :requirement/text
      "Collections require matching delimiters and maps require an even number of forms."
      :requirement/evidence
-     [{:suite :hal/reader
-       :cases [:odd-map :unterminated-list :mismatched-vector]}]}]}
+     [{:conformance/suite :hal/reader
+       :conformance/cases
+       [:odd-map :unterminated-list :mismatched-vector]}]}]}
 
   {:section/id :hal.data/scalars
    :section/title "Scalar values"
@@ -100,8 +104,8 @@
      :requirement/text
      "Map keys and set members are unique."
      :requirement/evidence
-     [{:suite :hal/reader
-       :cases [:duplicate-map-key :duplicate-set-item]}]}]}
+     [{:conformance/suite :hal/reader
+       :conformance/cases [:duplicate-map-key :duplicate-set-item]}]}]}
 
   {:section/id :hal.data/metadata
    :section/title "Metadata"
@@ -117,8 +121,9 @@
      :requirement/text
      "Metadata may only be attached to values that support metadata."
      :requirement/evidence
-     [{:suite :hal/reader
-       :cases [:metadata :invalid-metadata-value :invalid-metadata-target]}]}]}]
+     [{:conformance/suite :hal/reader
+       :conformance/cases
+       [:metadata :invalid-metadata-value :invalid-metadata-target]}]}]}]
 
  :spec/forms []
  :spec/references []

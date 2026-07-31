@@ -26,7 +26,7 @@
    :section/keys [:meta/cross-references]}
   {:section/id :hara.metaspec/requirements
    :section/cardinality :one-or-more
-   :section/keys [:meta/requirements]}
+   :section/keys [:meta/requirements :meta/checkers]}
   {:section/id :hara.metaspec/generation
    :section/cardinality :exactly-one
    :section/keys [:metaspec/generation]}]
@@ -39,7 +39,7 @@
   [:document/id :document/type :document/version :document/status
    :document/title :document/summary :spec/conforms-to :spec/artifact-kind
    :meta/document-schema :meta/schemas :meta/cross-references
-   :meta/requirements :metaspec/generation]
+   :meta/requirements :meta/checkers :metaspec/generation]
   :schema/properties
   {:document/id {:schema/ref :hara.metaspec/qualified-keyword}
    :document/type {:schema/ref :hara.metaspec/qualified-keyword}
@@ -53,6 +53,7 @@
    :meta/schemas {:schema/items :hara.metaspec/schema-declaration}
    :meta/cross-references {:schema/items :hara.metaspec/reference-declaration}
    :meta/requirements {:schema/items :hara.metaspec/requirement-declaration}
+   :meta/checkers {:schema/items :hara.metaspec/checker-declaration}
    :metaspec/generation {:schema/ref :hara.metaspec/generation-contract}}}
 
  :meta/schemas
@@ -81,6 +82,10 @@
    :schema/type :map
    :schema/required
    [:requirement/id :requirement/level :requirement/text]}
+  {:schema/id :hara.metaspec/checker-declaration
+   :schema/type :map
+   :schema/required
+   [:checker/id :checker/type :checker/requirement]}
   {:schema/id :hara.metaspec/generation-contract
    :schema/type :map
    :schema/required
@@ -104,12 +109,9 @@
   {:reference/id :hara.metaspec/schema-item-references
    :reference/from :schema/items
    :reference/to :schema/id}
-  {:reference/id :hara.metaspec/document-schema-reference
-   :reference/from :meta/document-schema
-   :reference/to :schema/id}
-  {:reference/id :hara.metaspec/self-conformance-reference
-   :reference/from :spec/conforms-to
-   :reference/to :document/id}
+  {:reference/id :hara.metaspec/checker-requirement-reference
+   :reference/from :checker/requirement
+   :reference/to :requirement/id}
   {:reference/id :hara.metaspec/requirement-finding-reference
    :reference/from :requirement/id
    :reference/to :requirement/id}]
@@ -142,6 +144,32 @@
   {:requirement/id :hara.metaspec/no-host-values
    :requirement/level :must-not
    :requirement/text "Normative documents contain runtime objects, Vars, handles or host-specific values."}]
+
+ :meta/checkers
+ [{:checker/id :hara.metaspec.rule/qualified-key
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/qualified-map-keys
+   :checker/requirement :hara.metaspec/qualified-keys}
+  {:checker/id :hara.metaspec.rule/stable-id
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/qualified-field-values
+   :checker/requirement :hara.metaspec/stable-identifiers
+   :checker/fields
+   [:document/id :schema/id :reference/id :requirement/id :section/id
+    :rule/id :linter/id :form/id :entity/id :relation/id :codec/id
+    :checker/id :law/id :conformance/id]}
+  {:checker/id :hara.metaspec.rule/duplicate-id
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/unique-field-values
+   :checker/requirement :hara.metaspec/unique-identifiers
+   :checker/fields
+   [:document/id :schema/id :reference/id :requirement/id :section/id
+    :rule/id :linter/id :form/id :entity/id :relation/id :codec/id
+    :checker/id :law/id :conformance/id]}
+  {:checker/id :hara.metaspec.rule/no-host-values
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/no-host-values
+   :checker/requirement :hara.metaspec/no-host-values}]
 
  :metaspec/linter
  {:linter/id :hara.metaspec/linter
@@ -178,7 +206,8 @@
    [:document/id :document/type :document/version :document/status
     :document/title :document/summary :spec/conforms-to
     :spec/artifact-kind :meta/document-schema :meta/schemas
-    :meta/cross-references :meta/requirements :metaspec/generation]}
+    :meta/cross-references :meta/requirements :meta/checkers
+    :metaspec/generation]}
   :generation/process
   [:generate-draft :lint :repair-lint-findings :verify
    :repair-verification-findings :emit-canonical-edn]

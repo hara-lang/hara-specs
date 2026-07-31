@@ -49,17 +49,19 @@ Validation checks identifier uniqueness, cross-reference integrity, section
 ordering, requirement evidence, authority boundaries, and repository-local
 paths. Unknown extension keys must be qualified.
 
-The local workflow is:
+The checker is implemented in HAL:
 
-```text
-hara spec template
-hara spec lint FILE --format edn
-hara spec verify FILE --format edn
-hara spec validate ARTIFACT_SPEC --against ARTIFACT_METASPEC --format edn
+```clojure
+(require [hara.metaspec.core :as metaspec])
+
+(metaspec/conforms language-spec
+                  {:metaspec language-metaspec})
 ```
 
-Reports use stable finding IDs, data paths, and machine-readable repair
-actions. A report cannot pass with failed, unknown, or blocked obligations.
+Alternatively, register the exact metaspec coordinate once and call
+`(metaspec/conforms language-spec)`. Reports use stable finding IDs, data paths,
+and machine-readable repair actions. A report cannot pass with failed,
+unknown, or blocked obligations.
 
 ## Rendering
 

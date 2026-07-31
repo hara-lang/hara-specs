@@ -156,6 +156,30 @@
    :requirement/level :must-not
    :requirement/text "Canonical values contain runtime objects, Vars, handles or host-specific values."}]
 
+ :meta/checkers
+ [{:checker/id :hara.artifact.rule/qualified-key
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/qualified-map-keys
+   :checker/requirement :hara.artifact/qualified-extension-keys}
+  {:checker/id :hara.artifact.rule/stable-id
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/qualified-field-values
+   :checker/requirement :hara.artifact/stable-identifiers
+   :checker/fields
+   [:document/id :schema/id :requirement/id :form/id :entity/id
+    :relation/id :codec/id :checker/id :law/id :conformance/id]}
+  {:checker/id :hara.artifact.rule/duplicate-id
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/unique-field-values
+   :checker/requirement :hara.artifact/stable-identifiers
+   :checker/fields
+   [:document/id :schema/id :requirement/id :form/id :entity/id
+    :relation/id :codec/id :checker/id :law/id :conformance/id]}
+  {:checker/id :hara.artifact.rule/no-host-values
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/no-host-values
+   :checker/requirement :hara.artifact/no-host-values}]
+
  :metaspec/generation
  {:generation/input
   {:input/type :hara.artifact/generation-request
