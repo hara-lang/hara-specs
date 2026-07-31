@@ -221,6 +221,46 @@
    :class :module
    :source "(load-resource \"std/foundation.hal\") (+ (first [1 2]) (second [2 3]) (first (rest [3 4])))"
    :expect {:value 8 :type :integer}}
+  {:id :sequence/empty-is-nil
+   :class :collection
+   :source "(and (nil? (seq nil)) (nil? (seq [])) (nil? (rest nil)) (nil? (rest [])) (nil? (rest [1])))"
+   :expect {:value true :type :boolean}}
+  {:id :sequence/non-empty-rest
+   :class :collection
+   :source "(and (seq? (rest [1 2])) (= [2] (vec (rest [1 2]))) (= [] (vec (rest [1]))))"
+   :expect {:value true :type :boolean}}
+  {:id :sequence/is-iterator
+   :class :collection
+   :source "(let [value (seq [1])] (and (seq? value) (iter? value) (= 1 (iter-next value))))"
+   :expect {:value true :type :boolean}}
+  {:id :sequence/lazy-cons
+   :class :collection
+   :source "(and (= [0 2] (vec (cons 0 (rest [1 2])))) (= [0 1 1 1] (vec (iter-take 4 (cons 0 (repeat 1))))))"
+   :expect {:value true :type :boolean}}
+  {:id :sequence/reject-conj
+   :class :collection
+   :source "(conj (rest [1 2]) 0)"
+   :expect {:error :unsupported}}
+  {:id :iterator/exact-lookahead
+   :class :iterator
+   :source "(let [it (iter-map inc [1])] (and (iter-has? it) (iter-has? it) (= 2 (iter-next it)) (not (iter-has? it))))"
+   :expect {:value true :type :boolean}}
+  {:id :iterator/generated-exhaustion
+   :class :iterator
+   :source "(and (not (iter-has? (iter-drop 1 [1]))) (not (iter-has? (iter-take 0 [1]))) (not (iter-has? (iter-map inc []))) (empty? (iter-drop 1 [1])))"
+   :expect {:value true :type :boolean}}
+  {:id :iterator/shortest-source-finite
+   :class :iterator
+   :source "(and (= [[1 0]] (vec (iter-zip [1] (repeat 0)))) (= [1 0] (vec (iter-interleave [1] (repeat 0)))))"
+   :expect {:value true :type :boolean}}
+  {:id :iterator/nil-requires-conversion
+   :class :iterator
+   :source "(iter-has? nil)"
+   :expect {:error :unsupported}}
+  {:id :iterator/empty-cycle-rejected
+   :class :iterator
+   :source "(cycle [])"
+   :expect {:error :unsupported}}
   {:id :module/core-iterator-aliases
    :class :module
    :source "(load-resource \"std/foundation.hal\") (+ (first (map inc [3])) (first (filter (fn [x] (= x 2)) [1 2])) (nth (first (partition-pair [4 5])) 1))"

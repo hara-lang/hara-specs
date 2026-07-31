@@ -3,3 +3,6 @@
 
 # Nested vendor checkout metadata
 vendor/.DS_Store
+
+# Generated Hara UI assets copied during site builds
+vendor/hara-ui/
