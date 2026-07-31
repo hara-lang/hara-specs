@@ -4,7 +4,7 @@
  :document/for :hal/bytecode-vm
  :document/status :draft
  :note
- "Machine-checked corpus for specs/runtime/draft/hal-bytecode-vm.edn. Consumed by rust/src/vm/conformance_tests.rs (Cargo feature bytecode-vm). :display cases must agree exactly on the tree-walking evaluator and the VM; :error-category cases must fail in the same normalized category on both; :compile-error cases pin VM-only compile-time behavior and do not consult the tree evaluator. Workload sources are verbatim from lib/bench/runtime/workloads.json."
+ "Machine-checked corpus for specs/01-lang/010-bytecode/draft/hal-bytecode-vm.edn. Consumed by rust/src/vm/conformance_tests.rs (Cargo feature bytecode-vm). :display cases must agree exactly on the tree-walking evaluator and the VM; :error-category cases must fail in the same normalized category on both; :compile-error cases pin VM-only compile-time behavior and do not consult the tree evaluator. :vm-display cases pin canonical VM behavior the tree evaluator has not converged to and likewise do not consult it. Workload sources are verbatim from lib/bench/runtime/workloads.json."
  :cases
  [;; ---- literals ----
   {:id :literal/integer :source "42" :expect {:display "42"}}

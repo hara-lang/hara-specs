@@ -256,7 +256,7 @@
   "Compile errors carry the source position of the offending form. Runtime errors carry the failing instruction index and, when the source map has an entry, its source position. Diagnostics never panic on malformed input."}
 
  :vm/conformance
- {:corpus "specs/runtime/draft/conformance/bytecode-vm.edn"
+ {:corpus "specs/01-lang/010-bytecode/draft/conformance/bytecode-vm.edn"
   :consumer "rust/src/vm/conformance_tests.rs (feature bytecode-vm)"
   :schema
   {:spec/version "0.1"
