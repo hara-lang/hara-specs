@@ -350,7 +350,19 @@
       "owner": "hara-lang"
     },
     {
+      "path": "01-lang/007-resp/draft/hal-resp-protocol.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "01-lang/008-hta/draft/hal-hta-contract.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/009-hir/draft/hal-hir-format.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
@@ -436,12 +448,6 @@
     {
       "path": "99-archive/planning/language/typed.edn",
       "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "99-archive/planning/runtime/hir.md",
-      "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
