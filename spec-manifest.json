@@ -416,7 +416,19 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/009-hir/draft/hal-hir-format.md",
+      "path": "01-lang/006-host-and-kernel/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/006-host-and-kernel/draft/host-kernel-spec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/009-halc/draft/halc-format.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
@@ -435,6 +447,36 @@
     },
     {
       "path": "01-lang/010-bytecode/draft/hal-bytecode-vm.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/020-data-structures/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/020-data-structures/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/020-data-structures/draft/conformance/collections.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/020-data-structures/draft/conformance/hash-parity.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/020-data-structures/draft/data-structures-spec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
