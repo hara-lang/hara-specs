@@ -1,0 +1,329 @@
+{:document/id :hal/bytecode-vm
+ :document/type :runtime-spec
+ :document/version "0.3.0-draft"
+ :document/status :draft
+ :document/title "HAL staged bytecode VM (milestones 1-2: synchronous core, closures)"
+ :document/summary
+ "Normative contract for the experimental, feature-gated bytecode VM in the Rust runtime: execution model, instruction set, program representation, validation, lexical slots, form lowering, function values and calls, defn lowering, primitive dispatch, diagnostics, and conformance. The VM is synchronous; milestone 2 adds closures, upvalues, and direct calls. Replacing a std.foundation builtin through defn requires an explicit declare. The non-normative design narrative lives in notes/rust-bytecode-vm.md; where the two disagree for covered areas, this document wins."
+
+ :vm/stage
+ {:milestone 2
+  :pipeline [:parse :compile :validate :execute :display]
+  :execution-model :synchronous-stack-machine
+  :entry-arity 0
+  :closures true
+  :defn :lowered-to-direct-bindings
+  :suspension false
+  :rule
+  "Source is parsed into forms, compiled into a typed instruction program, validated by abstract interpretation, executed on an operand-stack machine, and the resulting value is displayed. Execution is fully synchronous; there are no suspension, resumption, or yield variants. Unsupported forms are compile errors, never silent fallback into the tree-walking evaluator."
+  :reference-implementation
+  {:module rust/src/vm
+   :feature "bytecode-vm"
+   :entry-points [compile_bytecode execute_bytecode eval_bytecode_native]}}
+
+ :vm/instructions
+ {:encoding :typed-enum
+  :jump-operands :absolute-instruction-index
+  :note
+  "Instructions are a typed enum, not packed bytes. A future encoding milestone may pack them; stack effects and validation rules remain normative regardless of encoding."
+  :set
+  [{:op Constant :operand :u32-constant-index :pops 0 :pushes 1
+    :meaning "push constants[index]"}
+   {:op Nil :pops 0 :pushes 1 :meaning "push nil"}
+   {:op True :pops 0 :pushes 1 :meaning "push true"}
+   {:op False :pops 0 :pushes 1 :meaning "push false"}
+   {:op LoadLocal :operand :u16-slot :pops 0 :pushes 1
+    :meaning "push the value of local slot"}
+   {:op StoreLocal :operand :u16-slot :pops 1 :pushes 0
+    :meaning "pop the top of stack into local slot"}
+   {:op Pop :pops 1 :pushes 0 :meaning "discard the top of stack"}
+   {:op Primitive :operand {:op :primitive :argc :u8}
+    :pops :argc :pushes 1
+    :meaning "pop argc arguments, apply the shared value-level primitive, push the result"}
+   {:op Jump :operand :u32-absolute-target :pops 0 :pushes 0
+    :meaning "unconditional transfer"}
+   {:op JumpIfFalse :operand :u32-absolute-target :pops 1 :pushes 0
+    :meaning "pop the condition; transfer when it is not truthy"}
+   {:op Closure :operand {:prototype :u16 :captures :u8}
+    :pops :captures :pushes 1
+    :meaning "pop the captured values and push a function value for the given prototype"}
+   {:op Call :operand {:argc :u8}
+    :pops "argc + 1 (arguments, then the callee)" :pushes 1
+    :meaning "call the function value; the callee is compiled before its arguments"}
+   {:op CallStatic :operand {:prototype :u16 :argc :u8}
+    :pops :argc :pushes 1
+    :meaning "direct call to a known prototype (defn self-recursion); the callee's captures are copied from the current frame's capture slots"}
+   {:op Return :terminal true
+    :meaning "return the top of stack; requires stack height exactly 1"}]}
+
+ :vm/program
+ {:model
+  {:constants "vector of core::Value; the VM reuses the Hara value model and never duplicates it"
+   :functions "vector of function prototypes; the entry prototype is one of them, fn/defn forms contribute the rest"
+   :entry :u16-function-index}
+  :function-prototype
+  {:name :optional-string
+   :arity :u16
+   :capture-count :u16
+   :local-count :u16
+   :max-stack :u16
+   :code "vector of instructions"
+   :source-map "one source position entry per instruction"}
+  :limits
+  {:max-constants 16777216
+   :max-instructions-per-function 16777216
+   :max-locals 65535
+   :max-operand-stack 4096
+   :max-primitive-arguments 255
+   :max-call-arguments 255
+   :max-captures-per-closure 255}
+  :persistence :none
+  :persistence-note
+  "Programs are in-memory only. HIR remains the form serializer; it is not bytecode and is unchanged by this specification."}
+
+ :vm/validation
+ {:timing :before-execution
+  :method :abstract-interpretation-worklist
+  :rule
+  "Every program is validated before execution. After validation the machine indexes without re-checking; malformed programs produce validation errors, never panics."
+  :rejects
+  [:constant-pool-exceeds-limit
+   :no-functions
+   :entry-index-out-of-range
+   :source-map-length-mismatch
+   :empty-code
+   :code-exceeds-instruction-limit
+   :local-count-exceeds-slot-limit
+   :constant-index-out-of-range
+   :local-slot-out-of-range
+   :jump-target-out-of-range
+   :closure-prototype-index-out-of-range
+   :closure-capture-count-differs-from-prototype
+   :call-static-target-out-of-range
+   :call-static-capture-count-differs-from-current-function
+   :return-with-stack-height-other-than-1
+   :stack-underflow
+   :operand-stack-exceeds-limit
+   :inconsistent-stack-heights-at-join
+   :unreachable-instruction
+   :control-falls-off-end-without-return
+   :declared-max-stack-disagrees-with-computed]
+  :join-rule
+  "Every control-flow join must be reached with exactly one operand-stack height; the validator computes the unique height per instruction and rejects disagreement."}
+
+ :vm/locals
+ {:storage :numeric-slots
+  :allocation :compile-time
+  :rule
+  "Lexical bindings compile to numeric frame slots. No string-keyed lookup and no runtime environment map restoration occurs during execution."
+  :let-semantics
+  [:initializers-evaluate-in-order
+   :a-later-initializer-observes-earlier-bindings
+   :shadowing-resolves-to-the-innermost-slot
+   :sibling-scopes-may-reuse-slots
+   :frame-local-count-is-the-compile-time-high-water-mark]}
+
+ :vm/functions
+ {:representation
+  "A VM function value is a plain core::Value::Function whose native callback runs a nested machine over the shared Rc<Program>. There is no VM-specific value variant: arity errors (\"function expects N arguments\"), \"<fn>\" display, and pointer identity come from the shared value model unchanged."
+  :slot-layout
+  {:params "slots 0..arity-1, declared first"
+   :captures "slots arity..arity+capture-count-1, appended as discovered during body compilation"
+   :body-locals "slots above arity+capture-count, the let/loop high-water mark"}
+  :capture-semantics
+  [:capture-is-by-value-at-closure-creation
+   :capture-resolution-walks-function-contexts-innermost-to-outermost
+   :intermediate-functions-thread-captured-values-inward
+   :capture-access-is-ordinary-loadlocal]
+  :capture-evidence
+  "Matches the evaluator, which clones the lexical environment at fn creation: (let [x 1 f (fn [] x) x 2] (f)) evaluates to 1 on both paths."
+  :call-convention
+  {:static "the callee form is compiled before its argument forms"
+   :dynamic "Call pops the arguments, then the callee, and dispatches through the shared core::call_function boundary; calling a non-function value reports \"value is not callable\""
+   :static-direct "CallStatic (defn self-recursion only) calls a known prototype directly, copying the current frame's capture slots as the callee's captures"}
+  :execution
+  {:model :nested-machine-per-call
+   :note
+   "Every Call/CallStatic runs a fresh machine for the callee. Call depth is therefore bounded by the host stack; the tree evaluator trampolines through its fiber and survives deeper recursion (verified to depth 10000). Programs compiled for this milestone must keep recursion shallow; the conformance corpus stays at or below depth 1000. An in-machine frame stack or trampolined calls are future performance work."}
+  :fn-shapes
+  {:params "a vector of plain symbols; anything else reports \"function parameters must be a vector\""
+   :body "one or more forms sequenced like do; the last form is the result"
+   :variadic :rejected-at-compile-time
+   :destructured-params :rejected-at-compile-time
+   :multi-arity :rejected-at-compile-time}}
+
+ :vm/defn-lowering
+ {:rule
+  "A defn whose var is never accessed directly is lowered to a direct slot binding and direct calls. This is a compile-time analysis result, not var semantics; any observable var behavior is a compile error."
+  :lowering
+  [:defn-is-supported-only-as-a-non-final-top-level-statement
+   :the-name-is-declared-as-an-ordinary-entry-scope-slot-after-its-fn-body-is-compiled
+   :references-resolve-sequentially-against-that-slot
+   :redefinition-declares-a-fresh-shadowing-slot
+   :operator-position-self-reference-compiles-to-callstatic]
+  :evidence
+  "The evaluator binds early (symbols resolve against the environment captured at fn creation): (do (defn g [x] (f x)) (defn f [x] (+ x 1)) (g 41)) fails with \"unbound symbol: f\", redefinition shadows for closures created between definitions, and self-recursion works. Slot lowering reproduces each behavior exactly."
+  :rejects
+  [:defn-in-result-position "the Var result value would be observable: \"defn in result position requires var semantics\""
+   :defn-nested-below-the-top-level "\"defn is only supported as a top-level statement\""
+   :self-reference-in-value-position "\"defn self-reference in value position is not supported\""
+   :self-reference-from-a-nested-fn "unbound; late binding through the var is future work"
+   :direct-var-access "(var f) and #'f remain unsupported forms"]
+  :forward-references
+  "References to not-yet-defined names fail as \"unbound symbol\" at compile time; the evaluator fails the same way when the capturing fn is created. Both paths agree and the conformance corpus pins it."
+  :foundation-replacement
+  {:rule
+   "A defn whose name collides with a std.foundation builtin (the evaluator's CORE_SPECIAL_FORMS inventory: the names runtime builtins take precedence over) is a compile error unless the name was explicitly declared first: \"defn replaces std.foundation var: <name> (declare the name at the start of the namespace to replace it)\"."
+   :declare
+   "(declare name ...) is a top-level statement that marks names for explicit replacement and evaluates to nil. A declared builtin's later defn lowers to a slot binding exactly like any other defn, and subsequent calls resolve to the replacement. declare below the top level or with non-symbol arguments is a compile error."
+   :canonical-path
+   "The VM behavior is canonical. The evaluator still gives builtins precedence over redefinition (declared or not) and converges later; the corpus pins declared replacement with :vm-display, which consults only the VM."
+   :known-limitation
+   "Declared replacement of one of the ten VM primitives (e.g. mod) binds the slot, but operator-position calls still compile to the primitive instruction; the replacement is only observable through the slot value."}}
+
+ :vm/lowering
+ {:if
+  {:arity "2 or 3 arguments"
+   :missing-else :nil
+   :shape "condition; JumpIfFalse else; then; Jump end; else; end"
+   :join "both branches leave exactly one value; the join heights are equal by construction and checked by the validator"}
+  :do
+  {:shape "every non-final expression result is popped"
+   :empty :nil}
+  :let
+  {:bindings :ordered-pairs
+   :body "compiled in the extended scope; compiler scope is restored after the body with no runtime cost"}
+  :loop
+  {:bindings "compiled like let bindings into fresh slots"
+   :header "the instruction index after the binding stores"
+   :body "multiple body forms sequence like do; the last form is the tail position"}
+  :recur
+  {:lowering
+   [:evaluate-every-argument-left-to-right
+    :leave-all-values-on-the-operand-stack
+    :store-into-loop-slots-in-reverse-order
+    :jump-to-the-loop-header]
+   :simultaneity
+   "A recur value never observes a partially updated set of loop bindings."
+   :dead-code
+   "Instructions after a recur are unreachable; the compiler stops analyzing them, matching the evaluator, which never reaches them."}}
+
+ :vm/recur-rules
+ {:tail-position :required
+  :detection :compile-time
+  :rejects
+  [:recur-outside-loop
+   :recur-in-non-tail-position
+   :recur-arity-mismatch
+   :recur-expects-values
+   :recur-across-a-function-boundary]
+  :function-boundary-note
+  "Loop contexts are per function prototype, so a recur inside a fn body with no enclosing loop in that same body reports \"recur must be inside loop\". The evaluator's call_function rejects fn-targeted recur with the same message; both paths already agree."
+  :canonical-behavior
+  "Compile-time rejection of recur misuse is the canonical behavior of the language. The tree-walking evaluator currently detects some violations only at runtime; it is expected to converge to compile-time detection. This is a recorded, intentional divergence, not VM license."
+  :recur-as-value :never
+  :recur-as-exception :never}
+
+ :vm/primitives
+ {:boundary "core::apply_primitive shared by the tree-walking evaluator and the VM"
+  :rule
+  "Arithmetic and comparison semantics live exactly once in the shared value-level boundary. The VM never re-implements numeric semantics inside the machine."
+  :operators
+  [{"+" Add} {"-" Subtract} {"*" Multiply} {"/" Divide}
+   {"%" Remainder} {"mod" Remainder}
+   {"=" Equal} {"<" Less} {"<=" LessOrEqual}
+   {">" Greater} {">=" GreaterOrEqual}]
+  :error-spelling
+  {"integer overflow" "checked arithmetic overflowed"
+   "division by zero" "divide or remainder by zero"
+   "{op} expects numbers" "a non-numeric argument reached an arithmetic or comparison operator"
+   "{op} expects arguments" "an arithmetic operator received no arguments"
+   "{op} expects at least two arguments" "an ordering comparison received fewer than two arguments"
+   "= expects at least 2 arguments" "equality received fewer than two arguments"}
+  :mod-reporting "`mod` reports errors as `%`, matching the existing evaluator."
+  :numeric-tower
+  "Current semantics are the existing evaluator semantics: i64 checked arithmetic; mixed numeric types (for example integer plus float) are errors, not coercions."}
+
+ :vm/truthiness
+ {:rule "Only nil and false are false. Every other value, including 0 and the empty string, is truthy."
+  :reference :hal/langspec}
+
+ :vm/diagnostics
+ {:compile-error-format "message [line L, column C]"
+  :validation-error-format "validation failed at IIII: message"
+  :runtime-error-format "message [line L, column C] (instruction IIII)"
+  :rule
+  "Compile errors carry the source position of the offending form. Runtime errors carry the failing instruction index and, when the source map has an entry, its source position. Diagnostics never panic on malformed input."}
+
+ :vm/conformance
+ {:corpus "specs/01-lang/010-bytecode/draft/conformance/bytecode-vm.edn"
+  :consumer "rust/src/vm/conformance_tests.rs (feature bytecode-vm)"
+  :schema
+  {:spec/version "0.1"
+   :runtime "hara-bytecode-vm"
+   :cases
+   [{:id :keyword
+     :source "HAL source string"
+     :expect {:display "both evaluators must display exactly this"}}
+    {:id :keyword
+     :source "HAL source string"
+     :expect {:error-category "both evaluators must fail in this normalized category"}}
+    {:id :keyword
+     :source "HAL source string"
+     :expect {:compile-error "the VM compile path must fail with a message containing this marker; the tree evaluator is not consulted"}}
+    {:id :keyword
+     :source "HAL source string"
+     :expect {:vm-display "only the VM is consulted; canonical behavior the tree evaluator has not converged to"}}]}
+  :error-categories
+  ["division by zero" "integer overflow" "expects numbers"
+   "primitive arity" "reader"
+   "function arity" "not callable" "fn params shape"]
+  :rule
+  "Display expectations pin exact rendered values on both paths. Error-category expectations pin the failure class on both paths while allowing phrasing to differ. Compile-error expectations pin VM-only behavior where the specification makes the VM canonical (recur misuse, unbound symbols, unsupported forms, defn-lowering boundaries); the tree evaluator converges later. Vm-display expectations pin canonical VM behavior the evaluator has not yet converged to (declared foundation replacement)."}
+
+ :vm/coexistence
+ {:feature-gate "non-default Cargo feature bytecode-vm"
+  :default-evaluator :unchanged
+  :fallback :never
+  :rule
+  "The VM is disabled by default, never replaces Runtime::eval_native, and never falls back to the tree-walking evaluator. Differential tests and benchmarks compare the two paths; fallback would invalidate both."}
+
+ :vm/promotion
+ {:draft-to-candidate
+  [:conformance-corpus-green-on-the-rust-vm
+   :differential-tests-green-on-native-and-wasm32
+   :no-duplicate-value-model
+   :shared-primitive-boundary-preserved]
+  :future-milestones
+  {:frame-stack-calls "in-machine call/return frames replace nested-machine-per-call; lifts the host-stack recursion limit"
+   :variadic-and-multi-arity "rest parameters and arity clauses for fn/defn"
+   :namespace-aware-execution "real Vars, def/defn result values, var/#' access, set!, require; defn lowering becomes an optimization over late binding instead of a subset restriction"
+   :mutual-recursion "late-bound references between lowered defns, including from nested fn bodies"
+   :first-class-invocation "keywords, maps, and sets as functions"
+   :exceptions "try/catch/finally and guest exception propagation (issue #203)"
+   :suspension "promises, await, yielding, and resumability; instruction dispatch must accept suspension variants without rewriting (issue #204)"
+   :encoding "optional packed instruction encoding; stack effects and validation stay normative"}
+  :default-promotion-conditions
+  [:conformance-corpus-expanded-to-the-full-supported-language
+   :performance-evidence-sustained-across-milestones
+   :explicit-decision-on-issue-195]}
+
+ :vm/conformance-checklist
+ [{:id :vm/feature-gated
+   :assert "Default builds contain no VM entry points and Runtime::eval_native is byte-identical in behavior."}
+  {:id :vm/no-fallback
+   :assert "Every unsupported form is a typed compile error; no path silently delegates to the tree evaluator."}
+  {:id :vm/shared-primitives
+   :assert "Arithmetic and comparison semantics are defined exactly once in the shared primitive boundary."}
+  {:id :vm/shared-function-values
+   :assert "VM closures are plain core::Value::Function values; arity errors, display, and identity come from the shared value model."}
+  {:id :vm/validated-before-execution
+   :assert "No malformed program can reach the instruction loop."}
+  {:id :vm/simultaneous-recur
+   :assert "No recur argument observes a partially updated loop binding set."}
+  {:id :vm/defn-lowering-faithful
+   :assert "Lowered defns reproduce the evaluator's early binding: sequential resolution, shadowing redefinition, and direct self-recursion; observable var behavior is rejected at compile time."}
+  {:id :vm/foundation-replacement-declared
+   :assert "Replacing a std.foundation builtin through defn is a compile error unless the name was first declared at the top level."}
+  {:id :vm/corpus-green
+   :assert "Every corpus case passes on native and wasm32 with the feature enabled."}]}

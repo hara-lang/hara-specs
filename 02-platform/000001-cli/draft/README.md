@@ -1,10 +1,11 @@
-# Hara CLI application specification
+# Hara CLI application draft
 
 The normative [`hara-cli.edn`](hara-cli.edn) document defines the public
 command-line contract shared by the Rust `hara` runtime and the Truffle
 `hara-truffle` runtime.
 
-[`hal-cli-app-metaspec.edn`](hal-cli-app-metaspec.edn) defines the
+The reusable
+[`CLI application metaspec`](../metaspec/README.md) defines the
 machine-readable shape used for CLI application manifests. It is an artifact
 specification conforming to the Hara artifact meta-spec. The EDN documents are
 normative; this page is informative.
