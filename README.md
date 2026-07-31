@@ -14,6 +14,9 @@ documents and separately attributed contributions.
 - [`package/draft/hal-packagespec.edn`](package/draft/hal-packagespec.edn)
    defines Hara package manifests, locked dependency graphs, deterministic
    `.harp` archives, GitHub publication, and verified package loading.
+- [`cli/draft/hara-cli.edn`](cli/draft/hara-cli.edn) defines the public CLI
+   applications, routes, options, handlers and outcomes shared by the Rust and
+   Truffle runtimes.
 
 Each EDN document has an adjacent rendered `README.md` for human readers. The
 EDN source remains authoritative.
