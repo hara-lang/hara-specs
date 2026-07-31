@@ -204,7 +204,7 @@
    :reference/description
    "std.foundation.host and std.foundation.kernel capability facades."}
   {:reference/id :host-kernel/jvm-session-broker
-   :reference/path "../../../../java/src/main/java/hara/truffle/HaraSessionBroker.java"
+   :reference/path "../../../../java/src/main/java/hara/truffle/SessionKernel.java"
    :reference/authority :implementation}
   {:reference/id :host-kernel/jvm-conformance-suite
    :reference/path "../../../../java/src/test/java/hara/truffle/HaraHostSessionConformanceTest.java"
