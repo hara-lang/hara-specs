@@ -164,4 +164,28 @@
   {:id :compile/defn-replaces-foundation :source "(do (defn count [n] 42) (count 5))" :expect {:compile-error "defn replaces std.foundation var: count"}}
   {:id :compile/defn-replaces-primitive :source "(do (defn mod [a b] 100) 1)" :expect {:compile-error "defn replaces std.foundation var: mod"}}
   {:id :compile/declare-nested :source "(let [x 1] (declare y) x)" :expect {:compile-error "declare is only supported as a top-level statement"}}
-  {:id :compile/declare-non-symbol :source "(declare 1)" :expect {:compile-error "declare expects name symbols"}}]}
+  {:id :compile/declare-non-symbol :source "(declare 1)" :expect {:compile-error "declare expects name symbols"}}
+
+  ;; ---- exceptions: try/catch/finally and guest throw ----
+  {:id :error/catch-guest-value :source "(try (throw 41) (catch Exception error (+ error 1)))" :expect {:display "42"}}
+  {:id :error/catch-first-match :source "(try (throw 1) (catch Exception a 41) (catch Exception b 42))" :expect {:display "41"}}
+  {:id :error/catch-implicit-form :source "(try (throw :failed) (catch error error))" :expect {:display ":failed"}}
+  {:id :error/catch-binds-runtime-string :source "(try (/ 1 0) (catch Exception error error))" :expect {:display "\"division by zero\""}}
+  {:id :error/unmatched-class :source "(try (throw 41) (catch Problem error 0))" :expect {:error-category "thrown"}}
+  {:id :error/uncaught-throw :source "(throw :failed)" :expect {:error-category "thrown"}}
+  {:id :error/finally-value-discarded :source "(try 42 (finally 0))" :expect {:display "42"}}
+  {:id :error/finally-after-catch :source "(try (throw 41) (catch Exception error (+ error 1)) (finally 0))" :expect {:display "42"}}
+  {:id :error/finally-unmatched-rethrow :source "(try (try (throw 41) (catch Problem error 0) (finally 0)) (catch Exception error (+ error 1)))" :expect {:display "42"}}
+  {:id :error/finally-error-replaces :source "(try 1 (finally (throw 2)))" :expect {:error-category "thrown"}}
+  {:id :error/throw-arity :source "(throw)" :expect {:error-category "throw arity"}}
+
+  ;; ---- recur through try: catch-only supported, finally crossing rejected ----
+  {:id :error/recur-through-try :source "(loop [i 0] (try (if (< i 3) (recur (+ i 1)) i) (catch Exception e -1)))" :expect {:display "3"}}
+  {:id :error/recur-through-catch :source "(loop [i 0] (try (throw 1) (catch Exception e (if (< i 3) (recur (+ i 1)) i))))" :expect {:display "3"}}
+
+  ;; ---- exception compile errors: VM-only canonical behavior ----
+  {:id :compile/try-clause-order :source "(try (catch Exception e 0) 1)" :expect {:compile-error "try clauses must follow body"}}
+  {:id :compile/catch-class-not-symbol :source "(try 1 (catch 42 e 0))" :expect {:compile-error "catch class must be symbol"}}
+  {:id :compile/catch-name-not-symbol :source "(try 1 (catch Exception 42 0))" :expect {:compile-error "catch name must be symbol"}}
+  {:id :compile/catch-shape :source "(try 1 (catch e))" :expect {:compile-error "catch expects class, name, and body"}}
+  {:id :compile/recur-crosses-finally :source "(loop [i 0] (try (if (< i 3) (recur (+ i 1)) i) (finally 0)))" :expect {:compile-error "recur cannot cross a finally boundary"}}]}
