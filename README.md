@@ -17,6 +17,11 @@ The specification repository is organised into numbered architectural layers.
    defines the reusable document model for deterministic CLI applications.
 - [`02-platform/000001-cli/draft/hara-cli.edn`](02-platform/000001-cli/draft/hara-cli.edn)
    defines Hara's public command-line routes, options, handlers, and outcomes.
+- [`02-platform/000002-tap/draft/hara-tap.edn`](02-platform/000002-tap/draft/hara-tap.edn)
+   begins the Git-authoritative federated tap family.
+- [`02-platform/`](02-platform/)
+   contains the numbered identity, artifact, HARP, package, extension, asset,
+   publishing, distribution, and mirroring protocols.
 
 Each EDN document has an adjacent rendered `README.md` for human readers. The
 EDN source remains authoritative.
