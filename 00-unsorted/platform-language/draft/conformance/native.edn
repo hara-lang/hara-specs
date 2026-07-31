@@ -30,7 +30,7 @@
  {:status :accepted
   :closed true
   :type-count 21
-  :method-count 164
+  :method-count 161
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
