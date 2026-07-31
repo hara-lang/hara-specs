@@ -9,6 +9,11 @@ layers. Only the language/meta layer is classified in this first pass.
    defines the shape and authority rules for a HAL language specification.
 - [`01-lang/001-language/draft/hal-langspec.edn`](01-lang/001-language/draft/hal-langspec.edn)
    defines the small EDN-oriented HAL data and reader contract.
+- [`01-lang/050-lsp-base/draft/hara-lsp-base.edn`](01-lang/050-lsp-base/draft/hara-lsp-base.edn)
+   defines the portable Language Server Protocol profile, shared analysis
+   facts, namespace resolution, IDE capabilities, and safety boundary.
+- [`01-lang/100-chip-base/draft/hal-chip-base.edn`](01-lang/100-chip-base/draft/hal-chip-base.edn)
+   defines the bounded compact-AST matching coprocessor contract.
 
 Each EDN document has an adjacent rendered `README.md` for human readers. The
 EDN source remains authoritative.

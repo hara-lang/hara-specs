@@ -350,6 +350,54 @@
       "owner": "hara-lang"
     },
     {
+      "path": "01-lang/050-lsp-base/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/050-lsp-base/draft/conformance/lsp-base.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/050-lsp-base/draft/hara-lsp-base.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/100-chip-base/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/100-chip-base/draft/conformance/matcher.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/100-chip-base/draft/hal-chip-base.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/100-chip-base/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/100-chip-base/metaspec/chip-base-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "99-archive/planning/README.md",
       "kind": "markdown",
       "classification": "hara",
