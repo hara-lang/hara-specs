@@ -233,13 +233,13 @@
    "defstruct executes the evaluator's construction through a registry-based helper: validate name/fields, create the StructType qualified to the current namespace, intern Name, ->Name, and map->Name. Trailing protocol clauses are the compile error \"defstruct protocol clauses are not supported\"."
    :catch-interaction
    "catch_matches matches struct type names with the /{class} suffix rule (milestone 3), so the L0 error/catch-order, error/unmatched-catch, error/finally-normal, and error/finally-unwind cases run verbatim."}
-  :foundation-replacement
+  :namespace-owned-vars
   {:rule
-   "A defn whose name collides with a std.foundation builtin (the evaluator's CORE_SPECIAL_FORMS inventory) is a compile error unless the name was explicitly declared first: \"defn replaces std.foundation var: <name> (declare the name at the start of the namespace to replace it)\". def over a foundation name stays allowed, matching the evaluator; the ruling is defn-specific."
+   "Callable foundation bindings are Vars. def, defn, defmacro, declare, and set! may mutate only Vars owned by the current namespace. A referred Var is protected with \"Cannot replace referred Var without ns omission: <name>\"; a blank namespace, an omitted refer, or :require :exclude must establish the local slot before definition."
    :declare
-   "(declare name ...) is a top-level statement that marks names for explicit replacement and evaluates to nil. declare below the top level or with non-symbol arguments is a compile error."
+   "(declare name ...) is a top-level forward-visibility declaration for namespace-owned names and evaluates to nil. It is not permission to replace a referred Var. declare below the top level or with non-symbol arguments is a compile error."
    :canonical-path
-   "The VM behavior is canonical. The evaluator still gives builtins precedence over redefinition (declared or not) and converges later; the corpus pins declared replacement with :vm-display, which consults only the VM."}}
+   "The evaluator and VM share the namespace registry and the modules conformance corpus. Callable resolution is lexical binding, then visible Var, then an internal primitive fallback where one remains."}}
 
  :vm/lowering
  {:if
@@ -378,16 +378,14 @@
     {:id :keyword
      :source "HAL source string"
      :expect {:compile-error "the VM compile path must fail with a message containing this marker; the tree evaluator is not consulted"}}
-    {:id :keyword
-     :source "HAL source string"
-     :expect {:vm-display "only the VM is consulted; canonical behavior the tree evaluator has not converged to"}}]}
+    ]}
   :error-categories
   ["division by zero" "integer overflow" "expects numbers"
    "primitive arity" "reader"
    "function arity" "not callable" "fn params shape"
    "thrown" "throw arity"]
   :rule
-  "Display expectations pin exact rendered values on both paths. Error-category expectations pin the failure class on both paths while allowing phrasing to differ. Compile-error expectations pin VM-only behavior where the specification makes the VM canonical (recur misuse, unbound symbols, unsupported forms, defn-lowering boundaries); the tree evaluator converges later. Vm-display expectations pin canonical VM behavior the evaluator has not yet converged to (declared foundation replacement)."}
+  "Display expectations pin exact rendered values on both paths. Error-category expectations pin the failure class on both paths while allowing phrasing to differ. Compile-error expectations pin VM-only compile-time behavior (recur misuse, unbound symbols, unsupported forms, and lowering boundaries). Namespace and callable-Var edge cases are owned by the shared platform-language modules corpus and run on Java, the Rust evaluator, and the Rust VM."}
 
  :vm/coexistence
  {:feature-gate "non-default Cargo feature bytecode-vm"

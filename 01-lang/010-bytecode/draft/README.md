@@ -21,18 +21,19 @@ feature:
 - lexical slot allocation and `loop`/`recur` lowering;
 - function values, by-value captures as prefixed slots, direct and static
   calls, and `defn` lowering to direct bindings;
-- the declare-or-error rule for replacing std.foundation builtins through
-  `defn`;
+- namespace-owned callable Vars, protected referrals, and `declare` as
+  forward visibility only;
 - coexistence with the tree-walking evaluator: the VM never replaces it and
   never falls back to it.
 
-It does not define exceptions, suspension, namespaces, or var semantics;
-those are future milestones (#203, #204).
+It does not define suspension. Namespace syntax and module loading are owned
+by the language specification; this VM spec defines their bytecode boundary
+and points to the shared module corpus for cross-runtime behavior.
 
 ## Executable evidence
 
 [`conformance/bytecode-vm.edn`](conformance/bytecode-vm.edn) is the
 machine-checked corpus, consumed by `rust/src/vm/conformance_tests.rs`.
 `:display` and `:error-category` cases must agree on both evaluators;
-`:compile-error` and `:vm-display` cases pin VM-canonical behavior the tree
-evaluator converges to later.
+`:compile-error` cases pin VM-only lowering boundaries. Namespace, reload, and
+callable-Var cases live in the shared platform-language modules corpus.

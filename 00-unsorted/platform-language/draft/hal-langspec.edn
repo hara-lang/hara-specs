@@ -399,6 +399,23 @@
      [{:suite :hal/modules
        :cases [:namespace/alias-var-identity
                :namespace/refer-var-identity]}]}
+    {:requirement/id :namespace/callable-vars
+     :requirement/level :must
+     :requirement/text
+     "Every ordinary callable is resolved as a value: lexical binding first, then a visible namespace Var. Host implementations are Var roots, not privileged symbol dispatch, so Var identity, lexical shadowing, and late redefinition are preserved across runtimes and compilation backends."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/callable-var-precedence
+               :namespace/callable-var-lexical-shadow
+               :namespace/callable-var-late-binding]}]}
+    {:requirement/id :namespace/referred-var-ownership
+     :requirement/level :must
+     :requirement/text
+     "A referred Var belongs to its defining namespace and cannot be replaced by def, defn, set!, or declare in the receiving namespace. A namespace must omit the name, including through :require :exclude, before defining a local replacement. declare supplies forward visibility only."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/referred-var-protected
+               :namespace/callable-var-precedence]}]}
     {:requirement/id :namespace/facade-vars
      :requirement/level :must
      :requirement/text
@@ -419,11 +436,12 @@
     {:requirement/id :module/reload
      :requirement/level :must
      :requirement/text
-     "A successful initial load establishes revision 1. Explicit reload evaluates transactionally and increments the revision only after success. Existing compiled call targets remain immutable; subsequent compilation resolves the new Var and macro roots."
+     "A successful initial load establishes revision 1. Explicit reload evaluates transactionally and increments the revision only after success. The semantics are identical for standalone require and :reload true inside an ns :require clause: the target reload completes before aliases, referred Vars, or referred macros are published. A failed reload preserves the previous roots, revision, namespace bindings, and caller namespace. Existing compiled call targets remain immutable; subsequent compilation resolves the new Var and macro roots."
      :requirement/evidence
      [{:suite :hal/modules
        :cases [:module/reload-revision
                :module/reload-rollback
+               :module/ns-require-reload
                :macro/reload-new-compilation]}]}
     {:requirement/id :module/lazy-alias
      :requirement/level :must

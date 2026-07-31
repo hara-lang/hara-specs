@@ -208,7 +208,7 @@
                   iter-keep iter-interpose iter-interleave iter-every?
                   iter-any? iter-take iter-drop iter-zip iter-cycle
                   iter-partition-pair iter-partition-all iter-partition
-                  iter-range iter-constantly iter-repeatedly iter-iterate]}]
+                  iter-range iter-constantly iter-repeatedly iter-iterate]}}]
 
  :deferred
  [{:type Random :reason :no-agreed-portable-surface}

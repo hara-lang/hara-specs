@@ -4,7 +4,7 @@
  :document/for :hal/bytecode-vm
  :document/status :draft
  :note
- "Machine-checked corpus for specs/01-lang/010-bytecode/draft/hal-bytecode-vm.edn. Consumed by rust/src/vm/conformance_tests.rs (Cargo feature bytecode-vm). :display cases must agree exactly on the tree-walking evaluator and the VM; :error-category cases must fail in the same normalized category on both; :compile-error cases pin VM-only compile-time behavior and do not consult the tree evaluator. :vm-display cases pin canonical VM behavior the tree evaluator has not converged to and likewise do not consult it. Workload sources are verbatim from lib/bench/runtime/workloads.json."
+ "Machine-checked corpus for specs/01-lang/010-bytecode/draft/hal-bytecode-vm.edn. Consumed by rust/src/vm/conformance_tests.rs (Cargo feature bytecode-vm). :display cases must agree exactly on the tree-walking evaluator and the VM; :error-category cases must fail in the same normalized category on both; :compile-error cases pin VM-only compile-time behavior and do not consult the tree evaluator. Namespace, reload, and callable-Var cases are shared through the platform-language modules corpus. Workload sources are verbatim from lib/bench/runtime/workloads.json."
  :cases
  [;; ---- literals ----
   {:id :literal/integer :source "42" :expect {:display "42"}}
@@ -141,10 +141,10 @@
   ;; cells were created namespace-qualified (issue #223).
   {:id :defn/redefinition-captured :source "(do (defn f [x] 1) (defn g [] (f 0)) (defn f [x] 2) (g))" :expect {:display "2"}}
 
-  ;; ---- declare: explicit opt-in to replacing a std.foundation builtin ----
-  {:id :declare/alone :source "(declare count)" :expect {:display "nil"}}
-  {:id :declare/multi-name :source "(declare count first)" :expect {:display "nil"}}
-  {:id :defn/declared-replacement :source "(do (declare count) (defn count [n] 42) (count 5))" :expect {:display "42"}}
+  ;; ---- declare: forward visibility for namespace-owned Vars only ----
+  {:id :declare/alone :source "(declare answer)" :expect {:display "nil"}}
+  {:id :declare/multi-name :source "(declare answer result)" :expect {:display "nil"}}
+  {:id :defn/declared-forward :source "(do (declare answer) (defn answer [n] 42) (answer 5))" :expect {:display "42"}}
 
   ;; ---- shared benchmark workloads (verbatim from lib/bench/runtime/workloads.json) ----
   {:id :workload/function-call :source "(loop [i 0 acc 0] (if (< i 2500) (recur (+ i 1) ((fn [x] (+ x 1)) acc)) acc))" :expect {:display "2500"}}
@@ -179,10 +179,9 @@
   {:id :set/global :source "(do (def cleaned 0) (set! cleaned (+ cleaned 42)) cleaned)" :expect {:display "42"}}
   {:id :set/result :source "(do (def cleaned 0) (set! cleaned 42))" :expect {:display "42"}}
 
-  ;; ---- foundation replacement: declare-or-error (VM canonical; the
-  ;; evaluator still gives builtins precedence and converges later) ----
-  {:id :compile/defn-replaces-foundation :source "(do (defn count [n] 42) (count 5))" :expect {:compile-error "defn replaces std.foundation var: count"}}
-  {:id :compile/defn-replaces-primitive :source "(do (defn mod [a b] 100) 1)" :expect {:compile-error "defn replaces std.foundation var: mod"}}
+  ;; ---- referred Var ownership: omission or :exclude is required ----
+  {:id :compile/defn-replaces-foundation :source "(do (defn count [n] 42) (count 5))" :expect {:compile-error "Cannot replace referred Var without ns omission: count"}}
+  {:id :compile/defn-replaces-primitive :source "(do (defn mod [a b] 100) 1)" :expect {:compile-error "Cannot replace referred Var without ns omission: mod"}}
   {:id :compile/declare-nested :source "(let [x 1] (declare y) x)" :expect {:compile-error "declare is only supported as a top-level statement"}}
   {:id :compile/declare-non-symbol :source "(declare 1)" :expect {:compile-error "declare expects name symbols"}}
 
