@@ -32,9 +32,7 @@
   <button class="specs-theme-toggle" type="button" data-theme-toggle aria-label="Toggle light and dark mode" title="Toggle light and dark mode" aria-pressed="false">
     <span aria-hidden="true">◐</span>
   </button>
-  <aside class="specs-contribution-label" data-contribution-label hidden>
-    Greenways contribution · hosted and verified by Hara
-  </aside>
+  <aside class="specs-contribution-label" data-contribution-label hidden></aside>
   <main id="spec-explorer">
     <section class="hara-explorer-welcome">
       <h1>Hara specifications</h1>
@@ -107,7 +105,14 @@
     const contributionLabel = document.querySelector("[data-contribution-label]");
     const updateContributionLabel = () => {
       const selectedPath = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
-      contributionLabel.hidden = !selectedPath.startsWith("00-unsorted/contrib/greenways/");
+      const parts = selectedPath.split("/");
+      const owner = parts[0] === "00-unsorted" && parts[1] === "contrib"
+        ? parts[2]
+        : null;
+      contributionLabel.hidden = !owner;
+      contributionLabel.textContent = owner
+        ? `${owner} contribution · hosted and verified by Hara`
+        : "";
     };
     addEventListener("hashchange", updateContributionLabel);
     updateContributionLabel();

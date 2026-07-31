@@ -17,127 +17,127 @@
       "path": "00-unsorted/contrib/README.md",
       "kind": "markdown",
       "classification": "contribution",
-      "owner": "multiple",
-      "label": "Contributed specifications"
+      "owner": "README.md",
+      "label": "README.md contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/build/CONTRIBUTION.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/build/examples/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/build/spec/draft/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/build/spec/draft/conformance/checker.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/build/spec/draft/conformance/codec.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/build/spec/draft/conformance/graph.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/build/spec/draft/greenways-buildspec.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/supersonic/CONTRIBUTION.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/supersonic/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/supersonic/spec/draft/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/supersonic/spec/draft/conformance/graph.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/supersonic/spec/draft/conformance/provider.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/supersonic/spec/draft/greenways-supersonic-spec.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/usdskel/CONTRIBUTION.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/usdskel/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/contrib/greenways/usdskel/spec/draft/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
-      "label": "Greenways contribution"
+      "label": "greenways contribution"
     },
     {
       "path": "00-unsorted/design/draft/design-language.edn",

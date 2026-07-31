@@ -3,42 +3,56 @@
 
 from __future__ import annotations
 
+import argparse
 import shutil
 from pathlib import Path
 
 
 SPECS_ROOT = Path(__file__).resolve().parents[1]
-SOURCE_ROOT = SPECS_ROOT.parent / "contrib"
-TARGET_ROOT = SPECS_ROOT / "00-unsorted" / "contrib"
 PUBLISHABLE_NAMES = {"CONTRIBUTION.edn", "README.md"}
 
 
-def publishable_files() -> list[Path]:
-    files = [SOURCE_ROOT / "README.md", SOURCE_ROOT / "greenways" / "README.md"]
-    for contribution in sorted((SOURCE_ROOT / "greenways").iterdir()):
-        if not contribution.is_dir():
-            continue
-        files.extend(
-            path
-            for path in contribution.rglob("*")
-            if path.is_file()
-            and (
-                path.name in PUBLISHABLE_NAMES
-                or "spec" in path.relative_to(contribution).parts
-            )
+def publishable_files(source_root: Path) -> list[Path]:
+    if not source_root.is_dir():
+        return []
+    return sorted(
+        path
+        for path in source_root.rglob("*")
+        if path.is_file()
+        and (
+            path.name in PUBLISHABLE_NAMES
+            or "spec" in path.relative_to(source_root).parts
         )
-    return sorted(set(files))
+    )
 
 
-def main() -> None:
+def sync(source_root: Path, target_root: Path) -> int:
     copied = 0
-    for source in publishable_files():
-        relative = source.relative_to(SOURCE_ROOT)
-        target = TARGET_ROOT / relative
+    for source in publishable_files(source_root):
+        relative = source.relative_to(source_root)
+        target = target_root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
         copied += 1
-    print(f"published {copied} contribution files under {TARGET_ROOT.relative_to(SPECS_ROOT)}")
+    return copied
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "source",
+        nargs="?",
+        type=Path,
+        default=SPECS_ROOT.parent / "contrib",
+    )
+    parser.add_argument(
+        "--target",
+        type=Path,
+        default=SPECS_ROOT / "00-unsorted" / "contrib",
+    )
+    args = parser.parse_args()
+    copied = sync(args.source.resolve(), args.target.resolve())
+    print(f"published {copied} contribution files")
 
 
 if __name__ == "__main__":

@@ -49,6 +49,12 @@ Unclassified platform, ecosystem, design, package, runtime, contribution, and
 the previous broad language/runtime documents remain under
 [`00-unsorted/`](00-unsorted/) until their numbered homes are settled.
 
+Documents below `00-unsorted/contrib/<owner>/` remain attributed contributions.
+Hara
+hosting and verification do not make their domain vocabulary part of the HAL
+language contract. The generated manifest records their classification and
+owner separately from Hara-owned specifications.
+
 ## Language boundary
 
 The active language specification covers data forms, the reader, immutable

@@ -31,17 +31,13 @@ def files() -> list[dict[str, str]]:
         if kind is None:
             continue
         entry = {"path": path, "kind": kind}
-        if path.startswith("00-unsorted/contrib/greenways/"):
+        parts = Path(path).parts
+        if len(parts) >= 3 and parts[:2] == ("00-unsorted", "contrib"):
+            owner = parts[2]
             entry.update({
                 "classification": "contribution",
-                "owner": "greenways",
-                "label": "Greenways contribution",
-            })
-        elif path.startswith("00-unsorted/contrib/"):
-            entry.update({
-                "classification": "contribution",
-                "owner": "multiple",
-                "label": "Contributed specifications",
+                "owner": owner,
+                "label": f"{owner} contribution",
             })
         else:
             entry.update({
