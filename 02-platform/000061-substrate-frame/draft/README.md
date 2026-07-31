@@ -1,9 +1,5 @@
-# Hara substrate frames
+# XTalk substrate frames
 
-The authoritative [`substrate-frame.edn`](substrate-frame.edn) contract defines
-the `substrate.v1` logical frame shared by requests, responses, streams,
-subscriptions, cancellation, and errors.
-
-Canonical frames use deterministic string keys and JSON field order.
-Correlation uses `id`, `reply_to`, and `cause`; false and empty values remain
-distinct from missing fields.
+This draft mirrors `xt.substrate.base-frame` and `xt.substrate.base-json`.
+There is no invented wire version, fixed canonical field expansion, cancel
+frame, standalone error frame, source field, or target field.

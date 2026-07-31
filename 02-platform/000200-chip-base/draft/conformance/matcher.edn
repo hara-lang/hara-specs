@@ -1,7 +1,7 @@
 {:conformance/id :chip-base/matcher-cases
  :conformance/version "0.1.0"
  :conformance/spec
- {:spec/id :hal/chip-base
+ {:spec/id :hara/chip-base
   :spec/version "0.1.0-draft"}
  :conformance/encoding
  {:encoding/note

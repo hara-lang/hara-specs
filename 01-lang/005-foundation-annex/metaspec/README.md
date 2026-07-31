@@ -1,4 +1,4 @@
-# HAL Foundation annex meta-specification
+# Hara Foundation annex meta-specification
 
 Status: **draft**
 

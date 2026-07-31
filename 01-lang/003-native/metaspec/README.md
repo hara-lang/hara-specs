@@ -1,4 +1,4 @@
-# HAL native-boundary meta-specification
+# Hara native-boundary meta-specification
 
 Status: **draft**
 

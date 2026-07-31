@@ -1,4 +1,4 @@
-{:document/id :hal/studio-runtime
+{:document/id :hara/studio-runtime
  :document/type :runtime-spec
  :document/version "1.5.0-draft"
  :document/status :draft
@@ -7,11 +7,11 @@
  "Normative kernel, session, filesystem, editor, canvas, audio graph, project, node, and wire contract."
 
  :runtime/host-contract
- {:spec :hal/host-runtime
+ {:spec :hara/host-runtime
   :host-layer hara-web
   :portable-substrate std.lib.substrate
-  :substrate-spec :hara/substrate-base
-  :substrate-profile :substrate.profile/hara
+  :related-substrate-spec :xt/substrate-base
+  :substrate-conformance-claim false
   :product-layer greenways.studio
   :studio-role :consumer}
 
@@ -20,8 +20,8 @@
        :availability :all-runtime-contexts}
   :node {:qualified-prefix "node/"
          :availability :node-bound-document-contexts
-         :contract :hara/substrate-runtime-profiles
-         :profile :substrate.profile/hara}}
+         :related-contract :xt/substrate-runtime-profiles
+         :conformance-claim false}}
 
  :runtime/kernel
  {:role :process-or-wasm-runtime-container
@@ -339,7 +339,8 @@
     :release-private-module]}}
 
  :runtime/node-module-ownership
- {:substrate-contract :hara/substrate-node
+ {:related-substrate-contract :xt/substrate-node
+  :substrate-conformance-claim false
   :public-identity :workspace/node-id
   :binding
   {:workspace-node :one-active-document-generation
@@ -426,11 +427,11 @@
    :serialization :canonical-edn}}
 
  :runtime/wire
- {:frame-spec :hara/substrate-frame
-  :request-spec :hara/substrate-request
-  :stream-spec :hara/substrate-stream-router
-  :transport-spec :hara/substrate-transport
-  :runtime-profile :substrate.profile/hara
+ {:related-frame-spec :xt/substrate-frame
+  :related-request-spec :xt/substrate-request
+  :related-stream-spec :xt/substrate-stream-router
+  :related-transport-spec :xt/substrate-transport
+  :relationship :adapter-compatibility-not-conformance
   :compatibility :existing-json-frames-remain-valid
   :version "substrate.v1"
   :studio-adapters

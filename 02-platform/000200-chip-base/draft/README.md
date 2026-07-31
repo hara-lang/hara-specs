@@ -1,10 +1,10 @@
-# HAL chip-base AST matcher
+# Hara chip-base AST matcher
 
 Status: **draft**  
 Target version: **0.1.0**
 
 The authoritative contract is
-[`hal-chip-base.edn`](hal-chip-base.edn). It conforms to the
+[`chip-base.edn`](chip-base.edn). It conforms to the
 [`chip-base meta-spec`](../metaspec/README.md).
 
 ## Decision

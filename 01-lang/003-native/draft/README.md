@@ -1,10 +1,10 @@
-# HAL native runtime boundary
+# Hara native runtime boundary
 
 Status: **draft**
 
 The authoritative document is
-[`hal-native-spec.edn`](hal-native-spec.edn). It conforms to the
-[`HAL native-boundary meta-spec`](../metaspec/README.md).
+[`native-spec.edn`](native-spec.edn). It conforms to the
+[`Hara native-boundary meta-spec`](../metaspec/README.md).
 
 This layer owns 21 guest-visible native descriptors and their canonical
 `std.native.Type/method` Vars. It defines capability checks and runtime-profile

@@ -1,7 +1,7 @@
 # Hara CLI application metaspec
 
 The normative
-[`hal-cli-app-metaspec.edn`](hal-cli-app-metaspec.edn) document defines the
+[`cli-app-metaspec.edn`](cli-app-metaspec.edn) document defines the
 machine-readable shape of a Hara CLI application specification.
 
 It defines CLI applications in terms of stable route, option, handler, outcome,

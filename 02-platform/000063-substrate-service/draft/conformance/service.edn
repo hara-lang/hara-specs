@@ -1,47 +1,23 @@
-{:suite/id :hara.substrate/service
- :suite/version "0.1.0"
- :suite/spec :hara/substrate-service
- :suite/cases
- [{:case/id :substrate.service/dependency-order
-   :case/given
-   [{:service/id "cache" :service/requires ["database"]}
-    {:service/id "database" :service/requires []}]
-   :case/when [:service/start "cache"]
+{:document/id :xt.substrate.conformance/service
+ :document/type :xt-substrate-conformance
+ :document/version "0.2.0"
+ :document/status :draft
+ :conformance/spec :xt/substrate-service
+ :conformance/source-tests
+ ["../../../../../../foundation-base/test-lang/xt/substrate_test.clj"
+  "../../../../../../foundation-base/test-lang/xt/substrate/base_util_handlers_test.clj"]
+ :conformance/cases
+ [{:case/id :xt.substrate.service/initial-values
+   :case/source-symbol "xt.substrate/get-services"
+   :case/expect :configured-arbitrary-values-preserved}
+  {:case/id :xt.substrate.service/set-get
+   :case/source-symbol "xt.substrate/set-service"
+   :case/expect :same-value}
+  {:case/id :xt.substrate.service/remove
+   :case/source-symbol "xt.substrate/remove-service"
+   :case/expect [:previous-value-returned :key-deleted]}
+  {:case/id :xt.substrate.service/utility-install
+   :case/source-symbol "xt.substrate.base-util-handlers/install-util-handlers"
    :case/expect
-   [[:service/start "database"] [:service/start "cache"]]}
-  {:case/id :substrate.service/reverse-stop
-   :case/given ["database" "cache"]
-   :case/when [:service/stop "database"]
-   :case/expect
-   [[:service/stop "cache"] [:service/stop "database"]]}
-  {:case/id :substrate.service/cycle
-   :case/given
-   [{:service/id "a" :service/requires ["b"]}
-    {:service/id "b" :service/requires ["a"]}]
-   :case/when [:service/start "a"]
-   :case/expect
-   {:error/code :service/dependency-cycle
-    :service/running []}}
-  {:case/id :substrate.service/capability-denied
-   :case/given
-   {:service/id "socket"
-    :service/capabilities ["network"]
-    :session/grants []}
-   :case/when [:service/start "socket"]
-   :case/expect
-   {:error/code :substrate/capability-denied
-    :service/state :service.state/registered}}
-  {:case/id :substrate.service/idempotent-stop
-   :case/given {:service/state :service.state/stopped}
-   :case/when [:service/stop :service/stop]
-   :case/expect {:service/stop-hook-calls 0}}
-  {:case/id :substrate.service/legacy-registry
-   :case/given [:service/set-legacy "cache" 42]
-   :case/expect
-   {:service/get-legacy 42
-    :service/state :service.state/running
-    :service/managed false}}
-  {:case/id :substrate.service/no-instance-transfer
-   :case/given :runtime/service-instance
-   :case/when :transport/encode
-   :case/expect :transport/rejected}]}
+   ["@/ping" "@/echo" "@/list-handlers" "@/list-triggers"
+    "@/list-spaces" "@/list-transports" "@/get-service" "@/node-info"]}]}

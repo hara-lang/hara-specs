@@ -2,9 +2,10 @@
  :language "hara"
  :runtimes [:rust :truffle :browser]
  :substrate/conformance
- {:spec :hara/substrate-runtime-profiles
+ {:spec :xt/substrate-runtime-profiles
   :path "../../../../02-platform/000069-substrate-runtime-profiles/draft/conformance/runtime-profiles.edn"
-  :authority :external}
+  :authority :related-evidence
+  :conformance-claim false}
  :cases
  [{:id :anonymous/first-form
    :operation :eval-document

@@ -1,8 +1,9 @@
-# Substrate runtime profiles
+# XTalk substrate runtime coverage
 
-This draft maps the portable 000060–000068 contracts onto Hara and XTalk. Java
-Truffle and Rust are Hara implementation profiles; generated XTalk targets form
-the XTalk profile. Divergences are explicit gaps, not alternate semantics.
+This document reports only the generated targets declared by the pinned test
+namespaces. Core and memory behavior is exercised in JavaScript, Lua, and
+Python. JSON, page/view/proxy, browser, and WebSocket coverage is JavaScript in
+the current tests.
 
-The validation gate combines EDN/reference checks, the portable corpus, and
-implementation-specific Truffle, Rust, and XTalk tests.
+Java Truffle and Rust may implement related Hara behavior, but they are not
+XTalk conformance profiles in this specification.

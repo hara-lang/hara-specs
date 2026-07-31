@@ -1,4 +1,4 @@
-# HAL chip-base meta-specification
+# Hara chip-base meta-specification
 
 Status: **draft**  
 Version: **0.1.0**

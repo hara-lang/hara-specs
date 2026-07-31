@@ -1,4 +1,4 @@
-# HAL protocol meta-specification
+# Hara protocol meta-specification
 
 Status: **draft**
 

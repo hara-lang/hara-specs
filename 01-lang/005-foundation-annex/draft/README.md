@@ -1,10 +1,10 @@
-# HAL Foundation library annex
+# Hara Foundation library annex
 
 Status: **draft**
 
 The authoritative document is
-[`hal-foundation-annex.edn`](hal-foundation-annex.edn). It conforms to the
-[`HAL Foundation annex meta-spec`](../metaspec/README.md).
+[`foundation-annex.edn`](foundation-annex.edn). It conforms to the
+[`Hara Foundation annex meta-spec`](../metaspec/README.md).
 
 The annex currently declares 13 public libraries:
 

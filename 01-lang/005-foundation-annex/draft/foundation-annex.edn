@@ -1,13 +1,13 @@
-{:document/id :hal/foundation-annex
+{:document/id :hara/foundation-annex
  :document/type :foundation-annex-spec
  :document/version "0.1.0-draft"
  :document/status :draft
- :document/title "HAL Foundation library annex"
+ :document/title "Hara Foundation library annex"
  :document/summary
  "Portable catalog and behavioral boundary for the public std.foundation.* library namespaces."
 
  :spec/conforms-to
- {:spec/id :hal/foundation-annex-metaspec
+ {:spec/id :hara/foundation-annex-metaspec
   :spec/version "0.1.0"}
 
  :annex/scope

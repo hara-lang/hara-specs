@@ -1,9 +1,9 @@
-# HAL metaspec
+# Hara metaspec
 
 Status: **draft**  
 Version: **0.1.0**
 
-The authoritative document is [`hal-metaspec.edn`](hal-metaspec.edn). It is the
+The authoritative document is [`metaspec-metaspec.edn`](metaspec-metaspec.edn). It is the
 self-describing contract for authoring, linting, verifying, and repairing Hara
 metaspec documents.
 
@@ -16,7 +16,7 @@ The executable cases in
 required sections, qualified extension keys, identifier uniqueness, reference
 resolution, and structured repair actions.
 
-## HAL checker
+## Hara checker
 
 The portable checker is `hara.metaspec.core/conforms`. Bootstrap validation
 passes this document as both the document and its metaspec:
@@ -24,8 +24,8 @@ passes this document as both the document and its metaspec:
 ```clojure
 (require [hara.metaspec.core :as metaspec])
 
-(metaspec/conforms hal-metaspec
-                  {:metaspec hal-metaspec})
+(metaspec/conforms hara-metaspec
+                  {:metaspec hara-metaspec})
 ```
 
 The result is a structured `:hara/metaspec-conformance` report. It passes only

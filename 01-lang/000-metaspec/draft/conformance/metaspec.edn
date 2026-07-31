@@ -3,7 +3,7 @@
  :conformance/cases
  [{:case/id :hara.metaspec/valid-self-description
    :case/type :verify
-   :case/input "../hal-metaspec.edn"
+   :case/input "../metaspec-metaspec.edn"
    :case/expected :pass}
   {:case/id :hara.metaspec/valid-artifact-metaspec
    :case/type :verify

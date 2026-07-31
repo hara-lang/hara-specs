@@ -1,4 +1,4 @@
-# HAL Foundation meta-specification
+# Hara Foundation meta-specification
 
 Status: **draft**
 

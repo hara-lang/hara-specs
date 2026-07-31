@@ -1,179 +1,104 @@
-{:document/id :hara/substrate-runtime-profiles
- :document/type :substrate-spec
- :document/version "0.1.0"
+{:document/id :xt/substrate-runtime-profiles
+ :document/type :xt-substrate-spec
+ :document/version "0.2.0"
  :document/status :draft
- :document/title "Hara and XTalk substrate runtime profiles"
+ :document/title "XTalk substrate generated-runtime coverage"
  :document/summary
- "Maps the portable substrate contracts to current Hara and XTalk symbols, records implementation gaps, and defines profile validation and candidate gates."
+ "Records the runtime targets actually exercised by the pinned xt.substrate tests and aggregates the source-backed conformance corpora."
 
  :spec/conforms-to
- {:spec/id :hara/substrate-metaspec
-  :spec/version "0.1.0"}
- :spec/family :hara/substrate
+ {:spec/id :xt/substrate-metaspec :spec/version "0.2.0"}
+ :spec/family :xt/substrate
  :spec/depends-on
- [:hara/substrate-base :hara/substrate-frame :hara/substrate-node
-  :hara/substrate-service :hara/substrate-request
-  :hara/substrate-stream-router :hara/substrate-transport
-  :hara/substrate-page-model :hara/substrate-view-proxy]
+ [:xt/substrate-base :xt/substrate-frame :xt/substrate-node
+  :xt/substrate-service :xt/substrate-request
+  :xt/substrate-stream-router :xt/substrate-transport
+  :xt/substrate-page-model :xt/substrate-view-proxy]
 
- :spec/scope
- {:scope/includes
-  [:profile/hara :profile/xtalk :profile/java-truffle :profile/rust
-   :profile/mappings :profile/gaps :profile/validation]
-  :scope/excludes
-  [:profile/implementation-plan :profile/release-schedule]}
+ :source/modules
+ [{:module/id :xt.substrate.profile/tests
+   :module/path "../../../../../foundation-base/test-lang/xt"
+   :module/role :runtime-evidence}
+  {:module/id :xt.substrate.profile/project
+   :module/path "../../../../../foundation-base/project.clj"
+   :module/role :test-runner}]
 
- :spec/invariants
- [{:requirement/id :hara.substrate.profile/common-observables
-   :requirement/level :must
-   :requirement/text "All conforming profiles produce the same portable observations for common conformance cases."}
-  {:requirement/id :hara.substrate.profile/gaps-explicit
-   :requirement/level :must
-   :requirement/text "An absent or divergent runtime behavior is recorded as an explicit profile gap rather than silently weakened."}
-  {:requirement/id :hara.substrate.profile/candidate-gate
-   :requirement/level :must
-   :requirement/text "This family cannot advance to candidate while a required portable gap remains open."}]
+ :profile/runtime-coverage
+ [{:profile/id :xt.substrate.profile/core
+   :profile/targets [:js :lua :python]
+   :profile/test-namespaces
+   ["xt.substrate-test" "xt.substrate-transport-test"
+    "xt.substrate.base-frame-test"
+    "xt.substrate.base-pubsub-test" "xt.substrate.base-request-test"
+    "xt.substrate.base-router-test" "xt.substrate.base-space-test"
+    "xt.substrate.base-util-handlers-test"
+    "xt.substrate.base-util-test"
+    "xt.substrate.request-promise-test"]}
+  {:profile/id :xt.substrate.profile/memory
+   :profile/targets [:js :lua :python]
+   :profile/test-namespaces ["xt.substrate.transport-memory-test"]}
+  {:profile/id :xt.substrate.profile/json-page-view-browser
+   :profile/targets [:js]
+   :profile/test-namespaces
+   ["xt.substrate.base-json-test" "xt.substrate.page-core-test"
+    "xt.substrate.page-util-test" "xt.substrate.page-proxy-test"
+    "xt.substrate.transport-browser-test"
+    "xt.substrate.transport-websocket-test"
+    "xt.substrate.view-test" "xt.substrate.view-catalog-test"
+    "xt.substrate.view-demos-test"]}]
 
- :profile/definitions
- [{:profile/id :substrate.profile/hara
-   :profile/runtime :hara
-   :profile/languages [:hal]
-   :profile/components [:profile/java-truffle :profile/rust]}
-  {:profile/id :substrate.profile/xtalk
-   :profile/runtime :xtalk
-   :profile/languages [:javascript :lua :python :r]
-   :profile/components [:profile/xtalk-generated]}]
+ :profile/walkthrough-evidence
+ ["xt.substrate.s01-basic-test"
+  "xt.substrate.walkthrough.s02-transport-memory-test"
+  "xt.substrate.walkthrough.s03-transport-test"
+  "xt.substrate.walkthrough.s04-fanout-test"
+  "xt.substrate.walkthrough.s05-multiplex-test"
+  "xt.substrate.walkthrough.s06-page-test"
+  "xt.substrate.walkthrough.s07-wsserver-test"
+  "xt.substrate.walkthrough-js.s30-workers-test"
+  "xt.substrate.walkthrough-js.s31-proxy-test"
+  "xt.substrate.walkthrough-js.s32-proxy-full-test"
+  "xt.substrate.walkthrough-js.s33-react-test"
+  "xt.substrate.walkthrough-js.s34-react-test"
+  "xt.substrate.walkthrough-js.s35-playground-test"
+  "xt.substrate.walkthrough-js.s35-playmin-test"]
 
- :profile/mappings
- [{:mapping/id :hara.substrate.profile/frame
-   :mapping/contract :hara/substrate-frame
-   :mapping/hara "std.lib.substrate.frame/normalize"
-   :mapping/xtalk "xt.lang.base-lib/to-flat"}
-  {:mapping/id :hara.substrate.profile/node
-   :mapping/contract :hara/substrate-node
-   :mapping/hara "std.lib.substrate/SubstrateNode"
-   :mapping/xtalk "xt.lang.base-lib/Node"}
-  {:mapping/id :hara.substrate.profile/service
-   :mapping/contract :hara/substrate-service
-   :mapping/hara "std.lib.substrate.protocol/IService"
-   :mapping/xtalk "xt.lang.base-lib/service-add"}
-  {:mapping/id :hara.substrate.profile/request
-   :mapping/contract :hara/substrate-request
-   :mapping/hara "std.lib.substrate.protocol/IRequest"
-   :mapping/xtalk "xt.lang.base-lib/request"}
-  {:mapping/id :hara.substrate.profile/stream
-   :mapping/contract :hara/substrate-stream-router
-   :mapping/hara "std.lib.substrate.protocol/IStream"
-   :mapping/xtalk "xt.lang.base-lib/stream"}
-  {:mapping/id :hara.substrate.profile/transport
-   :mapping/contract :hara/substrate-transport
-   :mapping/hara "std.lib.substrate.protocol/ITransport"
-   :mapping/xtalk "xt.lang.base-lib/transport-add"}
-  {:mapping/id :hara.substrate.profile/page
-   :mapping/contract :hara/substrate-page-model
-   :mapping/hara :profile/not-implemented
-   :mapping/xtalk "xt.lang.base-lib/page"}
-  {:mapping/id :hara.substrate.profile/view
-   :mapping/contract :hara/substrate-view-proxy
-   :mapping/hara :profile/not-implemented
-   :mapping/xtalk "xt.lang.base-lib/view"}]
-
- :profile/gaps
- [{:gap/id :hara.substrate.gap/hara-managed-service
-   :gap/profile :substrate.profile/hara
-   :gap/status :open
-   :gap/contract :hara/substrate-service
-   :gap/description "Hara exposes arbitrary service get/set/remove but not descriptors, list/describe, dependency ordering, capability checks, or managed lifecycle."}
-  {:gap/id :hara.substrate.gap/hara-promise-normalization
-   :gap/profile :substrate.profile/hara
-   :gap/status :open
-   :gap/contract :hara/substrate-request
-   :gap/description "A local Hara request may return its handler value directly; the portable contract always returns a logical promise."}
-  {:gap/id :hara.substrate.gap/hara-frame-record
-   :gap/profile :substrate.profile/hara
-   :gap/status :open
-   :gap/contract :hara/substrate-frame
-   :gap/description "Hara normalizes the complete wire shape, but SubstrateFrame does not store every normalized correlation and routing field."}
-  {:gap/id :hara.substrate.gap/hara-transport-lifecycle
-   :gap/profile :substrate.profile/hara
-   :gap/status :open
-   :gap/contract :hara/substrate-transport
-   :gap/description "Hara transports are send functions without descriptor, lifecycle, codec, or negotiation contracts."}
-  {:gap/id :hara.substrate.gap/hara-page-view
-   :gap/profile :substrate.profile/hara
-   :gap/status :open
-   :gap/contract :hara/substrate-page-model
-   :gap/description "Hara has no page-model or view-proxy implementation."}
-  {:gap/id :hara.substrate.gap/xtalk-service-lifecycle
-   :gap/profile :substrate.profile/xtalk
-   :gap/status :open
-   :gap/contract :hara/substrate-service
-   :gap/description "XTalk service values are node-local but do not expose the complete managed descriptor and lifecycle contract."}]
+ :spec/behavior
+ [{:behavior/id :xt.substrate.profile/claims-follow-tests
+   :behavior/text "A target is listed for a subsystem only when the pinned test namespace declares an l/script block for that target."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.profile/no-hara-equivalence
+   :behavior/text "This document makes no Java Truffle, Rust, Hara protocol, or cross-runtime equivalence claim."
+   :behavior/evidence :evidence/source-only}
+  {:behavior/id :xt.substrate.profile/test-command
+   :behavior/text "Foundation Base executes code.test through the Leiningen test alias; the targeted family command is lein test :with xt.substrate."
+   :behavior/evidence :evidence/source-and-test}]
 
  :profile/validation
- {:validation/layers
-  [:validation/edn-shape :validation/reference-resolution
-   :validation/portable-corpus :validation/profile-adapter
-   :validation/java-truffle :validation/rust :validation/xtalk]
-  :validation/shared-fixtures
-  [{:fixture/id :hara.substrate.fixture/protocol
-    :fixture/path "lib/test-fixtures/std/lib/substrate/protocol_conformance.hal"
-    :fixture/contracts [:hara/substrate-node :hara/substrate-service]}
-   {:fixture/id :hara.substrate.fixture/frame
-    :fixture/path "lib/test-fixtures/std/lib/substrate/frame_conformance.hal"
-    :fixture/contracts [:hara/substrate-frame]}
-   {:fixture/id :hara.substrate.fixture/node-lifecycle
-    :fixture/path "lib/test-fixtures/std/lib/substrate/node_lifecycle_conformance.hal"
-    :fixture/contracts [:hara/substrate-node :hara/substrate-request
-                        :hara/substrate-stream-router
-                        :hara/substrate-transport]}]
-  :validation/pass-criteria
-  [{:criterion/id :hara.substrate.validation/same-fixture-source
-    :criterion/requirement
-    "Java Truffle and Rust execute the same checked-in HAL fixture sources."}
-   {:criterion/id :hara.substrate.validation/same-observation
-    :criterion/requirement
-    "Each shared fixture returns the same canonical HAL value or the same stable error code in every claiming runtime."}
-   {:criterion/id :hara.substrate.validation/failure-is-total
-    :criterion/requirement
-    "A panic, uncaught host exception, malformed result, timeout, missing case, or skipped required case fails the profile."}
-   {:criterion/id :hara.substrate.validation/portable-profile-matrix
-    :criterion/requirement
-    "Every supported transport profile passes one logical-frame corpus without profile-specific expected values."}]
-  :validation/implementations
-  [{:implementation/id :profile/java-truffle
-    :implementation/command
-    "mvn -f java/pom.xml -Ptruffle -Dtest=hara.truffle.HaraSubstrateProtocolTest test"}
-   {:implementation/id :profile/rust
-    :implementation/command
-    "cargo test --manifest-path rust/Cargo.toml substrate"}
-   {:implementation/id :profile/xtalk-generated
-    :implementation/command
-    "Run the foundation-base xt.lang base-lib substrate test matrix for each generated target."}]
-  :validation/candidate-gate
-  [:validation/all-required-cases-pass
-   :validation/no-open-portable-gaps
-   :validation/java-rust-observations-equal
-   :validation/xtalk-target-observations-equal]}
+ {:validation/source-revision
+  "efa09d39ce44c28dfaf6ff064752d17ccd444e92"
+  :validation/command "lein test :with xt.substrate"
+  :validation/pass
+  [:validation/command-exits-zero
+   :validation/no-failing-facts
+   :validation/no-missing-declared-runtime]}
+
+ :source/evidence
+ [{:evidence/id :xt.substrate.profile/test-tree
+   :evidence/source "../../../../../foundation-base/test-lang/xt/substrate"
+   :evidence/symbols :profile/runtime-coverage
+   :evidence/tests "../../../../../foundation-base/test-lang/xt/substrate_test.clj"
+   :evidence/level :evidence/source-and-test}]
 
  :spec/references
- [{:reference/id :hara.substrate.profile/hara
-   :reference/kind :implementation
-   :reference/path "../../../../lib/src/std/lib/substrate.hal"
-   :reference/authority :evidence
-   :reference/description "Hara substrate implementation."}
-  {:reference/id :hara.substrate.profile/xtalk
-   :reference/kind :implementation
-   :reference/path "../../../../../foundation-base/src-lang/xt/substrate.clj"
-   :reference/authority :evidence
-   :reference/description "XTalk substrate module graph."}
-  {:reference/id :hara.substrate.profile/conformance
-   :reference/kind :conformance
-   :reference/path "conformance/runtime-profiles.edn"
-   :reference/authority :evidence
-   :reference/description "Cross-profile validation manifest."}]
+ [{:reference/id :xt.substrate.profile/project
+   :reference/path "../../../../../foundation-base/project.clj"
+   :reference/authority :normative}
+  {:reference/id :xt.substrate.profile/tests
+   :reference/path "../../../../../foundation-base/test-lang/xt/substrate_test.clj"
+   :reference/authority :evidence}]
 
  :spec/conformance
- [{:conformance/id :hara.substrate/runtime-profile-cases
+ [{:conformance/id :xt.substrate/runtime-profiles
    :conformance/path "conformance/runtime-profiles.edn"
    :conformance/required true}]}

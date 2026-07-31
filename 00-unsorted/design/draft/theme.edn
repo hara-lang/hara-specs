@@ -1,4 +1,4 @@
-{:document/id :hal/theme
+{:document/id :hara/theme
  :document/type :design-contract
  :document/version "0.1.0-draft"
  :document/status :draft

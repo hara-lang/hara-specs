@@ -1,7 +1,7 @@
 # GitHub package architecture
 
 This is a non-normative implementation companion to
-[`hal-packagespec.edn`](hal-packagespec.edn).
+[`package-spec.edn`](package-spec.edn).
 
 ```text
 publisher key                    tap identity repository

@@ -1,38 +1,32 @@
-{:document/id :hara.substrate.conformance/request
- :document/type :substrate-conformance
- :document/version "0.1.0"
+{:document/id :xt.substrate.conformance/request
+ :document/type :xt-substrate-conformance
+ :document/version "0.2.0"
  :document/status :draft
- :conformance/spec :hara/substrate-request
+ :conformance/spec :xt/substrate-request
+ :conformance/source-tests
+ ["../../../../../../foundation-base/test-lang/xt/substrate/base_request_test.clj"
+  "../../../../../../foundation-base/test-lang/xt/substrate/base_util_test.clj"
+  "../../../../../../foundation-base/test-lang/xt/substrate/request_promise_test.clj"
+  "../../../../../../foundation-base/test-lang/xt/substrate_test.clj"]
  :conformance/cases
- [{:case/id :hara.substrate.request/local-sync-normalized
-   :case/given [:node/running :handler/synchronous]
-   :case/when :request/invoke-local
-   :case/then [:request/returns-promise :request/resolves-value]}
-  {:case/id :hara.substrate.request/local-async
-   :case/given [:node/running :handler/asynchronous]
-   :case/when :request/invoke-local
-   :case/then [:request/returns-promise :request/adopts-handler-result]}
-  {:case/id :hara.substrate.request/remote-settlement
-   :case/given [:request/pending :response/matching-id]
-   :case/when :response/receive
-   :case/then [:pending/removed-before-continuation :request/settled-once]}
-  {:case/id :hara.substrate.request/missing-handler
-   :case/given [:handler/absent]
-   :case/when :request/invoke
-   :case/then [:request/rejected :error/code-not-found]}
-  {:case/id :hara.substrate.request/duplicate-response
-   :case/given [:request/already-settled]
-   :case/when :response/receive-again
-   :case/then [:response/ignored :diagnostic/emitted]}
-  {:case/id :hara.substrate.request/cancel
-   :case/given [:request/pending]
-   :case/when :request/cancel
-   :case/then [:request/rejected-cancelled :cancel/idempotent]}
-  {:case/id :hara.substrate.request/timeout
-   :case/given [:request/deadline-expired]
-   :case/when :clock/advance
-   :case/then [:pending/removed :request/rejected-timeout]}
-  {:case/id :hara.substrate.request/node-close
-   :case/given [:request/pending]
-   :case/when :node/close
-   :case/then [:request/rejected-node-closed :pending/empty]}]}
+ [{:case/id :xt.substrate.request/ensure-promise
+   :case/source-symbol "xt.substrate.base-request/ensure-promise"
+   :case/targets [:js :lua :python]
+   :case/expect :promise}
+  {:case/id :xt.substrate.request/pending-settle-ok
+   :case/source-symbol "xt.substrate.base-request/settle-pending"
+   :case/input [["reply_to" "req-1"] ["status" "ok"] ["data" 42]]
+   :case/expect [:pending/removed :promise/resolved-42]}
+  {:case/id :xt.substrate.request/pending-settle-error
+   :case/source-symbol "xt.substrate.base-request/settle-pending"
+   :case/input [["reply_to" "req-1"] ["status" "error"]]
+   :case/expect [:pending/removed :promise/rejected-with-response]}
+  {:case/id :xt.substrate.request/local-handler
+   :case/source-symbol "xt.substrate.base-request/invoke-handler"
+   :case/expect [:space/ensured :handler/four-arguments :result/promise]}
+  {:case/id :xt.substrate.request/remote-roundtrip
+   :case/source-symbol "xt.substrate/request"
+   :case/expect [:request/sent :pending/settled :response/data-returned]}
+  {:case/id :xt.substrate.request/send-failure
+   :case/source-symbol "xt.substrate.base-util/request"
+   :case/expect [:pending/removed :promise/rejected]}]}

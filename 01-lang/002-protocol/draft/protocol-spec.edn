@@ -1,13 +1,13 @@
-{:document/id :hal/protocol
+{:document/id :hara/protocol
  :document/type :protocol-spec
  :document/version "0.1.0-draft"
  :document/status :draft
- :document/title "HAL built-in protocol specification"
+ :document/title "Hara built-in protocol specification"
  :document/summary
  "Portable contract for the built-in protocol descriptors, method namespaces, dispatch, and guest extension surface under std.protocol.*."
 
  :spec/conforms-to
- {:spec/id :hal/protocol-metaspec
+ {:spec/id :hara/protocol-metaspec
   :spec/version "0.1.0"}
 
  :protocol/scope

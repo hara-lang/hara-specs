@@ -1,13 +1,13 @@
-{:document/id :hal/native
+{:document/id :hara/native
  :document/type :native-spec
  :document/version "0.1.0-draft"
  :document/status :draft
- :document/title "HAL native runtime boundary"
+ :document/title "Hara native runtime boundary"
  :document/summary
  "Portable guest-visible contract for std.native descriptors and their implementation-provided methods."
 
  :spec/conforms-to
- {:spec/id :hal/native-metaspec
+ {:spec/id :hara/native-metaspec
   :spec/version "0.1.0"}
 
  :native/scope

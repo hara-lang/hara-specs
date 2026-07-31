@@ -1,16 +1,18 @@
-{:suite/id :hara.substrate/base
- :suite/version "0.1.0"
- :suite/spec :hara/substrate-base
- :suite/cases
- [{:case/id :substrate.base/explicit-identities
-   :case/given [:node :space :service :transport :frame]
-   :case/expect :identity/non-empty-string}
-  {:case/id :substrate.base/node-wide-space
-   :case/given {:space/id nil}
-   :case/expect {:space/id "__NODE__"}}
-  {:case/id :substrate.base/dependency-order
-   :case/given :substrate/specification-graph
-   :case/expect :graph/acyclic}
-  {:case/id :substrate.base/no-live-transfer
-   :case/given [:runtime/callback :runtime/promise :runtime/service-instance]
-   :case/expect :transport/rejected}]}
+{:document/id :xt.substrate.conformance/base
+ :document/type :xt-substrate-conformance
+ :document/version "0.2.0"
+ :document/status :draft
+ :conformance/spec :xt/substrate-base
+ :conformance/source-test "../../../../../../foundation-base/test-lang/xt/substrate_test.clj"
+ :conformance/cases
+ [{:case/id :xt.substrate.base/node-predicate
+   :case/source-symbol "xt.substrate/node?"
+   :case/targets [:js :lua :python]
+   :case/expect true}
+  {:case/id :xt.substrate.base/transport-predicate
+   :case/source-symbol "xt.substrate/transport?"
+   :case/targets [:js :lua :python]
+   :case/expect true}
+  {:case/id :xt.substrate.base/public-facade
+   :case/source-symbol "xt.substrate"
+   :case/expect :all-reexports-resolve}]}

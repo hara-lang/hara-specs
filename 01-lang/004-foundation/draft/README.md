@@ -1,10 +1,10 @@
-# HAL Foundation bootstrap namespace
+# Hara Foundation bootstrap namespace
 
 Status: **draft**
 
 The authoritative document is
-[`hal-foundation-spec.edn`](hal-foundation-spec.edn). It conforms to the
-[`HAL Foundation meta-spec`](../metaspec/README.md).
+[`foundation-spec.edn`](foundation-spec.edn). It conforms to the
+[`Hara Foundation meta-spec`](../metaspec/README.md).
 
 This layer owns the root `std.foundation` namespace:
 

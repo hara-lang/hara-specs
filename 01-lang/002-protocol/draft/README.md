@@ -1,10 +1,10 @@
-# HAL built-in protocols
+# Hara built-in protocols
 
 Status: **draft**
 
 The authoritative document is
-[`hal-protocol-spec.edn`](hal-protocol-spec.edn). It conforms to the
-[`HAL protocol meta-spec`](../metaspec/README.md).
+[`protocol-spec.edn`](protocol-spec.edn). It conforms to the
+[`Hara protocol meta-spec`](../metaspec/README.md).
 
 This layer owns `std.protocol.*`: 53 canonical protocol descriptors, their
 method Vars, arities, inheritance, built-in dispatch, guest extension, and

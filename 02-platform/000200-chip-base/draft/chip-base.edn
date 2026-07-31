@@ -1,13 +1,13 @@
-{:document/id :hal/chip-base
+{:document/id :hara/chip-base
  :document/type :chip-base-spec
  :document/version "0.1.0-draft"
  :document/status :draft
- :document/title "HAL chip-base AST matcher"
+ :document/title "Hara chip-base AST matcher"
  :document/summary
  "Portable contract for a bounded coprocessor that matches compiled structural patterns against immutable compact AST arenas."
 
  :spec/conforms-to
- {:spec/id :hal/chip-base-metaspec
+ {:spec/id :hara/chip-base-metaspec
   :spec/version "0.1.0"}
 
  :chip/scope

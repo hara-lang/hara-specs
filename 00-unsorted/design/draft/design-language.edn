@@ -1,4 +1,4 @@
-{:document/id :hal/design-language
+{:document/id :hara/design-language
  :document/type :design-contract
  :document/version "0.1.0-draft"
  :document/status :draft
@@ -75,5 +75,5 @@
   {:id :llm-workflows :focus "prompts, tools, state, evaluation, and provenance"}]
 
  :design/adoption
- {:acceptance "Use this draft with hal-theme.edn to accept later Studio and surface-adapter implementation."
+ {:acceptance "Use this draft with theme.edn to accept later Studio and surface-adapter implementation."
   :non-goal "The four DSL profiles are reference profiles, not complete domain schemas."}}

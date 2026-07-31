@@ -1,9 +1,6 @@
-# Hara substrate meta-specification
+# XTalk substrate metaspec
 
-Status: **draft**  
-Version: **0.1.0**
-
-[`substrate-metaspec.edn`](substrate-metaspec.edn) defines the common
-machine-readable shape for every `00006x-substrate-*` contract. It requires
-qualified keys, stable identifiers, acyclic dependencies, inert normative
-data, and explicit conformance evidence.
+This metaspec prevents the numbered family from becoming an aspirational
+runtime design. A normative statement must be traceable to the pinned
+`foundation-base` source or tests. Untested behavior may be described from
+source, but it must be marked `source-only`.

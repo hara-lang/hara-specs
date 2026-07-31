@@ -1,32 +1,37 @@
-{:document/id :hara.substrate.conformance/transport
- :document/type :substrate-conformance
- :document/version "0.1.0"
+{:document/id :xt.substrate.conformance/transport
+ :document/type :xt-substrate-conformance
+ :document/version "0.2.0"
  :document/status :draft
- :conformance/spec :hara/substrate-transport
- :conformance/profiles
- [:substrate.transport/direct :substrate.transport/memory
-  :substrate.transport/hta1 :substrate.transport/structured-clone
-  :substrate.transport/transferable :substrate.transport/websocket]
+ :conformance/spec :xt/substrate-transport
+ :conformance/source-tests
+ ["../../../../../../foundation-base/test-lang/xt/substrate_transport_test.clj"
+  "../../../../../../foundation-base/test-lang/xt/substrate/transport_memory_test.clj"
+  "../../../../../../foundation-base/test-lang/xt/substrate/transport_browser_test.clj"
+  "../../../../../../foundation-base/test-lang/xt/substrate/transport_websocket_test.clj"]
  :conformance/cases
- [{:case/id :hara.substrate.transport/logical-frame-parity
-   :case/given :frame/same-normalized-request
-   :case/when :transport/profile-roundtrip
-   :case/then :frame/same-logical-result}
-  {:case/id :hara.substrate.transport/local-context
-   :case/given :frame/decoded
-   :case/when :transport/receive
-   :case/then [:frame/transport-id-present :runtime/instance-not-serialized]}
-  {:case/id :hara.substrate.transport/invalid-frame
-   :case/given :frame/schema-invalid
-   :case/when :transport/receive
-   :case/then [:frame/not-dispatched :diagnostic/emitted]}
-  {:case/id :hara.substrate.transport/detach
-   :case/given [:request/pending :subscription/owned]
-   :case/when :transport/detach
-   :case/then [:request/rejected-transport-stopped
-               :subscription/removed :transport/instance-released]}
-  {:case/id :hara.substrate.transport/node-info
-   :case/given :transport/running
-   :case/when :request/node-info
-   :case/then [:node/id-returned :substrate/version-returned
-               :transport/capabilities-returned]}]}
+ [{:case/id :xt.substrate.transport/create
+   :case/source-symbol "xt.substrate/transport-create"
+   :case/targets [:js :lua :python]
+   :case/expect
+   [["::" "substrate.transport"] ["listener" nil]
+    ["implementation-fields" :preserved]]}
+  {:case/id :xt.substrate.transport/send
+   :case/source-symbol "xt.substrate/transport-send"
+   :case/expect [:send-fn/called :result/promise-normalized]}
+  {:case/id :xt.substrate.transport/attach-detach
+   :case/source-symbol "xt.substrate/attach-transport"
+   :case/expect
+   [:router/registered :start/optional :receive-context/transport-id
+    :router/unregistered-on-detach :stop/optional]}
+  {:case/id :xt.substrate.transport/memory-pair
+   :case/source-symbol "xt.substrate.transport-memory/memory-pair"
+   :case/expect :bidirectional-frame-delivery}
+  {:case/id :xt.substrate.transport/text-endpoint
+   :case/source-symbol "xt.substrate.transport-memory/text-endpoint"
+   :case/expect :json-encode-decode}
+  {:case/id :xt.substrate.transport/browser-ready
+   :case/source-symbol "xt.substrate.transport-browser/await-ready"
+   :case/expect :ready-event-or-promise}
+  {:case/id :xt.substrate.transport/websocket
+   :case/source-symbol "xt.substrate.transport-websocket/websocket-endpoint"
+   :case/expect [:url/normalized :open/awaited :text/events-decoded]}]}

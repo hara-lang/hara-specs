@@ -1,8 +1,5 @@
-# Substrate page model
+# XTalk substrate page runtime
 
-This draft isolates the XTalk page/group/model service from rendering. The
-contract covers portable descriptions, lifecycle, updates, signals, ownership,
-and revision-consistent snapshots.
-
-Normative data is in `substrate-page-model.edn`; executable vectors are in
-`conformance/page-model.edn`.
+This draft mirrors `page-core` and `page-util`, including the behavior delegated
+to `xt.event.base-model`. It does not replace the implementation with generic
+page descriptors, lifecycle states, or revisioned snapshots.

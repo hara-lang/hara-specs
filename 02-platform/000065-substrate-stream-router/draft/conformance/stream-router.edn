@@ -1,30 +1,33 @@
-{:document/id :hara.substrate.conformance/stream-router
- :document/type :substrate-conformance
- :document/version "0.1.0"
+{:document/id :xt.substrate.conformance/stream-router
+ :document/type :xt-substrate-conformance
+ :document/version "0.2.0"
  :document/status :draft
- :conformance/spec :hara/substrate-stream-router
+ :conformance/spec :xt/substrate-stream-router
+ :conformance/source-tests
+ ["../../../../../../foundation-base/test-lang/xt/substrate/base_pubsub_test.clj"
+  "../../../../../../foundation-base/test-lang/xt/substrate/base_router_test.clj"
+  "../../../../../../foundation-base/test-lang/xt/substrate/base_util_test.clj"]
  :conformance/cases
- [{:case/id :hara.substrate.stream/local-before-route
-   :case/given [:trigger/registered :subscription/two-transports]
-   :case/when :stream/publish
-   :case/then [:trigger/invoked-once :router/after-trigger]}
-  {:case/id :hara.substrate.stream/stable-fanout
-   :case/given [:transport/id-z :transport/id-a]
-   :case/when :stream/publish
-   :case/then [:transport/id-a-sent-first :transport/id-z-sent-second]}
-  {:case/id :hara.substrate.stream/latest-overflow
-   :case/given [:delivery/latest :stream/backpressure]
-   :case/when [:stream/publish-a :stream/publish-b]
-   :case/then [:stream/a-replaced :stream/b-delivered]}
-  {:case/id :hara.substrate.stream/cause
-   :case/given [:frame/originating-id]
-   :case/when :stream/derive
-   :case/then [:frame/cause-id-preserved]}
-  {:case/id :hara.substrate.stream/unsubscribe-idempotent
-   :case/given [:subscription/registered]
-   :case/when [:subscription/remove :subscription/remove]
-   :case/then [:subscription/absent :operation/no-error]}
-  {:case/id :hara.substrate.stream/owner-stop
-   :case/given [:service/owns-trigger :transport/owns-subscription]
-   :case/when [:service/stop :transport/stop]
-   :case/then [:trigger/absent :subscription/absent]}]}
+ [{:case/id :xt.substrate.router/control-frames
+   :case/source-symbol "xt.substrate.base-router/subscribe-frame"
+   :case/expect
+   [["kind" "subscribe"] ["space-default" "__NODE__"]
+    ["id-prefix" "sub-"]]}
+  {:case/id :xt.substrate.router/add-remove
+   :case/source-symbol "xt.substrate.base-router/add-subscription"
+   :case/expect [:nested-entry/stored :empty-maps/pruned-on-remove]}
+  {:case/id :xt.substrate.router/unregister
+   :case/source-symbol "xt.substrate.base-router/unregister-connection"
+   :case/expect [:connection/removed :all-owned-subscriptions/removed]}
+  {:case/id :xt.substrate.router/targets
+   :case/source-symbol "xt.substrate.base-router/target-ids"
+   :case/expect :string-sorted-transport-ids}
+  {:case/id :xt.substrate.stream/missing-trigger
+   :case/source-symbol "xt.substrate.base-pubsub/invoke-trigger"
+   :case/expect :promise/resolved-nil}
+  {:case/id :xt.substrate.stream/trigger
+   :case/source-symbol "xt.substrate.base-pubsub/receive-publish"
+   :case/expect [:space/ensured :trigger/invoked :stream/resolved]}
+  {:case/id :xt.substrate.stream/fanout
+   :case/source-symbol "xt.substrate.base-util/stream-route-loop"
+   :case/expect [:sorted-targets/sequential-send :excluded-id/skipped]}]}

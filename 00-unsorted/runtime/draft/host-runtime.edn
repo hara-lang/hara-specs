@@ -1,4 +1,4 @@
-{:document/id :hal/host-runtime
+{:document/id :hara/host-runtime
  :document/type :runtime-spec
  :document/version "0.1.0-draft"
  :document/status :draft
@@ -47,14 +47,14 @@
    {:symbol host/capability? :arguments [capability]}]}
 
  :host/substrate
- {:spec :hara/substrate-base
-  :service-spec :hara/substrate-service
-  :transport-spec :hara/substrate-transport
-  :runtime-profile :hara/substrate-runtime-profiles
+ {:related-contract :xt/substrate-base
+  :source-implementation "xt.substrate"
+  :relationship :related-not-conforming
+  :conformance-claim false
   :layer :portable-above-host
   :host-authority false
   :role
-  "Normative substrate behavior is defined by 02-platform/000060 through 000069. This host contract only supplies capabilities to adapters that cross an embedding boundary."}
+  "The numbered substrate family specifies the pinned XTalk library. This host contract does not claim that Hara runtimes implement that complete contract."}
 
  :host/descriptor
  {:version-key :host/version

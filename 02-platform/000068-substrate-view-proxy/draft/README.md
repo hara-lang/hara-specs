@@ -1,8 +1,11 @@
-# Substrate view proxy
+# XTalk substrate views and page proxy
 
-This draft defines a rendering-independent view tree and the request/stream
-proxy joining it to page-model services. It specifies validation, declared
-action dispatch, state snapshots, causality, and deterministic cleanup.
+This draft uses the literal XTalk view shapes:
 
-Normative data is in `substrate-view-proxy.edn`; executable vectors are in
-`conformance/view-proxy.edn`.
+- view: `version`, `id`, `bindings`, `root`
+- node: `component`, `props`, `children`
+- action: `action`, `payload`
+- event projection: `$`, `path`
+
+It also covers the component catalog, examples, and the complete page-proxy
+handler and signal bridge.

@@ -1,104 +1,94 @@
-{:document/id :hara/substrate-stream-router
- :document/type :substrate-spec
- :document/version "0.1.0"
+{:document/id :xt/substrate-stream-router
+ :document/type :xt-substrate-spec
+ :document/version "0.2.0"
  :document/status :draft
- :document/title "Hara substrate stream and router contract"
+ :document/title "XTalk substrate pub/sub and router contract"
  :document/summary
- "Defines triggers, publication, subscriptions, routed fan-out, delivery modes, overflow behavior, and ownership cleanup."
+ "Defines the actual trigger, connection, subscription, publish, routing, and control-frame behavior."
 
  :spec/conforms-to
- {:spec/id :hara/substrate-metaspec
-  :spec/version "0.1.0"}
- :spec/family :hara/substrate
+ {:spec/id :xt/substrate-metaspec :spec/version "0.2.0"}
+ :spec/family :xt/substrate
  :spec/depends-on
- [:hara/substrate-base :hara/substrate-frame :hara/substrate-node
-  :hara/substrate-service]
+ [:xt/substrate-base :xt/substrate-frame :xt/substrate-node
+  :xt/substrate-request]
 
- :spec/scope
- {:scope/includes
-  [:stream/triggers :stream/publication :stream/subscriptions
-   :stream/router :stream/delivery :stream/cleanup]
-  :scope/excludes
-  [:stream/physical-buffer :stream/durable-log :stream/global-order]}
+ :source/modules
+ [{:module/id :xt.substrate.stream/pubsub
+   :module/namespace "xt.substrate.base-pubsub"
+   :module/path "../../../../../foundation-base/src-lang/xt/substrate/base_pubsub.clj"}
+  {:module/id :xt.substrate.stream/router
+   :module/namespace "xt.substrate.base-router"
+   :module/path "../../../../../foundation-base/src-lang/xt/substrate/base_router.clj"}
+  {:module/id :xt.substrate.stream/util
+   :module/namespace "xt.substrate.base-util"
+   :module/path "../../../../../foundation-base/src-lang/xt/substrate/base_util.clj"}]
 
- :spec/invariants
- [{:requirement/id :hara.substrate.stream/single-local-trigger
-   :requirement/level :must
-   :requirement/text "One publication invokes its matching local trigger no more than once."}
-  {:requirement/id :hara.substrate.stream/stable-fanout
-   :requirement/level :must
-   :requirement/text "Router fan-out visits matching transports in lexical transport-id order."}
-  {:requirement/id :hara.substrate.stream/cause-preserved
-   :requirement/level :must
-   :requirement/text "A derived publication preserves the originating frame id as its cause id."}
-  {:requirement/id :hara.substrate.stream/owned-cleanup
-   :requirement/level :must
-   :requirement/text "Stopping a transport, service, or node removes all subscriptions owned by it."}]
+ :router/records
+ [{:record/name "RouterConnectionEntry" :record/fields ["id" "meta"]}
+  {:record/name "RouterSubscriptionEntry" :record/fields ["id" "meta"]}
+  {:record/name "RouterState"
+   :record/fields ["connections" "subscriptions"]
+   :record/subscription-shape
+   ["space-id" "signal" "transport-id" "RouterSubscriptionEntry"]}]
 
- :stream/trigger
- {:trigger/identity [:trigger/space :trigger/signal]
-  :trigger/signature
-  [:trigger/space :trigger/signal :trigger/value :trigger/context
-   :trigger/node]
-  :trigger/operations
-  [:trigger/register :trigger/get :trigger/list :trigger/unregister]
-  :trigger/list-order :space-then-signal-lexical}
+ :router/symbols
+ ["RouterSignalSubscriptions" "RouterSpaceSubscriptions"
+  "RouterSubscriptions" "subscribe-frame" "unsubscribe-frame" "ensure-router"
+  "get-connections" "get-subscriptions" "register-connection"
+  "prune-subscription-signal-loop" "prune-subscription-space-loop"
+  "unregister-connection" "ensure-space-subscriptions"
+  "ensure-signal-subscriptions" "add-subscription"
+  "remove-subscription" "list-subscriptions" "target-ids"
+  "receive-subscribe" "receive-unsubscribe"]
+ :stream/symbols
+ ["subscribe" "unsubscribe" "invoke-trigger" "receive-publish"
+  "register-trigger" "get-trigger" "unregister-trigger"
+  "publish" "stream-route-loop" "route-stream" "broadcast-transport"
+  "receive-frame"]
 
- :stream/subscription
- {:subscription/identity
-  [:subscription/space :subscription/signal :subscription/transport-id
-   :subscription/id]
-  :subscription/operations
-  [:subscription/add :subscription/remove :subscription/list
-   :subscription/remove-owner]
-  :subscription/add-kind :frame.kind/subscribe
-  :subscription/remove-kind :frame.kind/unsubscribe
-  :subscription/list-order :space-signal-transport-id}
+ :spec/behavior
+ [{:behavior/id :xt.substrate.router/connection-cleanup
+   :behavior/text "unregister-connection deletes the connection and recursively removes that transport id from all subscription maps, pruning empty signal and space maps."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.router/subscription
+   :behavior/text "One subscription entry is stored per space, signal, and transport id; adding replaces that transport entry and removing prunes empty maps."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.router/list
+   :behavior/text "list-subscriptions returns the whole map when space is nil, the space map when signal is nil, or sorted transport ids for a signal."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.stream/trigger
+   :behavior/text "invoke-trigger returns a resolved nil promise when absent; otherwise it ensures the space, invokes fn with space, stream, and node, and wraps non-native-promise output."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.stream/publish-order
+   :behavior/text "publish creates a stream frame, awaits local receive-publish, then sequentially routes to sorted subscribed transport ids while excluding metadata transport_id."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.stream/no-delivery-policy
+   :behavior/text "The pinned router has no ordered/latest/best-effort modes, capacity, overflow, or durable delivery contract."
+   :behavior/evidence :evidence/source-only}]
 
- :stream/publication
- {:publication/kind :frame.kind/stream
-  :publication/order
-  [:publication/invoke-local-trigger :publication/route-subscribers]
-  :publication/context
-  [:frame/id :frame/cause-id :frame/origin :frame/transport-id]}
-
- :stream/router
- {:router/key [:frame/space :frame/op]
-  :router/fanout-order :transport-id-lexical
-  :router/self-echo-default false
-  :router/unknown-subscription :router/ignore-and-diagnose
-  :router/send-failure :router/continue-and-diagnose}
-
- :stream/delivery
- [{:delivery/id :signal.delivery/ordered
-   :delivery/guarantee :per-subscription-emission-order
-   :delivery/overflow :stream/fail-subscription}
-  {:delivery/id :signal.delivery/latest
-   :delivery/guarantee :latest-observable-value
-   :delivery/overflow :stream/replace-pending}
-  {:delivery/id :signal.delivery/best-effort
-   :delivery/guarantee :none
-   :delivery/overflow :stream/drop-and-diagnose}]
-
- :stream/cleanup-order
- [:stream/block-new-publications
-  :stream/remove-owned-subscriptions
-  :stream/unregister-owned-triggers
-  :stream/release-buffers]
+ :source/evidence
+ [{:evidence/id :xt.substrate.stream/tests
+   :evidence/source
+   ["../../../../../foundation-base/src-lang/xt/substrate/base_pubsub.clj"
+    "../../../../../foundation-base/src-lang/xt/substrate/base_router.clj"
+    "../../../../../foundation-base/src-lang/xt/substrate/base_util.clj"]
+   :evidence/symbols [:router/symbols :stream/symbols]
+   :evidence/tests
+   ["../../../../../foundation-base/test-lang/xt/substrate/base_pubsub_test.clj"
+    "../../../../../foundation-base/test-lang/xt/substrate/base_router_test.clj"
+    "../../../../../foundation-base/test-lang/xt/substrate/base_util_test.clj"]
+   :evidence/level :evidence/source-and-test}]
 
  :spec/references
- [{:reference/id :hara.substrate.stream/hara
-   :reference/kind :implementation
-   :reference/path "../../../../lib/src/std/lib/substrate.hal"
-   :reference/authority :evidence
-   :reference/description "Current Hara trigger, stream, and router implementation."}
-  {:reference/id :hara.substrate.stream/conformance
-   :reference/kind :conformance
-   :reference/path "conformance/stream-router.edn"
-   :reference/authority :evidence
-   :reference/description "Portable stream and router cases."}]
+ [{:reference/id :xt.substrate.stream/source
+   :reference/path "../../../../../foundation-base/src-lang/xt/substrate/base_pubsub.clj"
+   :reference/authority :normative}
+  {:reference/id :xt.substrate.router/source
+   :reference/path "../../../../../foundation-base/src-lang/xt/substrate/base_router.clj"
+   :reference/authority :normative}]
 
  :spec/conformance
- [{:conformance/id :hara.substrate/stream-router-cases
+ [{:conformance/id :xt.substrate/stream-router
    :conformance/path "conformance/stream-router.edn"
    :conformance/required true}]}

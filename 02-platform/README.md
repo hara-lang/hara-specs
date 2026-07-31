@@ -12,26 +12,26 @@ other interfaces that must remain portable across supported Hara runtimes.
   extension boundary.
 - [`000051-transport-resp`](000051-transport-resp/) — the RESP
   evaluation-broker transport.
-- [`000060-substrate-base`](000060-substrate-base/) — common substrate
-  identities, errors, compatibility, and family meta-specification.
-- [`000061-substrate-frame`](000061-substrate-frame/) — normalized
-  `substrate.v1` frames, kinds, correlation, validation, and JSON encoding.
-- [`000062-substrate-node`](000062-substrate-node/) — node identity, spaces,
-  registries, dispatch, lifecycle, and ownership.
-- [`000063-substrate-service`](000063-substrate-service/) — managed service
-  descriptors, dependencies, capabilities, lifecycle, actions, and signals.
+- [`000060-substrate-base`](000060-substrate-base/) — source authority,
+  namespace topology, and fidelity rules for the existing `xt.substrate`.
+- [`000061-substrate-frame`](000061-substrate-frame/) — XTalk NodeFrame
+  constructors, five frame kinds, validation, normalization, and JSON.
+- [`000062-substrate-node`](000062-substrate-node/) — mutable EventNode and
+  NodeSpace records, construction, configuration, and state operations.
+- [`000063-substrate-service`](000063-substrate-service/) — the arbitrary-value
+  EventNode service registry and built-in utility handlers.
 - [`000064-substrate-request`](000064-substrate-request/) — handlers,
-  promise-normalized invocation, settlement, cancellation, and timeouts.
+  promise normalization, pending entries, routing, and settlement.
 - [`000065-substrate-stream-router`](000065-substrate-stream-router/) —
-  triggers, subscriptions, delivery modes, fan-out, and cleanup.
-- [`000066-substrate-transport`](000066-substrate-transport/) — logical
-  transport lifecycle and carrier profiles including HTA/1.
-- [`000067-substrate-page-model`](000067-substrate-page-model/) — XTalk page,
-  group, and model services.
-- [`000068-substrate-view-proxy`](000068-substrate-view-proxy/) — portable
-  view descriptions and page proxy behavior.
+  XTalk triggers, router maps, subscriptions, control frames, and fan-out.
+- [`000066-substrate-transport`](000066-substrate-transport/) — NodeTransport
+  plus memory, browser, worker, MessagePort, and WebSocket adapters.
+- [`000067-substrate-page-model`](000067-substrate-page-model/) — the XTalk
+  per-space page runtime, model pipelines, dependencies, and throttling.
+- [`000068-substrate-view-proxy`](000068-substrate-view-proxy/) — the exact
+  XTalk view IR, catalog, subscriptions, demos, and page proxy.
 - [`000069-substrate-runtime-profiles`](000069-substrate-runtime-profiles/) —
-  Hara/XTalk mappings, implementation gaps, and validation gates.
+  generated-runtime coverage reported by the pinned XTalk tests.
 - [`000100-lsp-base`](000100-lsp-base/) — the portable Language Server
   Protocol profile, shared analysis facts, IDE capabilities, and safety rules.
 - [`000200-chip-base`](000200-chip-base/) — the bounded compact-AST matching

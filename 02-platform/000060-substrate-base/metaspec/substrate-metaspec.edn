@@ -1,127 +1,54 @@
-{:document/id :hara/substrate-metaspec
- :document/type :hara/metaspec
- :document/version "0.1.0"
+{:document/id :xt/substrate-metaspec
+ :document/type :xt-substrate-metaspec
+ :document/version "0.2.0"
  :document/status :draft
- :document/title "Hara substrate family meta-specification"
+ :document/title "XTalk substrate source-fidelity metaspec"
  :document/summary
- "Defines the common document shape, dependency rules, requirement levels, references, and conformance linkage for the 00006x substrate family."
+ "Defines a source-backed document model for the existing xt.substrate implementation."
 
- :spec/conforms-to
- {:spec/id :hara/metaspec-metaspec
-  :spec/version "0.1.0"}
- :spec/artifact-kind :hara/substrate-spec
+ :metaspec/source-authority
+ {:source/repository "../foundation-base"
+  :source/revision "efa09d39ce44c28dfaf6ff064752d17ccd444e92"
+  :source/root "src-lang/xt"
+  :source/tests "test-lang/xt"
+  :source/rule
+  "Normative behavior must be observable in the pinned source or its tests. Desired behavior is outside this specification."}
 
- :meta/document-schema
- {:schema/id :hara.substrate/document
-  :schema/type :map
-  :schema/closed false
-  :schema/required
-  [:document/id
-   :document/type
-   :document/version
-   :document/status
-   :document/title
-   :document/summary
-   :spec/conforms-to
-   :spec/family
-   :spec/depends-on
-   :spec/scope
-   :spec/invariants
-   :spec/references
+ :metaspec/document
+ {:schema/required
+  [:document/id :document/type :document/version :document/status
+   :document/title :document/summary :spec/conforms-to :spec/family
+   :spec/depends-on :source/modules :spec/behavior :spec/references
    :spec/conformance]
-  :schema/properties
-  {:document/id {:schema/type :keyword :schema/constraint :qualified}
-   :document/type {:schema/value :substrate-spec}
-   :document/version {:schema/type :string}
-   :document/status {:schema/type :enum
-                     :schema/values [:draft :candidate :stable :deprecated]}
-   :document/title {:schema/type :string}
-   :document/summary {:schema/type :string}
-   :spec/conforms-to {:schema/type :map}
-   :spec/family {:schema/value :hara/substrate}
-   :spec/depends-on {:schema/type :vector}
-   :spec/scope {:schema/type :map}
-   :spec/invariants {:schema/type :vector}
-   :spec/references {:schema/type :vector}
-   :spec/conformance {:schema/type :vector}}}
+  :schema/document-type :xt-substrate-spec
+  :schema/family :xt/substrate}
 
- :meta/schemas
- [{:schema/id :hara.substrate/requirement
-   :schema/type :map
-   :schema/required
-   [:requirement/id :requirement/level :requirement/text]}
-  {:schema/id :hara.substrate/reference
-   :schema/type :map
-   :schema/required
-   [:reference/id :reference/kind :reference/path
-    :reference/authority]}
-  {:schema/id :hara.substrate/conformance-link
-   :schema/type :map
-   :schema/required
-   [:conformance/id :conformance/path :conformance/required]}]
+ :metaspec/evidence
+ {:evidence/levels
+  [:evidence/source-and-test :evidence/source-only]
+  :evidence/required
+  [:evidence/id :evidence/source :evidence/symbols :evidence/level]
+  :evidence/no-inference
+  "Silence in the implementation does not establish ordering, lifecycle, retry, timeout, capability, cleanup, or portability guarantees."}
 
- :meta/cross-references
- [{:reference/id :hara.substrate/dependency-reference
-   :reference/from :spec/depends-on
-   :reference/to :document/id}
-  {:reference/id :hara.substrate/conformance-reference
-   :reference/from :conformance/path
-   :reference/to :document-relative-path}]
-
- :meta/requirements
- [{:requirement/id :hara.substrate/qualified-keys
+ :metaspec/requirements
+ [{:requirement/id :xt.substrate.meta/qualified-map-keys
    :requirement/level :must
-   :requirement/text "Every map key in a substrate specification is a qualified keyword."}
-  {:requirement/id :hara.substrate/stable-identifiers
+   :requirement/text "Specification EDN maps use qualified keyword keys."}
+  {:requirement/id :xt.substrate.meta/source-traceability
    :requirement/level :must
-   :requirement/text "Document, requirement, reference, case, entity, operation, state, and profile identifiers are stable qualified keywords."}
-  {:requirement/id :hara.substrate/acyclic-dependencies
-   :requirement/level :must
-   :requirement/text "The substrate specification dependency graph is acyclic."}
-  {:requirement/id :hara.substrate/no-runtime-values
+   :requirement/text "Every normative behavior names its source module and symbols."}
+  {:requirement/id :xt.substrate.meta/no-invented-api
    :requirement/level :must-not
-   :requirement/text "Normative documents contain executable callbacks, host handles, promises, or runtime instances."}
-  {:requirement/id :hara.substrate/conformance-linked
+   :requirement/text "A document introduces records, fields, operations, states, errors, or guarantees absent from the source baseline."}
+  {:requirement/id :xt.substrate.meta/tests-are-observations
    :requirement/level :must
-   :requirement/text "Every observable requirement names or links portable conformance evidence."}]
+   :requirement/text "Conformance cases preserve the inputs and observable results asserted by existing XTalk tests."}]
 
- :meta/checkers
- [{:checker/id :hara.substrate.rule/qualified-keys
-   :checker/type :builtin
-   :checker/op :hara.metaspec.check/qualified-map-keys
-   :checker/requirement :hara.substrate/qualified-keys}
-  {:checker/id :hara.substrate.rule/unique-identifiers
-   :checker/type :builtin
-   :checker/op :hara.metaspec.check/unique-field-values
-   :checker/requirement :hara.substrate/stable-identifiers
-   :checker/fields
-   [:document/id :requirement/id :reference/id :case/id :entity/id
-    :operation/id :state/id :profile/id]}
-  {:checker/id :hara.substrate.rule/no-runtime-values
-   :checker/type :builtin
-   :checker/op :hara.metaspec.check/no-host-values
-   :checker/requirement :hara.substrate/no-runtime-values}]
-
- :metaspec/generation
- {:generation/input
-  {:input/type :hara.substrate/spec-request
-   :input/required
-   [:request/id :request/title :request/summary :request/scope
-    :request/invariants :request/conformance]}
-  :generation/output
-  {:output/type :substrate-spec
-   :output/format :edn
-   :output/required
-   [:document/id :document/type :document/version :document/status
-    :document/title :document/summary :spec/conforms-to :spec/family
-    :spec/depends-on :spec/scope :spec/invariants :spec/references
-    :spec/conformance]}
-  :generation/process
-  [:generate-draft :lint :repair :verify-dependencies
-   :verify-conformance-links :emit-canonical-edn]
-  :generation/acceptance
-  {:acceptance/status :pass
-   :acceptance/no-unresolved-references true
-   :acceptance/acyclic true}}
+ :metaspec/validation
+ [:validation/edn-parse :validation/qualified-map-keys
+  :validation/unique-document-ids :validation/resolved-dependencies
+  :validation/source-paths-exist :validation/test-paths-exist
+  :validation/no-untraced-behavior]
 
  :spec/conformance []}

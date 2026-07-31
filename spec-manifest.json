@@ -140,13 +140,13 @@
       "label": "Greenways contribution"
     },
     {
-      "path": "00-unsorted/design/draft/hal-design-language.edn",
+      "path": "00-unsorted/design/draft/design-language.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/design/draft/hal-theme.edn",
+      "path": "00-unsorted/design/draft/theme.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -164,7 +164,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/package/draft/hal-packagespec.edn",
+      "path": "00-unsorted/package/draft/package-spec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -254,13 +254,13 @@
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/runtime/draft/hal-host-runtime.edn",
+      "path": "00-unsorted/runtime/draft/host-runtime.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/runtime/draft/hal-studio-runtime.edn",
+      "path": "00-unsorted/runtime/draft/studio-runtime.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -278,7 +278,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/000-metaspec/draft/hal-metaspec.edn",
+      "path": "01-lang/000-metaspec/draft/metaspec-metaspec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -320,7 +320,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/002-protocol/draft/hal-protocol-spec.edn",
+      "path": "01-lang/002-protocol/draft/protocol-spec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -344,7 +344,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/003-native/draft/hal-native-spec.edn",
+      "path": "01-lang/003-native/draft/native-spec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -368,7 +368,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/004-foundation/draft/hal-foundation-spec.edn",
+      "path": "01-lang/004-foundation/draft/foundation-spec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -392,7 +392,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/005-foundation-annex/draft/hal-foundation-annex.edn",
+      "path": "01-lang/005-foundation-annex/draft/foundation-annex.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -482,7 +482,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "02-platform/000001-cli/metaspec/hal-cli-app-metaspec.edn",
+      "path": "02-platform/000001-cli/metaspec/cli-app-metaspec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -500,7 +500,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "02-platform/000050-transport-hta/draft/hal-hta-contract.edn",
+      "path": "02-platform/000050-transport-hta/draft/transport-hta.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -518,7 +518,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "02-platform/000051-transport-resp/draft/hal-resp-protocol.edn",
+      "path": "02-platform/000051-transport-resp/draft/transport-resp.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -740,13 +740,13 @@
       "owner": "hara-lang"
     },
     {
-      "path": "02-platform/000200-chip-base/draft/conformance/matcher.edn",
+      "path": "02-platform/000200-chip-base/draft/chip-base.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "02-platform/000200-chip-base/draft/hal-chip-base.edn",
+      "path": "02-platform/000200-chip-base/draft/conformance/matcher.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"

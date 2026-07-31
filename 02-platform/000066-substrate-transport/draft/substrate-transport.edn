@@ -1,146 +1,125 @@
-{:document/id :hara/substrate-transport
- :document/type :substrate-spec
- :document/version "0.1.0"
+{:document/id :xt/substrate-transport
+ :document/type :xt-substrate-spec
+ :document/version "0.2.0"
  :document/status :draft
- :document/title "Hara substrate transport contract"
+ :document/title "XTalk substrate transport contract"
  :document/summary
- "Defines logical transport identity, lifecycle, attachment, receive context, codec boundaries, capability negotiation, and portable transport profiles."
+ "Defines NodeTransport attachment and the existing memory, text, browser-worker, MessagePort, and WebSocket adapters."
 
  :spec/conforms-to
- {:spec/id :hara/substrate-metaspec
-  :spec/version "0.1.0"}
- :spec/family :hara/substrate
+ {:spec/id :xt/substrate-metaspec :spec/version "0.2.0"}
+ :spec/family :xt/substrate
  :spec/depends-on
- [:hara/substrate-base :hara/substrate-frame :hara/substrate-node
-  :hara/substrate-request :hara/substrate-stream-router]
+ [:xt/substrate-base :xt/substrate-frame :xt/substrate-node
+  :xt/substrate-request :xt/substrate-stream-router]
 
- :spec/scope
- {:scope/includes
-  [:transport/descriptor :transport/lifecycle :transport/interface
-   :transport/attachment :transport/receive :transport/codecs
-   :transport/negotiation :transport/profiles]
-  :scope/excludes
-  [:transport/socket-api :transport/browser-api :transport/tls-policy]}
+ :source/modules
+ [{:module/id :xt.substrate.transport/root
+   :module/namespace "xt.substrate"
+   :module/path "../../../../../foundation-base/src-lang/xt/substrate.clj"}
+  {:module/id :xt.substrate.transport/memory
+   :module/namespace "xt.substrate.transport-memory"
+   :module/path "../../../../../foundation-base/src-lang/xt/substrate/transport_memory.clj"}
+  {:module/id :xt.substrate.transport/browser
+   :module/namespace "xt.substrate.transport-browser"
+   :module/path "../../../../../foundation-base/src-lang/xt/substrate/transport_browser.clj"}
+  {:module/id :xt.substrate.transport/websocket
+   :module/namespace "xt.substrate.transport-websocket"
+   :module/path "../../../../../foundation-base/src-lang/xt/substrate/transport_websocket.clj"}]
 
- :spec/invariants
- [{:requirement/id :hara.substrate.transport/logical-frame
-   :requirement/level :must
-   :requirement/text "All transport profiles deliver the same normalized logical substrate frame to the node."}
-  {:requirement/id :hara.substrate.transport/physical-encoding-owned
-   :requirement/level :must
-   :requirement/text "The transport profile, not request or stream semantics, owns physical encoding and transfer."}
-  {:requirement/id :hara.substrate.transport/receive-context
-   :requirement/level :must
-   :requirement/text "A received frame carries local transport identity without serializing the runtime transport instance."}
-  {:requirement/id :hara.substrate.transport/stop-settles
-   :requirement/level :must
-   :requirement/text "Stopping a transport rejects its pending requests and removes its subscriptions before releasing the transport instance."}]
+ :transport/record
+ {:record/name "NodeTransport"
+  :record/tag-field ["::" "substrate.transport"]
+  :record/fields ["id" "listener" "meta" "send_fn" "start_fn" "stop_fn"]
+  :record/function-signatures
+  [["send_fn" ["NodeFrame"] :xt/any]
+   ["start_fn" ["NodeTransportListener"] :xt/any]
+   ["stop_fn" [:xt/any] :xt/any]]}
 
- :transport/descriptor
- {:descriptor/required
-  [:transport/id :transport/profile :transport/capabilities
-   :transport/codecs :transport/meta]
-  :descriptor/id-rule :node-local-unique-non-empty-string
-  :descriptor/portable true}
+ :transport/core-symbols
+ ["NodeTransportSendFn" "NodeTransportStartFn" "NodeTransportStopFn"
+  "transport?" "transport-create" "transport-get" "transport-list"
+  "transport-send" "transport-broadcast-loop" "broadcast-transport"
+  "attach-transport" "detach-transport"]
+ :transport/memory-symbols
+ ["TextEndpointListener" "TextEndpointWriteFn" "TextEndpointStartFn"
+  "TextEndpointStopFn" "TextEndpointCreateFn" "MemoryWireEndpoint"
+  "MemoryWirePair" "MemoryWireNetwork" "event-text" "network-targets"
+  "ensure-network-state"
+  "ensure-network-targets-loop" "configure-network-links-loop"
+  "deliver-network-loop" "memory-endpoint"
+  "create-network-endpoints-loop" "text-endpoint" "memory-pair"
+  "memory-network" "link-pair"]
+ :transport/browser-symbols
+ ["NodeTransportConnection" "ready-event?" "await-ready"
+  "connection-record" "wrap-ready-endpoint"
+  "source-endpoint" "connect-endpoint" "event-data"
+  "messageport-endpoint" "sharedworker-endpoint" "worker-endpoint"
+  "self-endpoint" "connect-port" "connect-sharedworker" "connect-worker"
+  "boot-self" "disconnect" "blob-url" "webworker-source"
+  "sharedworker-source" "sharedworker-url-source" "node-worker-source"]
+ :transport/websocket-symbols
+ ["WebSocketCreateFn" "WebSocketConnectFn" "socket-open?"
+  "add-socket-listener" "remove-socket-listener"
+  "event-text" "websocket-url" "mark-open" "mark-error" "mark-close"
+  "await-open" "connect-socket" "resolve-socket" "websocket-native?"
+  "ensure-promise" "websocket-source" "websocket-endpoint"]
 
- :transport/interface
- {:interface/required
-  [:transport/start :transport/send :transport/stop]
-  :interface/start-arguments
-  [:transport/receive-listener :transport/error-listener]
-  :interface/send-arguments [:frame/normalized]
-  :interface/stop-arguments [:stop/reason]
-  :interface/returns :value-or-promise}
+ :spec/behavior
+ [{:behavior/id :xt.substrate.transport/send
+   :behavior/text "transport-send errors when the id is absent or send_fn is nil and otherwise promise-normalizes send_fn(frame)."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.transport/attach
+   :behavior/text "attach-transport wraps non-NodeTransport values, stores the transport, registers a router connection, optionally starts it with a receive listener, and stores the start result as listener."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.transport/detach
+   :behavior/text "detach-transport removes the transport, unregisters the router connection and subscriptions, optionally invokes stop_fn with listener, and resolves to the transport or nil."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.transport/memory
+   :behavior/text "The memory module supplies raw object endpoints, JSON text endpoints, pairs, directed networks, and link-pair mutation."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.transport/browser
+   :behavior/text "The browser module adapts MessagePort, Worker, SharedWorker, and self endpoints and supplies generated worker source and connection helpers."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.transport/websocket
+   :behavior/text "The WebSocket module normalizes URLs and events, tracks open/error/close state, waits for readiness, and provides source and endpoint constructors."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.transport/no-generalized-profile
+   :behavior/text "The pinned source does not define lifecycle states, capability descriptors, codec negotiation, HTA, structured-clone, transferable, or generic profile records."
+   :behavior/evidence :evidence/source-only}]
 
- :transport/states
- [{:state/id :transport.state/created}
-  {:state/id :transport.state/starting}
-  {:state/id :transport.state/running}
-  {:state/id :transport.state/stopping}
-  {:state/id :transport.state/stopped}
-  {:state/id :transport.state/failed}]
-
- :transport/transitions
- [{:transition/from :transport.state/created
-   :transition/operation :transport/start
-   :transition/to :transport.state/starting}
-  {:transition/from :transport.state/starting
-   :transition/operation :transport/start-succeeded
-   :transition/to :transport.state/running}
-  {:transition/from :transport.state/starting
-   :transition/operation :transport/start-failed
-   :transition/to :transport.state/failed}
-  {:transition/from :transport.state/running
-   :transition/operation :transport/stop
-   :transition/to :transport.state/stopping}
-  {:transition/from :transport.state/stopping
-   :transition/operation :transport/stop-succeeded
-   :transition/to :transport.state/stopped}]
-
- :transport/attachment
- {:attachment/operations
-  [:transport/attach :transport/get :transport/list :transport/detach]
-  :attachment/precondition :transport.state/running
-  :attachment/list-order :transport-id-lexical
-  :attachment/detach-order
-  [:transport/block-send :transport/reject-pending
-   :transport/remove-subscriptions :transport/stop-instance
-   :transport/remove-from-node]}
-
- :transport/receive
- {:receive/pipeline
-  [:transport/decode :frame/normalize :frame/validate
-   :transport/add-local-context :node/dispatch]
-  :receive/local-context
-  [:frame/transport-id :frame/received-at-ms]
-  :receive/invalid-frame :transport/reject-and-diagnose}
-
- :transport/negotiation
- {:negotiation/action "@/node-info"
-  :negotiation/returns
-  [:node/id :substrate/version :transport/profile
-   :transport/capabilities :transport/codecs]
-  :negotiation/required-before-non-control-send false}
-
- :transport/profiles
- [{:profile/id :substrate.transport/direct
-   :profile/encoding :runtime-value
-   :profile/portable-wire false}
-  {:profile/id :substrate.transport/memory
-   :profile/encoding :normalized-frame
-   :profile/portable-wire true}
-  {:profile/id :substrate.transport/hta1
-   :profile/encoding :hta1
-   :profile/spec :hara/transport-hta
-   :profile/portable-wire true}
-  {:profile/id :substrate.transport/structured-clone
-   :profile/encoding :browser-structured-clone
-   :profile/portable-wire true}
-  {:profile/id :substrate.transport/transferable
-   :profile/encoding :browser-transfer-list
-   :profile/portable-wire true}
-  {:profile/id :substrate.transport/websocket
-   :profile/encoding :negotiated-text-or-binary
-   :profile/portable-wire true}]
+ :source/evidence
+ [{:evidence/id :xt.substrate.transport/tests
+   :evidence/source
+   ["../../../../../foundation-base/src-lang/xt/substrate.clj"
+    "../../../../../foundation-base/src-lang/xt/substrate/transport_memory.clj"
+    "../../../../../foundation-base/src-lang/xt/substrate/transport_browser.clj"
+    "../../../../../foundation-base/src-lang/xt/substrate/transport_websocket.clj"]
+   :evidence/symbols
+   [:transport/core-symbols :transport/memory-symbols
+    :transport/browser-symbols :transport/websocket-symbols]
+   :evidence/tests
+   ["../../../../../foundation-base/test-lang/xt/substrate_transport_test.clj"
+    "../../../../../foundation-base/test-lang/xt/substrate/transport_memory_test.clj"
+    "../../../../../foundation-base/test-lang/xt/substrate/transport_browser_test.clj"
+    "../../../../../foundation-base/test-lang/xt/substrate/transport_websocket_test.clj"]
+   :evidence/level :evidence/source-and-test}]
 
  :spec/references
- [{:reference/id :hara.substrate.transport/hara
-   :reference/kind :implementation
-   :reference/path "../../../../lib/src/std/lib/substrate.hal"
-   :reference/authority :evidence
-   :reference/description "Current Hara function-backed transport registry."}
-  {:reference/id :hara.substrate.transport/hta
-   :reference/kind :specification
-   :reference/path "../../000050-transport-hta/draft/hal-hta-contract.edn"
-   :reference/authority :normative
-   :reference/description "HTA/1 physical transport profile."}
-  {:reference/id :hara.substrate.transport/conformance
-   :reference/kind :conformance
-   :reference/path "conformance/transport.edn"
-   :reference/authority :evidence
-   :reference/description "Logical transport profile matrix."}]
+ [{:reference/id :xt.substrate.transport/source
+   :reference/path "../../../../../foundation-base/src-lang/xt/substrate.clj"
+   :reference/authority :normative}
+  {:reference/id :xt.substrate.transport/memory
+   :reference/path "../../../../../foundation-base/src-lang/xt/substrate/transport_memory.clj"
+   :reference/authority :normative}
+  {:reference/id :xt.substrate.transport/browser
+   :reference/path "../../../../../foundation-base/src-lang/xt/substrate/transport_browser.clj"
+   :reference/authority :normative}
+  {:reference/id :xt.substrate.transport/websocket
+   :reference/path "../../../../../foundation-base/src-lang/xt/substrate/transport_websocket.clj"
+   :reference/authority :normative}]
 
  :spec/conformance
- [{:conformance/id :hara.substrate/transport-cases
+ [{:conformance/id :xt.substrate/transport
    :conformance/path "conformance/transport.edn"
    :conformance/required true}]}

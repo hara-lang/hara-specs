@@ -3,7 +3,7 @@
 Status: draft, version 0.1.0.
 
 The artifact metaspec conforms to the self-describing normative
-[`hal-metaspec.edn`](../../../01-lang/000-metaspec/draft/hal-metaspec.edn).
+[`metaspec-metaspec.edn`](../../../01-lang/000-metaspec/draft/metaspec-metaspec.edn).
 The normative artifact document is
 [`artifact-metaspec.edn`](artifact-metaspec.edn). This Markdown file is an
 informative guide.

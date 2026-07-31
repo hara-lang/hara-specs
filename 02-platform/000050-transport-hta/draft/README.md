@@ -4,7 +4,7 @@ Status: **draft**
 Contract version: **0.1.0**
 
 The authoritative machine-readable contract is
-[`hal-hta-contract.edn`](hal-hta-contract.edn). This README is its
+[`transport-hta.edn`](transport-hta.edn). This README is its
 human-readable companion.
 
 This document describes the WASM provider boundary behind ordinary `:require` forms. A Hara

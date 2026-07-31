@@ -4,7 +4,7 @@ Status: **draft**
 Contract version: **0.1.0**
 
 The authoritative machine-readable contract is
-[`hal-resp-protocol.edn`](hal-resp-protocol.edn). This README is its
+[`transport-resp.edn`](transport-resp.edn). This README is its
 human-readable companion.
 
 The Hara native runtime can expose its evaluation broker over TCP using the

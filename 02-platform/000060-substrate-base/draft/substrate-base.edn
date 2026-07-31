@@ -1,126 +1,64 @@
-{:document/id :hara/substrate-base
- :document/type :substrate-spec
- :document/version "0.1.0"
+{:document/id :xt/substrate-base
+ :document/type :xt-substrate-spec
+ :document/version "0.2.0"
  :document/status :draft
- :document/title "Hara portable substrate base"
+ :document/title "XTalk substrate module contract"
  :document/summary
- "Defines the shared vocabulary, identities, value boundary, errors, compatibility rules, and dependency order for Hara and XTalk substrate services."
+ "Defines the source baseline, namespace topology, public facade, and evidence rules for xt.substrate."
 
  :spec/conforms-to
- {:spec/id :hara/substrate-metaspec
-  :spec/version "0.1.0"}
- :spec/family :hara/substrate
+ {:spec/id :xt/substrate-metaspec :spec/version "0.2.0"}
+ :spec/family :xt/substrate
  :spec/depends-on []
 
- :spec/scope
- {:scope/includes
-  [:substrate/identity
-   :substrate/value-boundary
-   :substrate/error-boundary
-   :substrate/compatibility
-   :substrate/dependency-order]
-  :scope/excludes
-  [:substrate/host-authority
-   :substrate/product-ui
-   :substrate/physical-transport]
-  :scope/wire-version "substrate.v1"}
+ :source/modules
+ [{:module/id :xt.substrate/root
+   :module/namespace "xt.substrate"
+   :module/path "../../../../../foundation-base/src-lang/xt/substrate.clj"
+   :module/role :public-facade}
+  {:module/id :xt.substrate/base
+   :module/namespaces
+   ["xt.substrate.base-frame" "xt.substrate.base-json"
+    "xt.substrate.base-space" "xt.substrate.base-request"
+    "xt.substrate.base-pubsub" "xt.substrate.base-router"
+    "xt.substrate.base-util" "xt.substrate.base-util-handlers"]}
+  {:module/id :xt.substrate/transports
+   :module/namespaces
+   ["xt.substrate.transport-memory" "xt.substrate.transport-browser"
+    "xt.substrate.transport-websocket"]}
+  {:module/id :xt.substrate/page-view
+   :module/namespaces
+   ["xt.substrate.page-core" "xt.substrate.page-util"
+    "xt.substrate.page-proxy" "xt.substrate.view"
+    "xt.substrate.view-catalog" "xt.substrate.view-demos"]}]
 
- :spec/invariants
- [{:requirement/id :hara.substrate.base/transport-neutral
-   :requirement/level :must
-   :requirement/text "Logical nodes, services, frames, requests, and streams do not depend on a physical transport."}
-  {:requirement/id :hara.substrate.base/no-host-authority
-   :requirement/level :must-not
-   :requirement/text "Possession of a substrate node, service descriptor, frame, or transport identifier grants host authority."}
-  {:requirement/id :hara.substrate.base/explicit-identities
-   :requirement/level :must
-   :requirement/text "Node, space, service, action, signal, frame, request, subscription, and transport identities are explicit non-empty strings."}
-  {:requirement/id :hara.substrate.base/portable-data
-   :requirement/level :must
-   :requirement/text "Values crossing a transport are immutable portable values or values encoded by an explicitly negotiated codec."}
-  {:requirement/id :hara.substrate.base/no-live-transfer
-   :requirement/level :must-not
-   :requirement/text "Runtime service instances, callbacks, promises, host façades, or live handles cross a transport unless another normative transport profile explicitly permits them."}]
+ :spec/behavior
+ [{:behavior/id :xt.substrate.base/generated-library
+   :behavior/text "The implementation is authored with def.xt, defn.xt, defspec.xt, and l/script forms and generated for the targets declared by its tests."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.base/public-facade
+   :behavior/text "xt.substrate re-exports space, page, view, proxy, node, service, handler, trigger, request, stream, router, and transport operations."
+   :behavior/evidence :evidence/source-and-test}
+  {:behavior/id :xt.substrate.base/mutable-runtime-values
+   :behavior/text "Nodes, spaces, transports, router tables, pending entries, services, page state, and view state are mutable target-language objects."
+   :behavior/evidence :evidence/source-and-test}]
 
- :substrate/entities
- [{:entity/id :substrate/node
-   :entity/identity :node/id}
-  {:entity/id :substrate/space
-   :entity/identity [:node/id :space/id]}
-  {:entity/id :substrate/service
-   :entity/identity [:node/id :service/id]}
-  {:entity/id :substrate/frame
-   :entity/identity :frame/id}
-  {:entity/id :substrate/request
-   :entity/identity :frame/id}
-  {:entity/id :substrate/subscription
-   :entity/identity
-   [:node/id :transport/id :space/id :signal/id :subscription/id]}
-  {:entity/id :substrate/transport
-   :entity/identity [:node/id :transport/id]}]
-
- :substrate/identifiers
- {:identifier/type :non-empty-string
-  :identifier/node-wide-space "__NODE__"
-  :identifier/generated-prefixes
-  {:identifier/request "req-"
-   :identifier/response "res-"
-   :identifier/event "evt-"
-   :identifier/subscription "sub-"}
-  :identifier/uniqueness
-  {:identifier/frame :within-node-retention-window
-   :identifier/service :within-node
-   :identifier/transport :within-node}}
-
- :substrate/error
- {:error/required
-  [:error/code :error/message]
-  :error/optional
-  [:error/data :error/cause :error/retryable]
-  :error/codes
-  [:substrate/invalid
-   :substrate/not-found
-   :substrate/already-exists
-   :substrate/not-running
-   :substrate/cancelled
-   :substrate/timeout
-   :substrate/capability-denied
-   :substrate/transport-closed
-   :substrate/internal]
-  :error/transport :portable-data}
-
- :substrate/dependency-order
- [:hara/substrate-base
-  :hara/substrate-frame
-  :hara/substrate-node
-  :hara/substrate-service
-  :hara/substrate-request
-  :hara/substrate-stream-router
-  :hara/substrate-transport
-  :hara/substrate-page-model
-  :hara/substrate-view-proxy
-  :hara/substrate-runtime-profiles]
-
- :substrate/compatibility
- {:compatibility/wire-version "substrate.v1"
-  :compatibility/unknown-fields :preserve-when-forwarding
-  :compatibility/unknown-frame-kind :reject
-  :compatibility/legacy-services :supported-by-profile
-  :compatibility/extensions :explicit-profile-only}
+ :source/evidence
+ [{:evidence/id :xt.substrate.evidence/root
+   :evidence/source "../../../../../foundation-base/src-lang/xt/substrate.clj"
+   :evidence/symbols ["EventNode" "NodeTransport" "node-create" "node-configure"]
+   :evidence/tests "../../../../../foundation-base/test-lang/xt/substrate_test.clj"
+   :evidence/level :evidence/source-and-test}]
 
  :spec/references
- [{:reference/id :hara.substrate.base/host-boundary
-   :reference/kind :related-contract
-   :reference/path "../../../00-unsorted/runtime/draft/hal-host-runtime.edn"
-   :reference/authority :normative
-   :reference/description "Embedding-host authority remains outside substrate."}
-  {:reference/id :hara.substrate.base/conformance
-   :reference/kind :conformance
-   :reference/path "conformance/base.edn"
-   :reference/authority :evidence
-   :reference/description "Base identity, error, and dependency cases."}]
+ [{:reference/id :xt.substrate.base/source
+   :reference/path "../../../../../foundation-base/src-lang/xt/substrate.clj"
+   :reference/authority :normative}
+  {:reference/id :xt.substrate.base/tests
+   :reference/path "../../../../../foundation-base/test-lang/xt/substrate_test.clj"
+   :reference/authority :evidence}]
 
  :spec/conformance
- [{:conformance/id :hara.substrate/base-cases
+ [{:conformance/id :xt.substrate/base
    :conformance/path "conformance/base.edn"
    :conformance/required true}]}
