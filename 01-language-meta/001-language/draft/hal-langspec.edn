@@ -7,7 +7,7 @@
  "Portable contract for the immutable data forms shared by HAL source and the Hara EDN profile."
 
  :spec/conforms-to
- {:document "../../000-metaspec/draft/hal-metaspec.edn"
+ {:document "../metaspec/language-metaspec.edn"
   :version "0.1.0-draft"}
 
  :spec/scope

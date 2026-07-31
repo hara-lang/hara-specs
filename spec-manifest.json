@@ -2,6 +2,18 @@
   "version": 1,
   "files": [
     {
+      "path": "00-unsorted/artifact/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/artifact/metaspec/artifact-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "00-unsorted/cli/draft/README.md",
       "kind": "markdown",
       "classification": "hara",
@@ -290,12 +302,6 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-language-meta/000-metaspec/draft/ARTIFACT-METASPEC.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
       "path": "01-language-meta/000-metaspec/draft/README.md",
       "kind": "markdown",
       "classification": "hara",
@@ -303,18 +309,6 @@
     },
     {
       "path": "01-language-meta/000-metaspec/draft/conformance/metaspec.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "01-language-meta/000-metaspec/draft/hal-artifact-metaspec.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "01-language-meta/000-metaspec/draft/hal-metaspec-metaspec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -339,6 +333,18 @@
     },
     {
       "path": "01-language-meta/001-language/draft/hal-langspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-language-meta/001-language/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-language-meta/001-language/metaspec/language-metaspec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"

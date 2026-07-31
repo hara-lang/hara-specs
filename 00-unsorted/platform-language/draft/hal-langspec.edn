@@ -7,7 +7,7 @@
  "Portable language contract for HAL (Hara Lisp), whose shared reader uses a restricted, host-neutral EDN profile with signed 64-bit integers and binary64 floating-point numbers."
 
  :spec/conforms-to
- {:document "../../../01-language-meta/000-metaspec/draft/hal-metaspec.edn"
+ {:document "../../../01-language-meta/001-language/metaspec/language-metaspec.edn"
   :version "0.1.0-draft"}
 
  :spec/scope

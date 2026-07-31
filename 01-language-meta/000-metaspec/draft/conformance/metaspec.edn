@@ -3,11 +3,11 @@
  :conformance/cases
  [{:case/id :hara.metaspec/valid-self-description
    :case/type :verify
-   :case/input "../hal-metaspec-metaspec.edn"
+   :case/input "../hal-metaspec.edn"
    :case/expected :pass}
   {:case/id :hara.metaspec/valid-artifact-metaspec
    :case/type :verify
-   :case/input "../hal-artifact-metaspec.edn"
+   :case/input "../../../../00-unsorted/artifact/metaspec/artifact-metaspec.edn"
    :case/expected :pass}
   {:case/id :hara.metaspec/missing-required-section
    :case/type :lint

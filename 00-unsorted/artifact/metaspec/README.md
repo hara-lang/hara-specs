@@ -2,11 +2,11 @@
 
 Status: draft, version 0.1.0.
 
-The artifact meta-spec conforms to the self-describing normative
-[`hal-metaspec-metaspec.edn`](hal-metaspec-metaspec.edn). The normative
-artifact document is
-[`hal-artifact-metaspec.edn`](hal-artifact-metaspec.edn). This Markdown file is
-an informative guide.
+The artifact metaspec conforms to the self-describing normative
+[`hal-metaspec.edn`](../../../01-language-meta/000-metaspec/draft/hal-metaspec.edn).
+The normative artifact document is
+[`artifact-metaspec.edn`](artifact-metaspec.edn). This Markdown file is an
+informative guide.
 
 An artifact specification is a sibling of the HAL language specification. It
 does not change HAL syntax. It declares an artifact kind, its five specification
