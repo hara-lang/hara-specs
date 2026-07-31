@@ -2,11 +2,11 @@
 
 Status: draft, version 0.1.0.
 
-The artifact meta-spec conforms to the self-describing normative
-[`hal-metaspec-metaspec.edn`](hal-metaspec-metaspec.edn). The normative
-artifact document is
-[`hal-artifact-metaspec.edn`](hal-artifact-metaspec.edn). This Markdown file is
-an informative guide.
+The artifact metaspec conforms to the self-describing normative
+[`hal-metaspec.edn`](../../../01-lang/000-metaspec/draft/hal-metaspec.edn).
+The normative artifact document is
+[`artifact-metaspec.edn`](artifact-metaspec.edn). This Markdown file is an
+informative guide.
 
 An artifact specification is a sibling of the HAL language specification. It
 does not change HAL syntax. It declares an artifact kind, its five specification
@@ -40,15 +40,17 @@ closure, verification resolves all schema and declared cross-references. Only a
 report with no failed, unknown, or blocked obligations is accepted as a
 generated meta-spec.
 
-The offline bootstrap workflow is:
+The offline bootstrap workflow uses the portable HAL checker:
 
-```text
-hara spec template
-hara spec lint generated-metaspec.edn --format edn
-hara spec verify generated-metaspec.edn --format edn
+```clojure
+(require [hara.metaspec.core :as metaspec])
+
+(metaspec/conforms generated-metaspec
+                  {:metaspec artifact-metaspec})
 ```
 
-`lint` checks document shape, qualified keys, stable IDs and uniqueness.
-`verify` adds schema-reference, cross-reference and `conforms-to` resolution.
-Exit status is 0 for a passing report, 1 for a valid document with findings,
-and 2 for unreadable input or invalid command usage.
+`conforms` checks document shape, qualified keys, stable IDs, uniqueness,
+schema references, declared cross-references, and checker obligations. The
+result is a structured report whose status is `:pass`, `:fail`, or `:blocked`.
+Installed extension checkers are resolved only by exact package coordinate and
+qualified HAL entrypoint.

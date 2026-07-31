@@ -29,13 +29,13 @@ def files() -> list[dict[str, str]]:
         if kind is None:
             continue
         entry = {"path": path, "kind": kind}
-        if path.startswith("contrib/greenways/"):
+        if path.startswith("00-unsorted/contrib/greenways/"):
             entry.update({
                 "classification": "contribution",
                 "owner": "greenways",
                 "label": "Greenways contribution",
             })
-        elif path.startswith("contrib/"):
+        elif path.startswith("00-unsorted/contrib/"):
             entry.update({
                 "classification": "contribution",
                 "owner": "multiple",

@@ -9,7 +9,7 @@ from pathlib import Path
 
 SPECS_ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = SPECS_ROOT.parent / "contrib"
-TARGET_ROOT = SPECS_ROOT / "contrib"
+TARGET_ROOT = SPECS_ROOT / "00-unsorted" / "contrib"
 PUBLISHABLE_NAMES = {"CONTRIBUTION.edn", "README.md"}
 
 

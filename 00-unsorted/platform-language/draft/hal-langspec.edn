@@ -7,7 +7,7 @@
  "Portable language contract for HAL (Hara Lisp), whose shared reader uses a restricted, host-neutral EDN profile with signed 64-bit integers and binary64 floating-point numbers."
 
  :spec/conforms-to
- {:document "../../metaspec/draft/hal-metaspec.edn"
+ {:document "../../../01-lang/001-language/metaspec/language-metaspec.edn"
   :version "0.1.0-draft"}
 
  :spec/scope
@@ -676,12 +676,12 @@
    :reference/description "Rust WebAssembly and Truffle parity cases."}
   {:reference/id :hal.ref/legacy-language
    :reference/kind :provenance
-   :reference/path "../../archive/planning/language/l0-language.md"
+   :reference/path "../../../99-archive/planning/language/l0-language.md"
    :reference/authority :historical
    :reference/description "Previous prose L0 contract used as draft source material."}
   {:reference/id :hal.ref/legacy-foundation
    :reference/kind :provenance
-   :reference/path "../../archive/planning/foundation/foundation.edn"
+   :reference/path "../../../99-archive/planning/foundation/foundation.edn"
    :reference/authority :historical
    :reference/description "Previous foundation boundary model used as draft source material."}]
 

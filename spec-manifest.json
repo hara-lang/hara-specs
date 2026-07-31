@@ -2,410 +2,464 @@
   "version": 1,
   "files": [
     {
-      "path": "README.md",
+      "path": "00-unsorted/artifact/metaspec/README.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "archive/planning/README.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/extensions/contract.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/extensions/overview.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/foundation/foundation.edn",
+      "path": "00-unsorted/artifact/metaspec/artifact-metaspec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "archive/planning/foundation/runtime-libraries.md",
+      "path": "00-unsorted/cli/draft/README.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "archive/planning/interop/xtalk-equivalence.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/language/compatibility/clojure-core-compatibility-overrides.json",
-      "kind": "json",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/language/compatibility/clojure-core-compatibility.json",
-      "kind": "json",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/language/compatibility/clojure-core-symbols.json",
-      "kind": "json",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/language/compatibility/hal-core-symbols.json",
-      "kind": "json",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/language/l0-language.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/language/typed.edn",
+      "path": "00-unsorted/cli/draft/conformance/options.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "archive/planning/runtime/hir.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/runtime/jvm-flavor.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/runtime/native-flavors.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "archive/planning/runtime/rust-mapping.edn",
+      "path": "00-unsorted/cli/draft/conformance/outcomes.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "archive/planning/runtime/rust-runtime.md",
-      "kind": "markdown",
+      "path": "00-unsorted/cli/draft/conformance/routes.edn",
+      "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "archive/planning/tooling/repl.md",
-      "kind": "markdown",
+      "path": "00-unsorted/cli/draft/hal-cli-app-metaspec.edn",
+      "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "contrib/README.md",
+      "path": "00-unsorted/cli/draft/hara-cli.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/contrib/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "multiple",
       "label": "Contributed specifications"
     },
     {
-      "path": "contrib/greenways/README.md",
+      "path": "00-unsorted/contrib/greenways/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/build/CONTRIBUTION.edn",
+      "path": "00-unsorted/contrib/greenways/build/CONTRIBUTION.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/build/examples/README.md",
+      "path": "00-unsorted/contrib/greenways/build/examples/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/build/spec/draft/README.md",
+      "path": "00-unsorted/contrib/greenways/build/spec/draft/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/build/spec/draft/conformance/checker.edn",
+      "path": "00-unsorted/contrib/greenways/build/spec/draft/conformance/checker.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/build/spec/draft/conformance/codec.edn",
+      "path": "00-unsorted/contrib/greenways/build/spec/draft/conformance/codec.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/build/spec/draft/conformance/graph.edn",
+      "path": "00-unsorted/contrib/greenways/build/spec/draft/conformance/graph.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/build/spec/draft/greenways-buildspec.edn",
+      "path": "00-unsorted/contrib/greenways/build/spec/draft/greenways-buildspec.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/supersonic/CONTRIBUTION.edn",
+      "path": "00-unsorted/contrib/greenways/supersonic/CONTRIBUTION.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/supersonic/README.md",
+      "path": "00-unsorted/contrib/greenways/supersonic/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/supersonic/spec/draft/README.md",
+      "path": "00-unsorted/contrib/greenways/supersonic/spec/draft/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/supersonic/spec/draft/conformance/graph.edn",
+      "path": "00-unsorted/contrib/greenways/supersonic/spec/draft/conformance/graph.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/supersonic/spec/draft/conformance/provider.edn",
+      "path": "00-unsorted/contrib/greenways/supersonic/spec/draft/conformance/provider.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/supersonic/spec/draft/greenways-supersonic-spec.edn",
+      "path": "00-unsorted/contrib/greenways/supersonic/spec/draft/greenways-supersonic-spec.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/usdskel/CONTRIBUTION.edn",
+      "path": "00-unsorted/contrib/greenways/usdskel/CONTRIBUTION.edn",
       "kind": "edn",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/usdskel/README.md",
+      "path": "00-unsorted/contrib/greenways/usdskel/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "contrib/greenways/usdskel/spec/draft/README.md",
+      "path": "00-unsorted/contrib/greenways/usdskel/spec/draft/README.md",
       "kind": "markdown",
       "classification": "contribution",
       "owner": "greenways",
       "label": "Greenways contribution"
     },
     {
-      "path": "design/draft/hal-design-language.edn",
+      "path": "00-unsorted/design/draft/hal-design-language.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "design/draft/hal-theme.edn",
+      "path": "00-unsorted/design/draft/hal-theme.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "language/draft/README.md",
+      "path": "00-unsorted/package/draft/README.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "language/draft/conformance/clojure-functions.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/foundation.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/functions.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/l0.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/modules.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/native.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/parity/jvm-truffle.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/parity/wasm-truffle.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/protocol-method-cases.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/protocols.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/reader.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/conformance/studio-node.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "language/draft/hal-langspec.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "metaspec/draft/ARTIFACT-METASPEC.md",
+      "path": "00-unsorted/package/draft/architecture.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "metaspec/draft/README.md",
+      "path": "00-unsorted/package/draft/hal-packagespec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/package/draft/taps.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "metaspec/draft/conformance/metaspec.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "metaspec/draft/hal-artifact-metaspec.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "metaspec/draft/hal-metaspec-metaspec.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "metaspec/draft/hal-metaspec.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "package/draft/README.md",
+      "path": "00-unsorted/platform-language/draft/README.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "package/draft/architecture.md",
+      "path": "00-unsorted/platform-language/draft/conformance/clojure-functions.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/conformance/foundation.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/conformance/functions.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/conformance/l0.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/conformance/modules.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/conformance/native.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/conformance/parity/jvm-truffle.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/conformance/parity/wasm-truffle.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/conformance/protocol-method-cases.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/conformance/protocols.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/conformance/studio-node.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/platform-language/draft/hal-langspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/runtime/draft/hal-host-runtime.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/runtime/draft/hal-studio-runtime.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/000-metaspec/draft/README.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "package/draft/hal-packagespec.edn",
+      "path": "01-lang/000-metaspec/draft/conformance/metaspec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "package/draft/taps.md",
+      "path": "01-lang/000-metaspec/draft/hal-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/001-language/draft/README.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "runtime/draft/hal-host-runtime.edn",
+      "path": "01-lang/001-language/draft/conformance/reader.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "runtime/draft/hal-studio-runtime.edn",
+      "path": "01-lang/001-language/draft/hal-langspec.edn",
       "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/001-language/metaspec/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/001-language/metaspec/language-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/extensions/contract.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/extensions/overview.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/foundation/foundation.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/foundation/runtime-libraries.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/interop/xtalk-equivalence.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/language/compatibility/clojure-core-compatibility-overrides.json",
+      "kind": "json",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/language/compatibility/clojure-core-compatibility.json",
+      "kind": "json",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/language/compatibility/clojure-core-symbols.json",
+      "kind": "json",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/language/compatibility/hal-core-symbols.json",
+      "kind": "json",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/language/l0-language.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/language/typed.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/runtime/hir.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/runtime/jvm-flavor.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/runtime/native-flavors.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/runtime/rust-mapping.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/runtime/rust-runtime.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "99-archive/planning/tooling/repl.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "README.md",
+      "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
     }
