@@ -1,0 +1,167 @@
+{:spec/version "0.1"
+ :runtime "hara-bytecode-vm"
+ :document/id :hal/bytecode-vm-conformance
+ :document/for :hal/bytecode-vm
+ :document/status :draft
+ :note
+ "Machine-checked corpus for specs/runtime/draft/hal-bytecode-vm.edn. Consumed by rust/src/vm/conformance_tests.rs (Cargo feature bytecode-vm). :display cases must agree exactly on the tree-walking evaluator and the VM; :error-category cases must fail in the same normalized category on both; :compile-error cases pin VM-only compile-time behavior and do not consult the tree evaluator. Workload sources are verbatim from lib/bench/runtime/workloads.json."
+ :cases
+ [;; ---- literals ----
+  {:id :literal/integer :source "42" :expect {:display "42"}}
+  {:id :literal/min-integer :source "-9223372036854775808" :expect {:display "-9223372036854775808"}}
+  {:id :literal/max-integer :source "9223372036854775807" :expect {:display "9223372036854775807"}}
+  {:id :literal/float :source "1.5" :expect {:display "1.5"}}
+  {:id :literal/string :source "\"hello world\"" :expect {:display "\"hello world\""}}
+  {:id :literal/keyword :source ":keyword" :expect {:display ":keyword"}}
+  {:id :literal/namespaced-keyword :source ":hara/namespaced" :expect {:display ":hara/namespaced"}}
+  {:id :literal/character :source "\\a" :expect {:display "\\a"}}
+  {:id :literal/newline-character :source "\\newline" :expect {:display "\\newline"}}
+  {:id :literal/nil :source "nil" :expect {:display "nil"}}
+  {:id :literal/true :source "true" :expect {:display "true"}}
+  {:id :literal/false :source "false" :expect {:display "false"}}
+  {:id :literal/empty-list :source "()" :expect {:display "nil"}}
+  {:id :literal/last-of-forms :source "1 2 3" :expect {:display "3"}}
+
+  ;; ---- arithmetic ----
+  {:id :arith/add :source "(+ 19 23)" :expect {:display "42"}}
+  {:id :arith/add-multi :source "(+ 1 2 3 4 5)" :expect {:display "15"}}
+  {:id :arith/add-single :source "(+ 7)" :expect {:display "7"}}
+  {:id :arith/subtract :source "(- 10 1 2 3)" :expect {:display "4"}}
+  {:id :arith/multiply :source "(* 2 3 4)" :expect {:display "24"}}
+  {:id :arith/divide :source "(/ 100 4 5)" :expect {:display "5"}}
+  {:id :arith/remainder :source "(% 100 7)" :expect {:display "2"}}
+  {:id :arith/mod-negative :source "(mod -7 3)" :expect {:display "-1"}}
+
+  ;; ---- comparisons ----
+  {:id :compare/less-chained :source "(< 1 2 3 4)" :expect {:display "true"}}
+  {:id :compare/less-or-equal :source "(<= 1 1 2)" :expect {:display "true"}}
+  {:id :compare/greater-chained :source "(> 4 3 2 1)" :expect {:display "true"}}
+  {:id :compare/greater-or-equal :source "(>= 3 3 2)" :expect {:display "true"}}
+  {:id :compare/equal-chained :source "(= 42 42 42)" :expect {:display "true"}}
+  {:id :compare/equal-mixed-numeric :source "(= 1 1.0)" :expect {:display "false"}}
+  {:id :compare/equal-nil :source "(= nil nil)" :expect {:display "true"}}
+  {:id :compare/equal-keyword :source "(= :a :a)" :expect {:display "true"}}
+  {:id :compare/equal-strings :source "(= \"x\" \"x\" \"y\")" :expect {:display "false"}}
+
+  ;; ---- truthiness and if ----
+  {:id :if/basic :source "(if (< 19 20) 42 0)" :expect {:display "42"}}
+  {:id :if/truthy-zero :source "(if 0 1 2)" :expect {:display "1"}}
+  {:id :if/truthy-empty-string :source "(if \"\" 1 2)" :expect {:display "1"}}
+  {:id :if/nil-no-else :source "(if nil 1)" :expect {:display "nil"}}
+  {:id :if/false-no-else :source "(if false 1)" :expect {:display "nil"}}
+
+  ;; ---- do ----
+  {:id :do/sequence :source "(do 1 2 3)" :expect {:display "3"}}
+  {:id :do/empty :source "(do)" :expect {:display "nil"}}
+
+  ;; ---- let and locals ----
+  {:id :let/basic :source "(let [x 19 y 23] (+ x y))" :expect {:display "42"}}
+  {:id :let/sequential :source "(let [x 1 y (+ x 1) z (+ y 1)] z)" :expect {:display "3"}}
+  {:id :let/shadowing :source "(let [x 1] (let [x 2] x))" :expect {:display "2"}}
+  {:id :let/shadowing-restore :source "(let [x 1] (do (let [x 2] x) x))" :expect {:display "1"}}
+  {:id :let/rebinding :source "(let [x 1 x (+ x 1)] x)" :expect {:display "2"}}
+  {:id :let/nested-arithmetic :source "(let [a 1 b 2 c 3] (+ a (- b c)))" :expect {:display "0"}}
+
+  ;; ---- loop/recur ----
+  {:id :loop/zero-iteration :source "(loop [i 0] (if (< i 0) (recur (+ i 1)) i))" :expect {:display "0"}}
+  {:id :loop/one-iteration :source "(loop [i 0] (if (< i 1) (recur (+ i 1)) i))" :expect {:display "1"}}
+  {:id :loop/many-iterations :source "(loop [i 0 acc 1] (if (< i 10) (recur (+ i 1) (* acc 2)) acc))" :expect {:display "1024"}}
+  {:id :loop/simultaneous-recur :source "(loop [x 0 y 1] (if (< x 5) (recur (+ x 1) (+ x y)) y))" :expect {:display "11"}}
+  {:id :loop/swap-bindings :source "(loop [x 1 y 2 n 0] (if (< n 3) (recur y x (+ n 1)) (- x y)))" :expect {:display "1"}}
+  {:id :loop/recur-through-do :source "(loop [i 0] (let [next (+ i 1)] (if (< i 5) (do (recur next)) i)))" :expect {:display "5"}}
+  {:id :loop/nested :source "(loop [i 0 t 0] (if (< i 4) (recur (+ i 1) (+ t (loop [j 0 s 0] (if (< j 3) (recur (+ j 1) (+ s (* i j))) s)))) t))" :expect {:display "18"}}
+  {:id :loop/step-two :source "(loop [i 0] (if (>= i 3) i (recur (+ i 2))))" :expect {:display "4"}}
+  {:id :loop/empty-bindings :source "(loop [] 7)" :expect {:display "7"}}
+  {:id :loop/body-plus :source "(loop [i 0] 1 2)" :expect {:display "2"}}
+  {:id :loop/body-plus-discards :source "(loop [i 0] (+ i 1) i)" :expect {:display "0"}}
+
+  ;; ---- shared benchmark workloads (verbatim from lib/bench/runtime/workloads.json) ----
+  {:id :workload/noop :source "42" :expect {:display "42"}}
+  {:id :workload/arithmetic :source "(loop [i 0 acc 0] (if (< i 5000) (recur (+ i 1) (+ acc (mod i 17))) acc))" :expect {:display "39985"}}
+
+  ;; ---- runtime errors: both paths must fail in the same category ----
+  {:id :error/divide-by-zero :source "(/ 1 0)" :expect {:error-category "division by zero"}}
+  {:id :error/remainder-by-zero :source "(% 1 0)" :expect {:error-category "division by zero"}}
+  {:id :error/mod-by-zero :source "(mod 1 0)" :expect {:error-category "division by zero"}}
+  {:id :error/overflow-add :source "(+ 9223372036854775807 1)" :expect {:error-category "integer overflow"}}
+  {:id :error/overflow-multiply :source "(* 4611686018427387904 2)" :expect {:error-category "integer overflow"}}
+  {:id :error/overflow-subtract :source "(- -9223372036854775808 1)" :expect {:error-category "integer overflow"}}
+  {:id :error/mixed-numeric :source "(+ 1 1.5)" :expect {:error-category "expects numbers"}}
+  {:id :error/string-arithmetic :source "(+ \"a\" 1)" :expect {:error-category "expects numbers"}}
+  {:id :error/string-comparison :source "(< 1 \"a\")" :expect {:error-category "expects numbers"}}
+  {:id :error/less-arity :source "(< 1)" :expect {:error-category "primitive arity"}}
+  {:id :error/equal-arity :source "(= 1)" :expect {:error-category "primitive arity"}}
+  {:id :error/add-arity :source "(+)" :expect {:error-category "primitive arity"}}
+  {:id :error/mod-arity :source "(mod)" :expect {:error-category "primitive arity"}}
+  {:id :error/reader-eof :source "(+ 1" :expect {:error-category "reader"}}
+  {:id :error/reader-number :source "42N" :expect {:error-category "reader"}}
+
+  ;; ---- compile errors: VM-only canonical behavior ----
+  {:id :compile/recur-outside-loop :source "(recur 1)" :expect {:compile-error "recur must be inside loop"}}
+  {:id :compile/recur-arity-mismatch :source "(loop [i 0] (recur 1 2))" :expect {:compile-error "recur arity mismatch"}}
+  {:id :compile/recur-non-tail :source "(loop [i 0] (+ 1 (recur 2)))" :expect {:compile-error "recur must be in tail position"}}
+  {:id :compile/recur-empty :source "(loop [i 0] (recur))" :expect {:compile-error "recur expects values"}}
+  {:id :compile/unbound-symbol :source "unknown" :expect {:compile-error "unbound symbol"}}
+  {:id :compile/unbound-in-let :source "(let [x 1] (+ x y))" :expect {:compile-error "unbound symbol"}}
+  {:id :compile/unsupported-def :source "(def x 1)" :expect {:compile-error "unsupported operator: def"}}
+  {:id :compile/if-arity-low :source "(if)" :expect {:compile-error "if expects 2 or 3 arguments"}}
+  {:id :compile/if-arity-high :source "(if 1 2 3 4)" :expect {:compile-error "if expects 2 or 3 arguments"}}
+  {:id :compile/let-empty :source "(let)" :expect {:compile-error "let expects bindings and a body"}}
+  {:id :compile/let-odd-pairs :source "(let [x] x)" :expect {:compile-error "let bindings require name/value pairs"}}
+  {:id :compile/let-non-vector-bindings :source "(let 1 x)" :expect {:compile-error "let expects a binding list or vector"}}
+  {:id :compile/loop-empty :source "(loop [i 0])" :expect {:compile-error "loop expects bindings and a body"}}
+  {:id :compile/loop-non-vector-bindings :source "(loop 1 2)" :expect {:compile-error "loop expects a binding list or vector"}}
+
+  ;; ---- functions: calls, captures, nested closures ----
+  {:id :fn/direct-call :source "((fn [x] (+ x 1)) 41)" :expect {:display "42"}}
+  {:id :fn/two-params :source "((fn [x y] (+ x y)) 19 23)" :expect {:display "42"}}
+  {:id :fn/zero-params :source "((fn [] 42))" :expect {:display "42"}}
+  {:id :fn/let-bound :source "(let [f (fn [x] (+ x 1))] (f 41))" :expect {:display "42"}}
+  {:id :fn/body-plus :source "((fn [x] (+ x 1) (+ x 2)) 40)" :expect {:display "42"}}
+  {:id :fn/capture :source "(let [x 10 f (fn [y] (+ x y))] (f 32))" :expect {:display "42"}}
+  {:id :fn/capture-at-creation :source "(let [x 1 f (fn [] x) x 2] (f))" :expect {:display "1"}}
+  {:id :fn/nested-closure :source "(((fn [x] (fn [y] (+ x y))) 19) 23)" :expect {:display "42"}}
+  {:id :fn/transitive-capture :source "(let [x 1 f (fn [] (fn [] x))] ((f)))" :expect {:display "1"}}
+  {:id :fn/shadowing-capture :source "(let [x 1] (let [x 2] ((fn [] x))))" :expect {:display "2"}}
+  {:id :fn/captures-loop-binding :source "((loop [i 40] (fn [] (+ i 2))))" :expect {:display "42"}}
+  {:id :fn/as-value :source "(fn [x] x)" :expect {:display "<fn>"}}
+  {:id :fn/called-in-loop :source "(let [inc (fn [x] (+ x 1))] (loop [i 0 acc 0] (if (< i 100) (recur (inc i) (+ acc i)) acc)))" :expect {:display "4950"}}
+
+  ;; ---- defn lowering: direct bindings, shadowing, self-recursion ----
+  {:id :defn/basic :source "(do (defn f [x] (+ x 1)) (f 41))" :expect {:display "42"}}
+  {:id :defn/two-functions :source "(do (defn f [x] (+ x 1)) (defn g [x] (f (f x))) (g 40))" :expect {:display "42"}}
+  {:id :defn/self-recursion :source "(do (defn f [n] (if (< n 1) 0 (f (- n 1)))) (f 100))" :expect {:display "0"}}
+  {:id :defn/recursion-accumulator :source "(do (defn f [n acc] (if (< n 1) acc (f (- n 1) (+ acc 1)))) (f 1000 0))" :expect {:display "1000"}}
+  {:id :defn/redefinition-shadows :source "(do (defn f [x] 1) (defn f [x] 2) (f 0))" :expect {:display "2"}}
+  {:id :defn/redefinition-captured :source "(do (defn f [x] 1) (defn g [] (f 0)) (defn f [x] 2) (g))" :expect {:display "1"}}
+
+  ;; ---- declare: explicit opt-in to replacing a std.foundation builtin ----
+  {:id :declare/alone :source "(declare count)" :expect {:display "nil"}}
+  {:id :declare/multi-name :source "(declare count first)" :expect {:display "nil"}}
+  {:id :defn/declared-replacement :source "(do (declare count) (defn count [n] 42) (count 5))" :expect {:vm-display "42"}}
+
+  ;; ---- shared benchmark workloads (verbatim from lib/bench/runtime/workloads.json) ----
+  {:id :workload/function-call :source "(loop [i 0 acc 0] (if (< i 2500) (recur (+ i 1) ((fn [x] (+ x 1)) acc)) acc))" :expect {:display "2500"}}
+
+  ;; ---- function errors: both paths must fail in the same category ----
+  {:id :error/fn-arity-high :source "((fn [x] x) 1 2)" :expect {:error-category "function arity"}}
+  {:id :error/fn-arity-low :source "((fn [x] x))" :expect {:error-category "function arity"}}
+  {:id :error/not-callable :source "(1 2)" :expect {:error-category "not callable"}}
+  {:id :error/fn-params-shape :source "(fn self [x] x)" :expect {:error-category "fn params shape"}}
+  {:id :error/defn-forward-reference :source "(do (defn g [x] (f x)) (defn f [x] (+ x 1)) (g 41))" :expect {:error-category "unbound symbol"}}
+
+  ;; ---- function compile errors: VM-only canonical behavior ----
+  {:id :compile/fn-variadic :source "(fn [x & rest] x)" :expect {:compile-error "fn variadic parameters are not supported"}}
+  {:id :compile/fn-multi-arity :source "(fn ([x] x) ([x y] x))" :expect {:compile-error "fn multi-arity is not supported"}}
+  {:id :compile/fn-destructuring :source "(fn [[a b]] a)" :expect {:compile-error "fn destructuring is not supported"}}
+  {:id :compile/defn-result-position :source "(defn f [x] x)" :expect {:compile-error "defn in result position requires var semantics"}}
+  {:id :compile/defn-nested :source "(let [x 1] (defn f [y] y) x)" :expect {:compile-error "defn is only supported as a top-level statement"}}
+  {:id :compile/defn-value-self-reference :source "(do (defn f [] f) 1)" :expect {:compile-error "defn self-reference in value position is not supported"}}
+  {:id :compile/var-form :source "(do (defn f [x] x) #'f)" :expect {:compile-error "unsupported operator: var"}}
+
+  ;; ---- foundation replacement: declare-or-error (VM canonical; the
+  ;; evaluator still gives builtins precedence and converges later) ----
+  {:id :compile/defn-replaces-foundation :source "(do (defn count [n] 42) (count 5))" :expect {:compile-error "defn replaces std.foundation var: count"}}
+  {:id :compile/defn-replaces-primitive :source "(do (defn mod [a b] 100) 1)" :expect {:compile-error "defn replaces std.foundation var: mod"}}
+  {:id :compile/declare-nested :source "(let [x 1] (declare y) x)" :expect {:compile-error "declare is only supported as a top-level statement"}}
+  {:id :compile/declare-non-symbol :source "(declare 1)" :expect {:compile-error "declare expects name symbols"}}]}

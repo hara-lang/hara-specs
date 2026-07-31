@@ -290,6 +290,18 @@
       "owner": "hara-lang"
     },
     {
+      "path": "00-unsorted/runtime/draft/conformance/bytecode-vm.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/runtime/draft/hal-bytecode-vm.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "00-unsorted/runtime/draft/hal-host-runtime.edn",
       "kind": "edn",
       "classification": "hara",
