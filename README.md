@@ -22,8 +22,6 @@ The specification repository is organised into numbered architectural layers.
 - [`02-platform/000100-lsp-base/draft/hara-lsp-base.edn`](02-platform/000100-lsp-base/draft/hara-lsp-base.edn)
    defines the portable Language Server Protocol profile, shared analysis
    facts, namespace resolution, IDE capabilities, and safety boundary.
-- [`02-platform/000200-chip-base/draft/chip-base.edn`](02-platform/000200-chip-base/draft/chip-base.edn)
-   defines the bounded compact-AST matching coprocessor contract.
 - [`02-platform/000001-cli/metaspec/cli-app-metaspec.edn`](02-platform/000001-cli/metaspec/cli-app-metaspec.edn)
    defines the reusable document model for deterministic CLI applications.
 - [`02-platform/000001-cli/draft/hara-cli.edn`](02-platform/000001-cli/draft/hara-cli.edn)

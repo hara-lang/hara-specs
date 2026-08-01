@@ -54,8 +54,6 @@ other interfaces that must remain portable across supported Hara runtimes.
   generated-runtime coverage reported by the pinned XTalk tests.
 - [`000100-lsp-base`](000100-lsp-base/) — the portable Language Server
   Protocol profile, shared analysis facts, IDE capabilities, and safety rules.
-- [`000200-chip-base`](000200-chip-base/) — the bounded compact-AST matching
-  coprocessor contract and its document meta-specification.
 
 Material that has not yet been assigned a numbered platform specification
 remains under [`../00-unsorted/`](../00-unsorted/).
