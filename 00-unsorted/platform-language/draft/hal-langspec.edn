@@ -408,6 +408,16 @@
        :cases [:namespace/callable-var-precedence
                :namespace/callable-var-lexical-shadow
                :namespace/callable-var-late-binding]}]}
+    {:requirement/id :namespace/current-alias
+     :requirement/level :must
+     :requirement/text
+     "Every namespace, including a blank namespace, has the reserved virtual namespace alias -. During name resolution, an unquoted symbol -/name resolves exactly as the fully qualified symbol <current-namespace>/name, and (var -/name), including the #' reader form, resolves to that namespace-owned Var. The alias is contextual rather than an interned namespace or alias-table entry: it cannot be rebound, removed, or used as a module-loading target. Quoting suppresses resolution, so (quote -/name) retains the literal symbol -/name. Compiled artifacts must store the resolved fully qualified name rather than -."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/current-alias-value
+               :namespace/current-alias-var
+               :namespace/current-alias-quoted
+               :namespace/current-alias-missing]}]}
     {:requirement/id :namespace/referred-var-ownership
      :requirement/level :must
      :requirement/text

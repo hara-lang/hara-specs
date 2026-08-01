@@ -69,7 +69,8 @@ editor UX, and extension packaging are outside this language document.
 8. **Protocols, structs, and multimethods** — context-local dispatch and
    immutable domain values.
 9. **Vars, namespaces, macros, and modules** — live Var identity, compile-time
-   expansion, and transactional loading.
+   expansion, transactional loading, and the reserved `-` alias for the current
+   namespace.
 10. **Standard libraries** — `std.foundation.edn` provides restricted EDN
     read/write formatting; automatically loaded `std.foundation.json` provides
     JSON read/write formatting; `std.pretty` provides canonical readable

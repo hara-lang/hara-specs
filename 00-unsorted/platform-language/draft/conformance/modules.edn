@@ -42,6 +42,30 @@
    :setup "(ns conformance.late-binding (:config {:blank true}) (:require [std.foundation :refer :all :exclude [count]]))"
    :source "(defn count [ignored] 41) (defn call-count [] (count 5)) (defn count [ignored] 42) (call-count)"
    :expect {:display "42"}}
+  {:id :namespace/current-alias-value
+   :area :namespace
+   :scenario :current-alias
+   :setup "(ns conformance.current-alias-value)"
+   :source "(def answer 42) -/answer"
+   :expect {:display "42"}}
+  {:id :namespace/current-alias-var
+   :area :namespace
+   :scenario :current-alias
+   :setup "(ns conformance.current-alias-var)"
+   :source "(def answer 42) (= #'answer #'-/answer)"
+   :expect {:display "true"}}
+  {:id :namespace/current-alias-quoted
+   :area :namespace
+   :scenario :current-alias
+   :setup "(ns conformance.current-alias-quoted)"
+   :source "'-/answer"
+   :expect {:display "-/answer"}}
+  {:id :namespace/current-alias-missing
+   :area :namespace
+   :scenario :current-alias
+   :setup "(ns conformance.current-alias-missing)"
+   :source "-/missing"
+   :expect {:error-contains "unbound symbol"}}
   {:id :namespace/referred-var-protected
    :area :namespace
    :scenario :ownership
