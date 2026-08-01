@@ -5,8 +5,7 @@
  :cases
  [{:case/id :literal/success
    :source "42"
-   :events [[:evaluation/start]
-            [:operation/return {:operation/result {:value/type "integer" :value/display "42" :value/truncated false}}]]
+   :events [[:evaluation/start]]
    :result {:value/type "integer" :value/display "42" :value/truncated false}}
   {:case/id :function/nested
    :source "(do (defn inner [x] (+ x 1)) (defn outer [x] (inner x)) (outer 41))"
