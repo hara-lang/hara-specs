@@ -1,10 +1,20 @@
 {:document/id :hal/bytecode-vm
- :document/type :runtime-spec
+ :document/type :runtime-implementation-spec
+ :runtime :rust
+ :feature "bytecode-vm"
  :document/version "0.6.0-draft"
  :document/status :draft
- :document/title "HAL staged bytecode VM (milestones 1-5: synchronous core through persistent artifacts)"
+ :document/title "Rust HAL staged bytecode VM (milestones 1-5: synchronous core through persistent artifacts)"
  :document/summary
- "Normative contract for the experimental, feature-gated bytecode VM in the Rust runtime: execution model, instruction set, persistent program representation, validation, lexical slots, stackless function calls, exception handling, globals and namespaces, primitive dispatch, diagnostics, and conformance. Milestone 5 adds compact runtime slots, reusable in-machine call frames, and checksummed HBC1 artifacts that are validated before execution. Replacing a std.foundation builtin through defn requires an explicit declare. The non-normative design narrative lives in notes/rust-bytecode-vm.md; where the two disagree for covered areas, this document wins."
+ "Rust-only implementation contract for the experimental, feature-gated bytecode VM: execution model, instruction set, persistent program representation, validation, lexical slots, stackless function calls, exception handling, globals and namespaces, primitive dispatch, diagnostics, and conformance. It does not require Java or another HAL runtime to implement a stack VM, this opcode set, numeric slots, frames, handlers, or this compiler. Portable HAL language behavior remains owned by the shared language specifications and corpora."
+
+ :vm/ownership
+ {:owner :rust-runtime
+  :portable-input "Decoded HAL forms, including forms loaded from HALC."
+  :private-artifacts #{:HBC1 :Program :Instruction :numeric-slots :handler-table :call-frames}
+  :halc-boundary "HALC contains portable forms and metadata only. VM Program and Instructions are compiled after HALC decoding and are never embedded in HALC."
+  :journal-boundary "Evaluation Journal events are portable diagnostics, not VM instructions and not an input to execution or future JIT tracing. VM instruction details may appear only in optional runtime extensions."
+  :java-obligation "None beyond the shared HAL language, HALC, and Evaluation Journal contracts. Java remains free to use Truffle ASTs and Graal."}
 
  :vm/stage
  {:milestone 5
@@ -220,7 +230,7 @@
    :module-and-namespace-config-forms
    :destructuring-parameters]
   :entry-points
-  {:runtime-methods [Runtime::compile_bytecode Runtime::eval_bytecode_native]
+  {:runtime-methods ["Runtime::compile_bytecode" "Runtime::eval_bytecode_native"]
    :free-functions
    "compile_bytecode / execute_bytecode / eval_bytecode_native keep compiling closed programs against an empty registry"}}
 
@@ -378,7 +388,15 @@
   "Compile errors carry the source position of the offending form. Runtime errors carry the failing instruction index and, when the source map has an entry, its source position. Diagnostics never panic on malformed input."}
 
  :vm/conformance
- {:corpus "specs/01-lang/010-bytecode/draft/conformance/bytecode-vm.edn"
+ {:portable-language
+  {:owners ["specs/01-lang/001-language/draft/conformance"
+            "specs/00-unsorted/platform-language/draft/conformance"]
+   :consumers [:java-truffle :rust-evaluator :rust-bytecode-vm]
+   :rule "Java consumes portable language cases, never Rust VM structural cases."}
+  :rust-vm-structural
+  {:owner :rust-runtime
+   :covers #{:bytecode-validation :stack-effects :instruction-behavior :artifact-decoding :side-exit-readiness :vm-diagnostics}}
+  :corpus "specs/01-lang/010-bytecode/draft/conformance/bytecode-vm.edn"
   :consumer "rust/src/vm/conformance_tests.rs (feature bytecode-vm)"
   :schema
   {:spec/version "0.1"

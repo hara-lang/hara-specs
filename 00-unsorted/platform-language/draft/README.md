@@ -13,9 +13,9 @@ The document conforms to the draft
 
 This specification defines the behaviour of HAL (Hara Lisp), a host-neutral
 language whose shared reader uses a restricted EDN profile. Hara data continues
-to use `.edn`: integers are signed 64-bit values, floating-point numbers are
-binary64 values, and ratios plus the arbitrary-precision `N` and exact-decimal
-`M` suffixes are rejected. HAL and its EDN profile are defined independently of
+to use `.edn`: signed 64-bit integers and binary64 values are the defaults,
+explicit arbitrary-precision `N` integers and exact-decimal `M` values are
+accepted, and ratios plus unsuffixed integer overflow are rejected. HAL and its EDN profile are defined independently of
 evaluator, compiler, storage representation, host language, and target runtime.
 
 The shared reader also accepts HAL program syntax beyond core EDN data:

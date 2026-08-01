@@ -17,7 +17,7 @@
   {:name "EDN"
    :extension ".edn"
    :profile :hara
-   :unsupported-number-forms #{:ratio :arbitrary-precision-integer :exact-decimal}}
+   :unsupported-number-forms #{:ratio}}
   :profile :portable-core
   :includes
   #{:reader
@@ -100,15 +100,15 @@
    [{:requirement/id :reader/edn-profile
      :requirement/level :must
      :requirement/text
-     "The Hara EDN profile retains the core EDN data forms, limits integers to signed 64-bit values and floating-point numbers to binary64 values, and rejects ratios, arbitrary-precision N suffixes, and exact-decimal M suffixes."
+     "The Hara EDN profile retains the core EDN data forms, accepts signed 64-bit integers and binary64 floating-point values by default, accepts arbitrary-precision integers and exact decimals with explicit N and M suffixes, and rejects ratios and unsuffixed integer overflow."
      :requirement/evidence
      [{:suite :hal/reader
        :cases [:numbers
                :integer-boundaries
                :positive-integer-overflow
                :negative-integer-overflow
-               :explicit-bigint-unsupported
-               :big-decimal-unsupported]}]}
+               :explicit-bigint
+               :big-decimal]}]}
     {:requirement/id :reader/forms
      :requirement/level :must
      :requirement/text
@@ -504,7 +504,7 @@
    [{:requirement/id :std.foundation.edn/api
      :requirement/level :must
      :requirement/text
-     "The std.foundation.edn namespace provides one-argument read and write functions plus the two-argument (pretty value opts) function. read accepts exactly one value using the Hara EDN profile and does not evaluate it; ratios, arbitrary-precision N suffixes, exact-decimal M suffixes, integer overflow, empty input, and multiple top-level values are errors. write and pretty return canonical readable text that round-trips through read. pretty requires opts to be a map; its option keys are reserved."}
+     "The std.foundation.edn namespace provides one-argument read and write functions plus the two-argument (pretty value opts) function. read accepts exactly one value using the Hara EDN profile and does not evaluate it; ratios, unsuffixed integer overflow, empty input, and multiple top-level values are errors. Explicit arbitrary-precision N integers and exact-decimal M values are accepted. write and pretty return canonical readable text that round-trips through read. pretty requires opts to be a map; its option keys are reserved."}
     {:requirement/id :std.foundation/ex-info
      :requirement/level :must
      :requirement/text
