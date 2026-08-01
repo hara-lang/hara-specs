@@ -220,13 +220,13 @@
  :data-structures/conformance
  {:conformance/hash-parity
   {:corpus/path "conformance/hash-parity.edn"
-   :corpus/generator "target/hashdump/HashDump.java (Java reference runtime)"
+   :corpus/generator "specs/scripts/hashdump/HashDump.java (Java reference runtime)"
    :corpus/case-count 276
    :corpus/format
    "{:cases [{:id :<hash>/<label> :hash :system|:rapid|:murmur3|:sip :kind :string|:int|:long|:double|:bigint|:decimal|:bool|:char|:bytes|:nil|:seed|:keyword|:symbol|:collection :input <edn> :expect <java-long>}]}. :input is an EDN form per :kind; :expect is the decimal Java long with 32-bit hashes sign-extended. Collection cases add :structure and encode queue/tuple2 inputs as vectors."}
   :conformance/collections
   {:corpus/path "conformance/collections.edn"
-   :corpus/generator "target/hashdump/CollectionDump.java (Java reference runtime)"
+   :corpus/generator "specs/scripts/hashdump/CollectionDump.java (Java reference runtime)"
    :corpus/case-count 54
    :corpus/format
    "{:cases [{:id :<structure>/<label> :structure :map|:vector|:list|:set|:ordered-map|:ordered-set|:sorted-map|:sorted-set|:trie|:queue :transient <bool> :ops [[:assoc k v] [:dissoc k] [:conj v] [:push-first v] [:push-last v] [:pop-first] [:pop-last]] :expect {...}]}. Expect keys: :count; :iter (map-like entries as [k v] pairs); :first/:last; :nth {idx val}; :find {key val-or-nil}; :contains {val bool}; :index-of {key rank-or-(-1)}; :hash (RAPID) and :hash-murmur3. Values are strings or small longs. For :map and :set the :iter order is the Java CHAMP layout; runtimes without layout parity assert unordered equality. For :queue growth cases :iter is omitted (probe-only)."}

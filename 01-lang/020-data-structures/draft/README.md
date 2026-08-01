@@ -32,25 +32,21 @@ byte-for-byte deterministic across runs:
 
 ```shell
 mvn -f java/pom.xml -Ptruffle package   # once, for java/target/classes
-javac -cp java/target/classes -d target/hashdump target/hashdump/HashDump.java
+javac -cp java/target/classes -d target/hashdump specs/scripts/hashdump/HashDump.java
 java -cp target/hashdump:java/target/classes HashDump \
   > specs/01-lang/020-data-structures/draft/conformance/hash-parity.edn
-javac -cp java/target/classes -d target/hashdump target/hashdump/CollectionDump.java
+javac -cp java/target/classes -d target/hashdump specs/scripts/hashdump/CollectionDump.java
 java -cp target/hashdump:java/target/classes CollectionDump \
   > specs/01-lang/020-data-structures/draft/conformance/collections.edn
 ```
 
 Regeneration caveats:
 
-- The generators (`HashDump.java`, `CollectionDump.java`) currently live in
-  `target/hashdump/`, which is untracked CI scratch. **TODO**: move them to a
-  tracked home (e.g. `specs/scripts/` or `java/src/test/`) — until then they
-  must be recovered from the working tree or rewritten from the corpus
-  formats in `data-structures-spec.edn`.
-- `java/target/classes` must be fresh: the `Queue` reference-runtime repairs
-  (below) are uncommitted source changes, so re-run the `mvn package` step
-  before regenerating or the corpora will pin the old, broken `Queue`
-  behaviour.
+- The generators (`HashDump.java`, `CollectionDump.java`) are tracked in
+  [`specs/scripts/hashdump/`](../../../scripts/hashdump/); `target/hashdump/`
+  is only the gitignored build output.
+- `java/target/classes` must be fresh — re-run the `mvn package` step before
+  regenerating if the Java reference sources have changed.
 
 Rust consumers: `lang::hash::tests::java_parity_fixture`
 (`rust/src/lang/hash/mod.rs`) and `lang::data::conformance_tests`

@@ -6,11 +6,10 @@ cross-runtime hashing contract.
 
 - [`draft/`](draft/) — current draft (`data-structures-spec.edn`) with
   machine-checked conformance corpora under `draft/conformance/`. The corpora
-  regenerate from the Java reference runtime; see the
+  regenerate from the Java reference runtime via the tracked generators in
+  [`specs/scripts/hashdump/`](../../scripts/hashdump/); see the
   [draft README](draft/README.md#executable-evidence) for the exact commands
-  and caveats (generators live in untracked `target/hashdump/`, and
-  `java/target/classes` must be rebuilt first because the `Queue` repairs are
-  uncommitted).
+  and caveats.
 - `metaspec/` — **TODO**: the document-model metaspec for this area has not
   been written yet. The draft declares conformance to
   `:hara/data-structures-metaspec` as `:planned`; add the metaspec here when
