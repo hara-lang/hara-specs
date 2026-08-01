@@ -111,8 +111,10 @@
    :classification :portable
    :source "(iter-has? (iter [42]))"}
   {:id :iterator/close
-   :classification :portable
-   :source "(iter-close (iter [1]))"}
+   :classification :capability-specific
+   :capability :native/iterator-close
+   :reason "Native iterator lifecycle methods are exposed through Iter, which the legacy JVM interpreter does not provide."
+   :source "(Iter/iter-close (iter [1]))"}
   {:id :module/load-resource
    :classification :portable
    :source "(load-resource \"hara/l0-resource.hal\")"}
