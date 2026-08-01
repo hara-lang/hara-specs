@@ -100,6 +100,11 @@
    :surface/symbols
    [reset! cas! swap! watch-add watch-remove watch-list]
    :surface/classification :protocol-wrapper}
+  {:surface/id :foundation/metadata
+   :surface/domain :function
+   :surface/symbols [meta with-meta]
+   :surface/classification :protocol-wrapper
+   :surface/protocol-spec :hara/protocol}
   {:surface/id :foundation/collections
    :surface/domain :function
    :surface/symbols
