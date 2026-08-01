@@ -9,7 +9,14 @@ golden/complete.halc   canonical HALC v1 emitted identically by Java and Rust
 golden/legacy-v1.hir   frozen former HIR v1 accepted only by compatibility readers
 ```
 
-The generator builds the complete module from `values.edn`, encodes it independently with Java and Rust, fails unless the bytes match, verifies cross-runtime decode and evaluation, writes `complete.halc`, and copies the frozen pre-HALC fixture as `legacy-v1.hir`.
+Run `scripts/generate-halc-goldens`. The generator compiles `complete.hal` independently with Java and Rust, fails unless the bytes match, writes `complete.halc`, and derives the decode-only legacy fixture by changing only its magic. Runtime tests then decode both files directly from this directory.
+
+Current SHA-256 values:
+
+```text
+4d1b0ba5671f11d7fc032883e73899866638ee429fa44f972b35470dbf706858  complete.halc
+94e00b333f1c13191b54a51032a7364d7a37f9739e2b4f18b90c41e94ba86d8f  legacy-v1.hir
+```
 
 Goldens must not be hand-edited. A wire-format change requires a format-version decision, updated manifests, regeneration by both implementations, and review of the binary diff.
 
