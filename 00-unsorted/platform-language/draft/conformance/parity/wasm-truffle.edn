@@ -218,34 +218,34 @@
   {:id :collections/assoc-017 :group :collections :origin :curated :source "(get (assoc {:answer 17} :answer 42) :answer)" :expect {:value 42 :type :integer}}
   {:id :collections/assoc-018 :group :collections :origin :curated :source "(get (assoc {:answer 18} :answer 42) :answer)" :expect {:value 42 :type :integer}}
   {:id :collections/assoc-019 :group :collections :origin :curated :source "(get (assoc {:answer 19} :answer 42) :answer)" :expect {:value 42 :type :integer}}
-  {:id :iterators/map-000 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [0]))" :expect {:value 1 :type :integer}}
-  {:id :iterators/map-001 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [1]))" :expect {:value 2 :type :integer}}
-  {:id :iterators/map-002 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [2]))" :expect {:value 3 :type :integer}}
-  {:id :iterators/map-003 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [3]))" :expect {:value 4 :type :integer}}
-  {:id :iterators/map-004 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [4]))" :expect {:value 5 :type :integer}}
-  {:id :iterators/map-005 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [5]))" :expect {:value 6 :type :integer}}
-  {:id :iterators/map-006 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [6]))" :expect {:value 7 :type :integer}}
-  {:id :iterators/map-007 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [7]))" :expect {:value 8 :type :integer}}
-  {:id :iterators/map-008 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [8]))" :expect {:value 9 :type :integer}}
-  {:id :iterators/map-009 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [9]))" :expect {:value 10 :type :integer}}
-  {:id :iterators/map-010 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [10]))" :expect {:value 11 :type :integer}}
-  {:id :iterators/map-011 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [11]))" :expect {:value 12 :type :integer}}
-  {:id :iterators/map-012 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [12]))" :expect {:value 13 :type :integer}}
-  {:id :iterators/map-013 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [13]))" :expect {:value 14 :type :integer}}
-  {:id :iterators/map-014 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [14]))" :expect {:value 15 :type :integer}}
-  {:id :iterators/map-015 :group :iterators :origin :curated :source "(iter-next (iter-map (fn [x] (+ x 1)) [15]))" :expect {:value 16 :type :integer}}
-  {:id :iterators/filter-000 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 1)) [0 1]))" :expect {:value 1 :type :integer}}
-  {:id :iterators/filter-001 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 2)) [0 2]))" :expect {:value 2 :type :integer}}
-  {:id :iterators/filter-002 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 3)) [0 3]))" :expect {:value 3 :type :integer}}
-  {:id :iterators/filter-003 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 4)) [0 4]))" :expect {:value 4 :type :integer}}
-  {:id :iterators/filter-004 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 5)) [0 5]))" :expect {:value 5 :type :integer}}
-  {:id :iterators/filter-005 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 6)) [0 6]))" :expect {:value 6 :type :integer}}
-  {:id :iterators/filter-006 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 7)) [0 7]))" :expect {:value 7 :type :integer}}
-  {:id :iterators/filter-007 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 8)) [0 8]))" :expect {:value 8 :type :integer}}
-  {:id :iterators/filter-008 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 9)) [0 9]))" :expect {:value 9 :type :integer}}
-  {:id :iterators/filter-009 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 10)) [0 10]))" :expect {:value 10 :type :integer}}
-  {:id :iterators/filter-010 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 11)) [0 11]))" :expect {:value 11 :type :integer}}
-  {:id :iterators/filter-011 :group :iterators :origin :curated :source "(iter-next (iter-filter (fn [x] (= x 12)) [0 12]))" :expect {:value 12 :type :integer}}
+  {:id :iterators/map-000 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [0]))" :expect {:value 1 :type :integer}}
+  {:id :iterators/map-001 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [1]))" :expect {:value 2 :type :integer}}
+  {:id :iterators/map-002 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [2]))" :expect {:value 3 :type :integer}}
+  {:id :iterators/map-003 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [3]))" :expect {:value 4 :type :integer}}
+  {:id :iterators/map-004 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [4]))" :expect {:value 5 :type :integer}}
+  {:id :iterators/map-005 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [5]))" :expect {:value 6 :type :integer}}
+  {:id :iterators/map-006 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [6]))" :expect {:value 7 :type :integer}}
+  {:id :iterators/map-007 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [7]))" :expect {:value 8 :type :integer}}
+  {:id :iterators/map-008 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [8]))" :expect {:value 9 :type :integer}}
+  {:id :iterators/map-009 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [9]))" :expect {:value 10 :type :integer}}
+  {:id :iterators/map-010 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [10]))" :expect {:value 11 :type :integer}}
+  {:id :iterators/map-011 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [11]))" :expect {:value 12 :type :integer}}
+  {:id :iterators/map-012 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [12]))" :expect {:value 13 :type :integer}}
+  {:id :iterators/map-013 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [13]))" :expect {:value 14 :type :integer}}
+  {:id :iterators/map-014 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [14]))" :expect {:value 15 :type :integer}}
+  {:id :iterators/map-015 :group :iterators :origin :curated :source "(iter-next (Iter/iter-map (fn [x] (+ x 1)) [15]))" :expect {:value 16 :type :integer}}
+  {:id :iterators/filter-000 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 1)) [0 1]))" :expect {:value 1 :type :integer}}
+  {:id :iterators/filter-001 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 2)) [0 2]))" :expect {:value 2 :type :integer}}
+  {:id :iterators/filter-002 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 3)) [0 3]))" :expect {:value 3 :type :integer}}
+  {:id :iterators/filter-003 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 4)) [0 4]))" :expect {:value 4 :type :integer}}
+  {:id :iterators/filter-004 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 5)) [0 5]))" :expect {:value 5 :type :integer}}
+  {:id :iterators/filter-005 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 6)) [0 6]))" :expect {:value 6 :type :integer}}
+  {:id :iterators/filter-006 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 7)) [0 7]))" :expect {:value 7 :type :integer}}
+  {:id :iterators/filter-007 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 8)) [0 8]))" :expect {:value 8 :type :integer}}
+  {:id :iterators/filter-008 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 9)) [0 9]))" :expect {:value 9 :type :integer}}
+  {:id :iterators/filter-009 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 10)) [0 10]))" :expect {:value 10 :type :integer}}
+  {:id :iterators/filter-010 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 11)) [0 11]))" :expect {:value 11 :type :integer}}
+  {:id :iterators/filter-011 :group :iterators :origin :curated :source "(iter-next (Iter/iter-filter (fn [x] (= x 12)) [0 12]))" :expect {:value 12 :type :integer}}
   {:id :errors/divide-zero-000 :group :errors :origin :curated :source "(/ 1 0)" :expect {:error :arithmetic/divide-by-zero}}
   {:id :errors/divide-zero-001 :group :errors :origin :curated :source "(/ 2 0)" :expect {:error :arithmetic/divide-by-zero}}
   {:id :errors/divide-zero-002 :group :errors :origin :curated :source "(/ 3 0)" :expect {:error :arithmetic/divide-by-zero}}
@@ -742,102 +742,102 @@
   {:id :generated/collections-093 :group :generated-collections :origin :generated :source "(get (assoc {:a 3 :b 39} :a 42) :a)" :expect {:value 42 :type :integer}}
   {:id :generated/collections-094 :group :generated-collections :origin :generated :source "(get (assoc {:a 4 :b 38} :a 42) :a)" :expect {:value 42 :type :integer}}
   {:id :generated/collections-095 :group :generated-collections :origin :generated :source "(get (assoc {:a 5 :b 37} :a 42) :a)" :expect {:value 42 :type :integer}}
-  {:id :generated/iterators-000 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [0]))" :expect {:value 0 :type :integer}}
-  {:id :generated/iterators-001 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [1]))" :expect {:value 2 :type :integer}}
-  {:id :generated/iterators-002 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [2]))" :expect {:value 4 :type :integer}}
-  {:id :generated/iterators-003 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [3]))" :expect {:value 6 :type :integer}}
-  {:id :generated/iterators-004 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [4]))" :expect {:value 8 :type :integer}}
-  {:id :generated/iterators-005 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [5]))" :expect {:value 10 :type :integer}}
-  {:id :generated/iterators-006 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [6]))" :expect {:value 12 :type :integer}}
-  {:id :generated/iterators-007 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [7]))" :expect {:value 14 :type :integer}}
-  {:id :generated/iterators-008 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [8]))" :expect {:value 16 :type :integer}}
-  {:id :generated/iterators-009 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [9]))" :expect {:value 18 :type :integer}}
-  {:id :generated/iterators-010 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [10]))" :expect {:value 20 :type :integer}}
-  {:id :generated/iterators-011 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [11]))" :expect {:value 22 :type :integer}}
-  {:id :generated/iterators-012 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [12]))" :expect {:value 24 :type :integer}}
-  {:id :generated/iterators-013 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [13]))" :expect {:value 26 :type :integer}}
-  {:id :generated/iterators-014 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [14]))" :expect {:value 28 :type :integer}}
-  {:id :generated/iterators-015 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [15]))" :expect {:value 30 :type :integer}}
-  {:id :generated/iterators-016 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [16]))" :expect {:value 32 :type :integer}}
-  {:id :generated/iterators-017 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [17]))" :expect {:value 34 :type :integer}}
-  {:id :generated/iterators-018 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [18]))" :expect {:value 36 :type :integer}}
-  {:id :generated/iterators-019 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [19]))" :expect {:value 38 :type :integer}}
-  {:id :generated/iterators-020 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [20]))" :expect {:value 40 :type :integer}}
-  {:id :generated/iterators-021 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [21]))" :expect {:value 42 :type :integer}}
-  {:id :generated/iterators-022 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [22]))" :expect {:value 44 :type :integer}}
-  {:id :generated/iterators-023 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [23]))" :expect {:value 46 :type :integer}}
-  {:id :generated/iterators-024 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [24]))" :expect {:value 48 :type :integer}}
-  {:id :generated/iterators-025 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [25]))" :expect {:value 50 :type :integer}}
-  {:id :generated/iterators-026 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [26]))" :expect {:value 52 :type :integer}}
-  {:id :generated/iterators-027 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [27]))" :expect {:value 54 :type :integer}}
-  {:id :generated/iterators-028 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [28]))" :expect {:value 56 :type :integer}}
-  {:id :generated/iterators-029 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [29]))" :expect {:value 58 :type :integer}}
-  {:id :generated/iterators-030 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [30]))" :expect {:value 60 :type :integer}}
-  {:id :generated/iterators-031 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [31]))" :expect {:value 62 :type :integer}}
-  {:id :generated/iterators-032 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [32]))" :expect {:value 64 :type :integer}}
-  {:id :generated/iterators-033 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [33]))" :expect {:value 66 :type :integer}}
-  {:id :generated/iterators-034 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [34]))" :expect {:value 68 :type :integer}}
-  {:id :generated/iterators-035 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [35]))" :expect {:value 70 :type :integer}}
-  {:id :generated/iterators-036 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [36]))" :expect {:value 72 :type :integer}}
-  {:id :generated/iterators-037 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [37]))" :expect {:value 74 :type :integer}}
-  {:id :generated/iterators-038 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [38]))" :expect {:value 76 :type :integer}}
-  {:id :generated/iterators-039 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [39]))" :expect {:value 78 :type :integer}}
-  {:id :generated/iterators-040 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [40]))" :expect {:value 80 :type :integer}}
-  {:id :generated/iterators-041 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [0]))" :expect {:value 0 :type :integer}}
-  {:id :generated/iterators-042 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [1]))" :expect {:value 2 :type :integer}}
-  {:id :generated/iterators-043 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [2]))" :expect {:value 4 :type :integer}}
-  {:id :generated/iterators-044 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [3]))" :expect {:value 6 :type :integer}}
-  {:id :generated/iterators-045 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [4]))" :expect {:value 8 :type :integer}}
-  {:id :generated/iterators-046 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [5]))" :expect {:value 10 :type :integer}}
-  {:id :generated/iterators-047 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [6]))" :expect {:value 12 :type :integer}}
-  {:id :generated/iterators-048 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [7]))" :expect {:value 14 :type :integer}}
-  {:id :generated/iterators-049 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [8]))" :expect {:value 16 :type :integer}}
-  {:id :generated/iterators-050 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [9]))" :expect {:value 18 :type :integer}}
-  {:id :generated/iterators-051 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [10]))" :expect {:value 20 :type :integer}}
-  {:id :generated/iterators-052 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [11]))" :expect {:value 22 :type :integer}}
-  {:id :generated/iterators-053 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [12]))" :expect {:value 24 :type :integer}}
-  {:id :generated/iterators-054 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [13]))" :expect {:value 26 :type :integer}}
-  {:id :generated/iterators-055 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [14]))" :expect {:value 28 :type :integer}}
-  {:id :generated/iterators-056 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [15]))" :expect {:value 30 :type :integer}}
-  {:id :generated/iterators-057 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [16]))" :expect {:value 32 :type :integer}}
-  {:id :generated/iterators-058 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [17]))" :expect {:value 34 :type :integer}}
-  {:id :generated/iterators-059 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [18]))" :expect {:value 36 :type :integer}}
-  {:id :generated/iterators-060 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [19]))" :expect {:value 38 :type :integer}}
-  {:id :generated/iterators-061 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [20]))" :expect {:value 40 :type :integer}}
-  {:id :generated/iterators-062 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [21]))" :expect {:value 42 :type :integer}}
-  {:id :generated/iterators-063 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [22]))" :expect {:value 44 :type :integer}}
-  {:id :generated/iterators-064 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [23]))" :expect {:value 46 :type :integer}}
-  {:id :generated/iterators-065 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [24]))" :expect {:value 48 :type :integer}}
-  {:id :generated/iterators-066 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [25]))" :expect {:value 50 :type :integer}}
-  {:id :generated/iterators-067 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [26]))" :expect {:value 52 :type :integer}}
-  {:id :generated/iterators-068 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [27]))" :expect {:value 54 :type :integer}}
-  {:id :generated/iterators-069 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [28]))" :expect {:value 56 :type :integer}}
-  {:id :generated/iterators-070 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [29]))" :expect {:value 58 :type :integer}}
-  {:id :generated/iterators-071 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [30]))" :expect {:value 60 :type :integer}}
-  {:id :generated/iterators-072 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [31]))" :expect {:value 62 :type :integer}}
-  {:id :generated/iterators-073 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [32]))" :expect {:value 64 :type :integer}}
-  {:id :generated/iterators-074 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [33]))" :expect {:value 66 :type :integer}}
-  {:id :generated/iterators-075 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [34]))" :expect {:value 68 :type :integer}}
-  {:id :generated/iterators-076 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [35]))" :expect {:value 70 :type :integer}}
-  {:id :generated/iterators-077 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [36]))" :expect {:value 72 :type :integer}}
-  {:id :generated/iterators-078 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [37]))" :expect {:value 74 :type :integer}}
-  {:id :generated/iterators-079 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [38]))" :expect {:value 76 :type :integer}}
-  {:id :generated/iterators-080 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [39]))" :expect {:value 78 :type :integer}}
-  {:id :generated/iterators-081 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [40]))" :expect {:value 80 :type :integer}}
-  {:id :generated/iterators-082 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [0]))" :expect {:value 0 :type :integer}}
-  {:id :generated/iterators-083 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [1]))" :expect {:value 2 :type :integer}}
-  {:id :generated/iterators-084 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [2]))" :expect {:value 4 :type :integer}}
-  {:id :generated/iterators-085 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [3]))" :expect {:value 6 :type :integer}}
-  {:id :generated/iterators-086 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [4]))" :expect {:value 8 :type :integer}}
-  {:id :generated/iterators-087 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [5]))" :expect {:value 10 :type :integer}}
-  {:id :generated/iterators-088 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [6]))" :expect {:value 12 :type :integer}}
-  {:id :generated/iterators-089 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [7]))" :expect {:value 14 :type :integer}}
-  {:id :generated/iterators-090 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [8]))" :expect {:value 16 :type :integer}}
-  {:id :generated/iterators-091 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [9]))" :expect {:value 18 :type :integer}}
-  {:id :generated/iterators-092 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [10]))" :expect {:value 20 :type :integer}}
-  {:id :generated/iterators-093 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [11]))" :expect {:value 22 :type :integer}}
-  {:id :generated/iterators-094 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [12]))" :expect {:value 24 :type :integer}}
-  {:id :generated/iterators-095 :group :generated-iterators :origin :generated :source "(iter-next (iter-map (fn [x] (* x 2)) [13]))" :expect {:value 26 :type :integer}}
+  {:id :generated/iterators-000 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [0]))" :expect {:value 0 :type :integer}}
+  {:id :generated/iterators-001 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [1]))" :expect {:value 2 :type :integer}}
+  {:id :generated/iterators-002 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [2]))" :expect {:value 4 :type :integer}}
+  {:id :generated/iterators-003 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [3]))" :expect {:value 6 :type :integer}}
+  {:id :generated/iterators-004 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [4]))" :expect {:value 8 :type :integer}}
+  {:id :generated/iterators-005 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [5]))" :expect {:value 10 :type :integer}}
+  {:id :generated/iterators-006 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [6]))" :expect {:value 12 :type :integer}}
+  {:id :generated/iterators-007 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [7]))" :expect {:value 14 :type :integer}}
+  {:id :generated/iterators-008 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [8]))" :expect {:value 16 :type :integer}}
+  {:id :generated/iterators-009 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [9]))" :expect {:value 18 :type :integer}}
+  {:id :generated/iterators-010 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [10]))" :expect {:value 20 :type :integer}}
+  {:id :generated/iterators-011 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [11]))" :expect {:value 22 :type :integer}}
+  {:id :generated/iterators-012 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [12]))" :expect {:value 24 :type :integer}}
+  {:id :generated/iterators-013 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [13]))" :expect {:value 26 :type :integer}}
+  {:id :generated/iterators-014 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [14]))" :expect {:value 28 :type :integer}}
+  {:id :generated/iterators-015 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [15]))" :expect {:value 30 :type :integer}}
+  {:id :generated/iterators-016 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [16]))" :expect {:value 32 :type :integer}}
+  {:id :generated/iterators-017 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [17]))" :expect {:value 34 :type :integer}}
+  {:id :generated/iterators-018 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [18]))" :expect {:value 36 :type :integer}}
+  {:id :generated/iterators-019 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [19]))" :expect {:value 38 :type :integer}}
+  {:id :generated/iterators-020 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [20]))" :expect {:value 40 :type :integer}}
+  {:id :generated/iterators-021 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [21]))" :expect {:value 42 :type :integer}}
+  {:id :generated/iterators-022 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [22]))" :expect {:value 44 :type :integer}}
+  {:id :generated/iterators-023 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [23]))" :expect {:value 46 :type :integer}}
+  {:id :generated/iterators-024 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [24]))" :expect {:value 48 :type :integer}}
+  {:id :generated/iterators-025 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [25]))" :expect {:value 50 :type :integer}}
+  {:id :generated/iterators-026 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [26]))" :expect {:value 52 :type :integer}}
+  {:id :generated/iterators-027 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [27]))" :expect {:value 54 :type :integer}}
+  {:id :generated/iterators-028 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [28]))" :expect {:value 56 :type :integer}}
+  {:id :generated/iterators-029 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [29]))" :expect {:value 58 :type :integer}}
+  {:id :generated/iterators-030 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [30]))" :expect {:value 60 :type :integer}}
+  {:id :generated/iterators-031 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [31]))" :expect {:value 62 :type :integer}}
+  {:id :generated/iterators-032 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [32]))" :expect {:value 64 :type :integer}}
+  {:id :generated/iterators-033 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [33]))" :expect {:value 66 :type :integer}}
+  {:id :generated/iterators-034 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [34]))" :expect {:value 68 :type :integer}}
+  {:id :generated/iterators-035 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [35]))" :expect {:value 70 :type :integer}}
+  {:id :generated/iterators-036 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [36]))" :expect {:value 72 :type :integer}}
+  {:id :generated/iterators-037 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [37]))" :expect {:value 74 :type :integer}}
+  {:id :generated/iterators-038 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [38]))" :expect {:value 76 :type :integer}}
+  {:id :generated/iterators-039 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [39]))" :expect {:value 78 :type :integer}}
+  {:id :generated/iterators-040 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [40]))" :expect {:value 80 :type :integer}}
+  {:id :generated/iterators-041 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [0]))" :expect {:value 0 :type :integer}}
+  {:id :generated/iterators-042 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [1]))" :expect {:value 2 :type :integer}}
+  {:id :generated/iterators-043 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [2]))" :expect {:value 4 :type :integer}}
+  {:id :generated/iterators-044 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [3]))" :expect {:value 6 :type :integer}}
+  {:id :generated/iterators-045 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [4]))" :expect {:value 8 :type :integer}}
+  {:id :generated/iterators-046 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [5]))" :expect {:value 10 :type :integer}}
+  {:id :generated/iterators-047 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [6]))" :expect {:value 12 :type :integer}}
+  {:id :generated/iterators-048 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [7]))" :expect {:value 14 :type :integer}}
+  {:id :generated/iterators-049 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [8]))" :expect {:value 16 :type :integer}}
+  {:id :generated/iterators-050 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [9]))" :expect {:value 18 :type :integer}}
+  {:id :generated/iterators-051 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [10]))" :expect {:value 20 :type :integer}}
+  {:id :generated/iterators-052 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [11]))" :expect {:value 22 :type :integer}}
+  {:id :generated/iterators-053 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [12]))" :expect {:value 24 :type :integer}}
+  {:id :generated/iterators-054 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [13]))" :expect {:value 26 :type :integer}}
+  {:id :generated/iterators-055 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [14]))" :expect {:value 28 :type :integer}}
+  {:id :generated/iterators-056 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [15]))" :expect {:value 30 :type :integer}}
+  {:id :generated/iterators-057 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [16]))" :expect {:value 32 :type :integer}}
+  {:id :generated/iterators-058 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [17]))" :expect {:value 34 :type :integer}}
+  {:id :generated/iterators-059 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [18]))" :expect {:value 36 :type :integer}}
+  {:id :generated/iterators-060 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [19]))" :expect {:value 38 :type :integer}}
+  {:id :generated/iterators-061 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [20]))" :expect {:value 40 :type :integer}}
+  {:id :generated/iterators-062 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [21]))" :expect {:value 42 :type :integer}}
+  {:id :generated/iterators-063 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [22]))" :expect {:value 44 :type :integer}}
+  {:id :generated/iterators-064 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [23]))" :expect {:value 46 :type :integer}}
+  {:id :generated/iterators-065 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [24]))" :expect {:value 48 :type :integer}}
+  {:id :generated/iterators-066 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [25]))" :expect {:value 50 :type :integer}}
+  {:id :generated/iterators-067 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [26]))" :expect {:value 52 :type :integer}}
+  {:id :generated/iterators-068 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [27]))" :expect {:value 54 :type :integer}}
+  {:id :generated/iterators-069 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [28]))" :expect {:value 56 :type :integer}}
+  {:id :generated/iterators-070 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [29]))" :expect {:value 58 :type :integer}}
+  {:id :generated/iterators-071 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [30]))" :expect {:value 60 :type :integer}}
+  {:id :generated/iterators-072 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [31]))" :expect {:value 62 :type :integer}}
+  {:id :generated/iterators-073 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [32]))" :expect {:value 64 :type :integer}}
+  {:id :generated/iterators-074 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [33]))" :expect {:value 66 :type :integer}}
+  {:id :generated/iterators-075 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [34]))" :expect {:value 68 :type :integer}}
+  {:id :generated/iterators-076 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [35]))" :expect {:value 70 :type :integer}}
+  {:id :generated/iterators-077 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [36]))" :expect {:value 72 :type :integer}}
+  {:id :generated/iterators-078 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [37]))" :expect {:value 74 :type :integer}}
+  {:id :generated/iterators-079 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [38]))" :expect {:value 76 :type :integer}}
+  {:id :generated/iterators-080 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [39]))" :expect {:value 78 :type :integer}}
+  {:id :generated/iterators-081 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [40]))" :expect {:value 80 :type :integer}}
+  {:id :generated/iterators-082 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [0]))" :expect {:value 0 :type :integer}}
+  {:id :generated/iterators-083 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [1]))" :expect {:value 2 :type :integer}}
+  {:id :generated/iterators-084 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [2]))" :expect {:value 4 :type :integer}}
+  {:id :generated/iterators-085 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [3]))" :expect {:value 6 :type :integer}}
+  {:id :generated/iterators-086 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [4]))" :expect {:value 8 :type :integer}}
+  {:id :generated/iterators-087 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [5]))" :expect {:value 10 :type :integer}}
+  {:id :generated/iterators-088 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [6]))" :expect {:value 12 :type :integer}}
+  {:id :generated/iterators-089 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [7]))" :expect {:value 14 :type :integer}}
+  {:id :generated/iterators-090 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [8]))" :expect {:value 16 :type :integer}}
+  {:id :generated/iterators-091 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [9]))" :expect {:value 18 :type :integer}}
+  {:id :generated/iterators-092 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [10]))" :expect {:value 20 :type :integer}}
+  {:id :generated/iterators-093 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [11]))" :expect {:value 22 :type :integer}}
+  {:id :generated/iterators-094 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [12]))" :expect {:value 24 :type :integer}}
+  {:id :generated/iterators-095 :group :generated-iterators :origin :generated :source "(iter-next (Iter/iter-map (fn [x] (* x 2)) [13]))" :expect {:value 26 :type :integer}}
   {:id :generated/bitops-000 :group :generated-bitops :origin :generated :source "(bit-xor (bit-or 1 42) (bit-and 1 42))" :expect {:value 43 :type :integer}}
   {:id :generated/bitops-001 :group :generated-bitops :origin :generated :source "(bit-xor (bit-or 2 42) (bit-and 2 42))" :expect {:value 40 :type :integer}}
   {:id :generated/bitops-002 :group :generated-bitops :origin :generated :source "(bit-xor (bit-or 3 42) (bit-and 3 42))" :expect {:value 41 :type :integer}}

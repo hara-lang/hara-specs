@@ -140,7 +140,7 @@
   {:surface/id :foundation/macros
    :surface/domain :macro
    :surface/symbols
-   [doto if-not if-let when-let cond-> cond->> with-ns intern-in intern-all
+   [doto if-not when if-let when-let cond-> cond->> with-ns intern-in intern-all
     with:template-meta template-vars template-entries code-line code-column]
    :surface/classification :portable-hal}
   {:surface/id :foundation/templates
