@@ -19,7 +19,7 @@
   {:id :literal/nil :source "nil" :expect {:display "nil"}}
   {:id :literal/true :source "true" :expect {:display "true"}}
   {:id :literal/false :source "false" :expect {:display "false"}}
-  {:id :literal/empty-list :source "()" :expect {:display "nil"}}
+  {:id :literal/empty-list :source "()" :expect {:display "()"}}
   {:id :literal/last-of-forms :source "1 2 3" :expect {:display "3"}}
 
   ;; ---- arithmetic ----
