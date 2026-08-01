@@ -15,18 +15,18 @@
    :class :reader
    :source "nil"
    :expect {:value nil :type :nil}}
-  {:id :reader/bigint-unsupported
+  {:id :reader/bigint
    :class :reader
    :source "123N"
-   :expect {:error :invalid-number :message "Invalid number"}}
-  {:id :reader/zero-bigint-unsupported
+   :expect {:value 123N :type :big-integer}}
+  {:id :reader/zero-bigint
    :class :reader
    :source "0N"
-   :expect {:error :invalid-number :message "Invalid number"}}
-  {:id :reader/bigdec-unsupported
+   :expect {:value 0N :type :big-integer}}
+  {:id :reader/bigdec
    :class :reader
    :source "123.45M"
-   :expect {:error :invalid-number :message "Invalid number"}}
+   :expect {:value 123.45M :type :decimal}}
   {:id :reader/integer-overflow
    :class :reader
    :source "9223372036854775808"

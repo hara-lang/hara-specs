@@ -94,7 +94,7 @@
   {:id :error/add-arity :source "(+)" :expect {:error-category "primitive arity"}}
   {:id :error/mod-arity :source "(mod)" :expect {:error-category "primitive arity"}}
   {:id :error/reader-eof :source "(+ 1" :expect {:error-category "reader"}}
-  {:id :error/reader-number :source "42N" :expect {:error-category "reader"}}
+  {:id :literal/big-integer :source "42N" :expect {:display "42N"}}
 
   ;; ---- compile errors: VM-only canonical behavior ----
   {:id :compile/recur-outside-loop :source "(recur 1)" :expect {:compile-error "recur must be inside loop"}}
