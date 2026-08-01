@@ -56,7 +56,7 @@
    [{:requirement/id :reader/edn-profile
      :requirement/level :must
      :requirement/text
-     "The reader accepts nil, booleans, strings, characters, symbols, keywords, signed 64-bit integers, binary64 floating-point numbers, lists, vectors, maps, and sets."
+     "The reader accepts nil, booleans, strings, characters, symbols, keywords, signed 64-bit integers, explicit arbitrary-precision integers with an N suffix, binary64 floating-point numbers, exact decimals with an M suffix, lists, vectors, maps, and sets."
      :requirement/evidence
      [{:conformance/suite :hal/reader
        :conformance/cases
@@ -65,12 +65,12 @@
     {:requirement/id :reader/restricted-numbers
      :requirement/level :must-not
      :requirement/text
-     "The Hara EDN profile does not accept ratios, arbitrary-precision integer suffixes, or exact-decimal suffixes."
+     "The Hara EDN profile does not accept ratios or unsuffixed integers outside the signed 64-bit range. Arbitrary-precision integers and exact decimals require explicit N and M suffixes."
      :requirement/evidence
      [{:conformance/suite :hal/reader
        :conformance/cases
-       [:unsupported-ratio :explicit-bigint-unsupported
-        :big-decimal-unsupported]}]}
+       [:unsupported-ratio :positive-integer-overflow
+        :negative-integer-overflow]}]}
     {:requirement/id :reader/delimiters
      :requirement/level :must
      :requirement/text

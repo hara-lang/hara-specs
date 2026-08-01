@@ -1,4 +1,4 @@
-{:spec/version "0.1"
+{:spec/version "0.2"
  :language "hal-modules"
  :description
  "Cross-runtime acceptance scenarios for namespace identity, transactional modules, lazy loading, macros, sessions, and retained REPL state."
@@ -24,6 +24,30 @@
    :area :namespace
    :scenario :var-identity
    :expect {:same-var true :live-root true}}
+  {:id :namespace/callable-var-precedence
+   :area :namespace
+   :scenario :callable-var
+   :setup "(ns conformance.callable (:config {:blank true}) (:require [std.foundation :refer :all :exclude [count]]))"
+   :source "(defn count [ignored] 42) (list (count 5) (std.foundation/count (list 1 2 3)) (= #'count #'std.foundation/count))"
+   :expect {:display "(42 3 false)"}}
+  {:id :namespace/callable-var-lexical-shadow
+   :area :namespace
+   :scenario :callable-var
+   :setup "(ns conformance.lexical)"
+   :source "(let [count (fn [ignored] 42)] (count 5))"
+   :expect {:display "42"}}
+  {:id :namespace/callable-var-late-binding
+   :area :namespace
+   :scenario :callable-var
+   :setup "(ns conformance.late-binding (:config {:blank true}) (:require [std.foundation :refer :all :exclude [count]]))"
+   :source "(defn count [ignored] 41) (defn call-count [] (count 5)) (defn count [ignored] 42) (call-count)"
+   :expect {:display "42"}}
+  {:id :namespace/referred-var-protected
+   :area :namespace
+   :scenario :ownership
+   :setup "(ns conformance.protected)"
+   :source "(declare count)"
+   :expect {:error-contains "Cannot replace referred Var without ns omission"}}
   {:id :namespace/use-declaration
    :area :namespace
    :scenario :use
@@ -83,6 +107,44 @@
    :area :module
    :scenario :reload
    :expect {:previous-revision-preserved true :previous-roots-preserved true}}
+  {:id :module/ns-require-reload
+   :area :module
+   :scenario :reload
+   :fixture
+   {:resource
+    {:namespace "conformance.reload-target"
+     :path "conformance/reload_target.hal"
+     :revisions
+     {:initial "(ns conformance.reload-target) (def answer 41)"
+      :updated "(ns conformance.reload-target) (def answer 42)"
+      :broken "(ns conformance.reload-target) (def answer 99) (def leaked 1) (throw :reload-failed)"}}
+    :steps
+    [{:op :resource/use :revision :initial}
+     {:op :eval
+      :source "(ns conformance.reload-client (:config {:blank true}) (:require [conformance.reload-target :as target :refer [answer]])) [target/answer answer]"
+      :expect {:display "[41 41]"}}
+     {:op :assert/revision :expect 1}
+     {:op :resource/use :revision :updated}
+     {:op :eval
+      :source "(ns conformance.reload-client (:config {:blank true}) (:require [conformance.reload-target :as target :refer [answer] :reload true])) [target/answer answer]"
+      :expect {:display "[42 42]"}}
+     {:op :assert/revision :expect 2}
+     {:op :resource/use :revision :broken}
+     {:op :eval
+      :source "(ns conformance.reload-client (:config {:blank true}) (:require [conformance.reload-target :as target :refer [answer] :reload true]))"
+      :expect {:error true}}
+     {:op :eval
+      :source "[target/answer answer]"
+      :expect {:display "[42 42]"}}
+     {:op :assert/revision :expect 2}
+     {:op :eval
+      :source "conformance.reload-target/leaked"
+      :expect {:error-contains "unbound symbol"}}]}
+   :expect {:reload-before-bindings true
+            :alias-observes-new-root true
+            :refer-observes-new-root true
+            :revision-increment 1
+            :failed-reload-atomic true}}
   {:id :module/resource-precedence
    :area :module
    :scenario :resolution

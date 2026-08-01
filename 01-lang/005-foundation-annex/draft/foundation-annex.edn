@@ -50,8 +50,7 @@
    [length blank? includes? starts-with? ends-with? char-at slice index-of
     last-index-of join split split-lines repeat replace replace-first trim
     trim-left trim-right upper lower capitalize decapitalize pad-left
-    pad-right reverse encode-utf8 decode-utf8 len count char substring
-    to-upper to-lower encode decode comp lt? gt? to-fixed]}
+    pad-right reverse encode-utf8 decode-utf8 to-fixed]}
   {:library/id :foundation/bytes
    :library/namespace std.foundation.bytes
    :library/classification :native-facade

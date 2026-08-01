@@ -75,7 +75,7 @@
    [length blank? includes? starts-with? ends-with? char-at slice index-of
     last-index-of join split split-lines repeat replace replace-first trim
     trim-left trim-right upper lower capitalize decapitalize pad-left
-    pad-right reverse encode-utf8 decode-utf8 comp lt? gt? to-fixed]}
+    pad-right reverse encode-utf8 decode-utf8 to-fixed]}
   {:native/id :std.native/bytes
    :native/symbol Bytes :native/namespace std.native.Bytes
    :native/availability :portable

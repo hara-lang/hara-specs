@@ -14,6 +14,8 @@
    :target/path "004-foundation/draft/foundation-spec.edn"}
   {:target/id :hara/foundation-annex
    :target/path "005-foundation-annex/draft/foundation-annex.edn"}
+  {:target/id :hara/host-kernel
+   :target/path "006-host-and-kernel/draft/host-kernel-spec.edn"}
   {:target/id :hal/core
    :target/path nil
    :target/status :reserved}]
@@ -110,7 +112,10 @@
     {:target/id :hara/native
      :target/owns #{:native-capabilities :runtime-profiles}}
     {:target/id :hara/foundation-annex
-     :target/owns #{:capability-facades}}]}]
+     :target/owns #{:capability-facades}}
+    {:target/id :hara/host-kernel
+     :target/owns #{:session-authority :grant-resolution :provider-dispatch
+                    :settlement-semantics :embedding-wire-contract}}]}]
 
  :migration/corpora
  [{:legacy/path

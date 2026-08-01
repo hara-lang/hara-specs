@@ -152,6 +152,18 @@
       "owner": "hara-lang"
     },
     {
+      "path": "00-unsorted/diagnostics/draft/conformance/evaluation-journal.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "00-unsorted/diagnostics/draft/hal-evaluation-journal.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "00-unsorted/package/README.md",
       "kind": "markdown",
       "classification": "hara",
@@ -416,7 +428,37 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/009-hir/draft/hal-hir-format.md",
+      "path": "01-lang/006-host-and-kernel/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/006-host-and-kernel/draft/host-kernel-spec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/009-halc/draft/conformance/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/009-halc/draft/conformance/invalid-artifacts.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/009-halc/draft/conformance/values.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/009-halc/draft/halc-format.md",
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
@@ -435,6 +477,42 @@
     },
     {
       "path": "01-lang/010-bytecode/draft/hal-bytecode-vm.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/010-bytecode/draft/rust-tracing-jit.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/020-data-structures/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/020-data-structures/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/020-data-structures/draft/conformance/collections.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/020-data-structures/draft/conformance/hash-parity.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/020-data-structures/draft/data-structures-spec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
@@ -1029,36 +1107,6 @@
     },
     {
       "path": "02-platform/000100-lsp-base/draft/hara-lsp-base.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "02-platform/000200-chip-base/draft/README.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "02-platform/000200-chip-base/draft/chip-base.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "02-platform/000200-chip-base/draft/conformance/matcher.edn",
-      "kind": "edn",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "02-platform/000200-chip-base/metaspec/README.md",
-      "kind": "markdown",
-      "classification": "hara",
-      "owner": "hara-lang"
-    },
-    {
-      "path": "02-platform/000200-chip-base/metaspec/chip-base-metaspec.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"

@@ -17,7 +17,7 @@
   {:name "EDN"
    :extension ".edn"
    :profile :hara
-   :unsupported-number-forms #{:ratio :arbitrary-precision-integer :exact-decimal}}
+   :unsupported-number-forms #{:ratio}}
   :profile :portable-core
   :includes
   #{:reader
@@ -100,15 +100,15 @@
    [{:requirement/id :reader/edn-profile
      :requirement/level :must
      :requirement/text
-     "The Hara EDN profile retains the core EDN data forms, limits integers to signed 64-bit values and floating-point numbers to binary64 values, and rejects ratios, arbitrary-precision N suffixes, and exact-decimal M suffixes."
+     "The Hara EDN profile retains the core EDN data forms, accepts signed 64-bit integers and binary64 floating-point values by default, accepts arbitrary-precision integers and exact decimals with explicit N and M suffixes, and rejects ratios and unsuffixed integer overflow."
      :requirement/evidence
      [{:suite :hal/reader
        :cases [:numbers
                :integer-boundaries
                :positive-integer-overflow
                :negative-integer-overflow
-               :explicit-bigint-unsupported
-               :big-decimal-unsupported]}]}
+               :explicit-bigint
+               :big-decimal]}]}
     {:requirement/id :reader/forms
      :requirement/level :must
      :requirement/text
@@ -277,12 +277,21 @@
     {:requirement/id :iterator/exact-observation
      :requirement/level :must
      :requirement/text
-     "iter-has? exactly observes whether iter-next can produce an item without logically consuming that item. Repeated successful observations are stable, the following iter-next returns the observed item, exhaustion returns false, and failures other than exhaustion propagate."
+     "iter-next? exactly observes whether iter-next can produce an item without logically consuming that item. Repeated successful observations are stable, the following iter-next returns the observed item, exhaustion returns false, and failures other than exhaustion propagate."
      :requirement/evidence
      [{:suite :hal/l0
        :cases [:iterator/exact-lookahead
                :iterator/generated-exhaustion
                :iterator/nil-requires-conversion]}]}
+    {:requirement/id :iterator/public-surface
+     :requirement/level :must
+     :requirement/text
+     "std.foundation exports exactly iter, iter?, iter-next?, and iter-next from the iterator family. Every other iter-* operation is a host-native operation of Iter and must be invoked through the startup type alias as Iter/iter-* (or an explicit namespace alias); it is not a root Foundation binding."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:iterator/root-surface
+               :iterator/native-combinator-qualified
+               :iterator/root-combinator-unbound]}]}
     {:requirement/id :iterator/cycle-non-empty
      :requirement/level :must
      :requirement/text
@@ -390,6 +399,23 @@
      [{:suite :hal/modules
        :cases [:namespace/alias-var-identity
                :namespace/refer-var-identity]}]}
+    {:requirement/id :namespace/callable-vars
+     :requirement/level :must
+     :requirement/text
+     "Every ordinary callable is resolved as a value: lexical binding first, then a visible namespace Var. Host implementations are Var roots, not privileged symbol dispatch, so Var identity, lexical shadowing, and late redefinition are preserved across runtimes and compilation backends."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/callable-var-precedence
+               :namespace/callable-var-lexical-shadow
+               :namespace/callable-var-late-binding]}]}
+    {:requirement/id :namespace/referred-var-ownership
+     :requirement/level :must
+     :requirement/text
+     "A referred Var belongs to its defining namespace and cannot be replaced by def, defn, set!, or declare in the receiving namespace. A namespace must omit the name, including through :require :exclude, before defining a local replacement. declare supplies forward visibility only."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/referred-var-protected
+               :namespace/callable-var-precedence]}]}
     {:requirement/id :namespace/facade-vars
      :requirement/level :must
      :requirement/text
@@ -410,11 +436,12 @@
     {:requirement/id :module/reload
      :requirement/level :must
      :requirement/text
-     "A successful initial load establishes revision 1. Explicit reload evaluates transactionally and increments the revision only after success. Existing compiled call targets remain immutable; subsequent compilation resolves the new Var and macro roots."
+     "A successful initial load establishes revision 1. Explicit reload evaluates transactionally and increments the revision only after success. The semantics are identical for standalone require and :reload true inside an ns :require clause: the target reload completes before aliases, referred Vars, or referred macros are published. A failed reload preserves the previous roots, revision, namespace bindings, and caller namespace. Existing compiled call targets remain immutable; subsequent compilation resolves the new Var and macro roots."
      :requirement/evidence
      [{:suite :hal/modules
        :cases [:module/reload-revision
                :module/reload-rollback
+               :module/ns-require-reload
                :macro/reload-new-compilation]}]}
     {:requirement/id :module/lazy-alias
      :requirement/level :must
@@ -477,7 +504,7 @@
    [{:requirement/id :std.foundation.edn/api
      :requirement/level :must
      :requirement/text
-     "The std.foundation.edn namespace provides one-argument read and write functions plus the two-argument (pretty value opts) function. read accepts exactly one value using the Hara EDN profile and does not evaluate it; ratios, arbitrary-precision N suffixes, exact-decimal M suffixes, integer overflow, empty input, and multiple top-level values are errors. write and pretty return canonical readable text that round-trips through read. pretty requires opts to be a map; its option keys are reserved."}
+     "The std.foundation.edn namespace provides one-argument read and write functions plus the two-argument (pretty value opts) function. read accepts exactly one value using the Hara EDN profile and does not evaluate it; ratios, unsuffixed integer overflow, empty input, and multiple top-level values are errors. Explicit arbitrary-precision N integers and exact-decimal M values are accepted. write and pretty return canonical readable text that round-trips through read. pretty requires opts to be a map; its option keys are reserved."}
     {:requirement/id :std.foundation/ex-info
      :requirement/level :must
      :requirement/text

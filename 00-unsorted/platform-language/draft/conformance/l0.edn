@@ -15,18 +15,18 @@
    :class :reader
    :source "nil"
    :expect {:value nil :type :nil}}
-  {:id :reader/bigint-unsupported
+  {:id :reader/bigint
    :class :reader
    :source "123N"
-   :expect {:error :invalid-number :message "Invalid number"}}
-  {:id :reader/zero-bigint-unsupported
+   :expect {:value 123N :type :big-integer}}
+  {:id :reader/zero-bigint
    :class :reader
    :source "0N"
-   :expect {:error :invalid-number :message "Invalid number"}}
-  {:id :reader/bigdec-unsupported
+   :expect {:value 0N :type :big-integer}}
+  {:id :reader/bigdec
    :class :reader
    :source "123.45M"
-   :expect {:error :invalid-number :message "Invalid number"}}
+   :expect {:value 123.45M :type :decimal}}
   {:id :reader/integer-overflow
    :class :reader
    :source "9223372036854775808"
@@ -49,7 +49,7 @@
    :expect {:value 42 :type :integer}}
   {:id :compiler/defn
    :class :compiler
-   :source "(do (defn inc [x] (+ x 1)) (inc 41))"
+   :source "(ns l0.defn (:config {:blank true}) (:require [std.foundation :refer :all :exclude [inc]])) (defn inc [x] (+ x 1)) (inc 41)"
    :expect {:value 42 :type :integer}}
   {:id :function/closure-capture
    :class :function
@@ -183,7 +183,7 @@
    :expect {:value 2 :type :integer}}
   {:id :iterator/combinators
    :class :iterator
-   :source "(let [it (iter-map (fn [x] (* x 2)) [1 2])] (iter-next it))"
+   :source "(let [it (Iter/iter-map (fn [x] (* x 2)) [1 2])] (iter-next it))"
    :expect {:value 2 :type :integer}}
   {:id :iterator/mutable-bytes
    :class :iterator
@@ -191,11 +191,11 @@
    :expect {:value 4 :type :integer}}
   {:id :iterator/cycle-partition
    :class :iterator
-   :source "(let [it (iter-cycle [1 2])] (+ (iter-next it) (iter-next it) (iter-next it) (nth (iter-next (iter-partition-pair [4 5])) 1)))"
+   :source "(let [it (Iter/iter-cycle [1 2])] (+ (iter-next it) (iter-next it) (iter-next it) (nth (iter-next (Iter/iter-partition-pair [4 5])) 1)))"
    :expect {:value 9 :type :integer}}
   {:id :iterator/mapcat-keep
    :class :iterator
-   :source "(let [it (iter-mapcat (fn [x] [x (+ x 10)]) [1 2])] (+ (iter-next it) (iter-next it) (iter-next it) (iter-next (iter-keep (fn [x] (if (= x 2) x nil)) [1 2 3]))))"
+   :source "(let [it (Iter/iter-mapcat (fn [x] [x (+ x 10)]) [1 2])] (+ (iter-next it) (iter-next it) (iter-next it) (iter-next (Iter/iter-keep (fn [x] (if (= x 2) x nil)) [1 2 3]))))"
    :expect {:value 16 :type :integer}}
   {:id :function/apply
    :class :function
@@ -235,7 +235,7 @@
    :expect {:value true :type :boolean}}
   {:id :sequence/lazy-cons
    :class :collection
-   :source "(and (= [0 2] (vec (cons 0 (rest [1 2])))) (= [0 1 1 1] (vec (iter-take 4 (cons 0 (repeat 1))))))"
+   :source "(and (= [0 2] (vec (cons 0 (rest [1 2])))) (= [0 1 1 1] (vec (Iter/iter-take 4 (cons 0 (repeat 1))))))"
    :expect {:value true :type :boolean}}
   {:id :sequence/reject-conj
    :class :collection
@@ -243,20 +243,32 @@
    :expect {:error :unsupported}}
   {:id :iterator/exact-lookahead
    :class :iterator
-   :source "(let [it (iter-map inc [1])] (and (iter-has? it) (iter-has? it) (= 2 (iter-next it)) (not (iter-has? it))))"
+   :source "(let [it (Iter/iter-map inc [1])] (and (iter-next? it) (iter-next? it) (= 2 (iter-next it)) (not (iter-next? it))))"
    :expect {:value true :type :boolean}}
   {:id :iterator/generated-exhaustion
    :class :iterator
-   :source "(and (not (iter-has? (iter-drop 1 [1]))) (not (iter-has? (iter-take 0 [1]))) (not (iter-has? (iter-map inc []))) (empty? (iter-drop 1 [1])))"
+   :source "(and (not (iter-next? (Iter/iter-drop 1 [1]))) (not (iter-next? (Iter/iter-take 0 [1]))) (not (iter-next? (Iter/iter-map inc []))) (empty? (Iter/iter-drop 1 [1])))"
    :expect {:value true :type :boolean}}
   {:id :iterator/shortest-source-finite
    :class :iterator
-   :source "(and (= [[1 0]] (vec (iter-zip [1] (repeat 0)))) (= [1 0] (vec (iter-interleave [1] (repeat 0)))))"
+   :source "(and (= [[1 0]] (vec (Iter/iter-zip [1] (repeat 0)))) (= [1 0] (vec (Iter/iter-interleave [1] (repeat 0)))))"
    :expect {:value true :type :boolean}}
   {:id :iterator/nil-requires-conversion
    :class :iterator
-   :source "(iter-has? nil)"
+   :source "(iter-next? nil)"
    :expect {:error :unsupported}}
+  {:id :iterator/root-surface
+   :class :iterator
+   :source "(let [publics (ns-publics 'std.foundation)] (and (get publics 'iter) (get publics 'iter?) (get publics 'iter-next?) (get publics 'iter-next) (nil? (get publics 'iter-map)) (nil? (get publics 'iter-has?))))"
+   :expect {:value true :type :boolean}}
+  {:id :iterator/native-combinator-qualified
+   :class :iterator
+   :source "(Iter/iter-next (Iter/iter-map inc [1]))"
+   :expect {:value 2 :type :integer}}
+  {:id :iterator/root-combinator-unbound
+   :class :iterator
+   :source "(iter-map inc [1])"
+   :expect {:error :unbound}}
   {:id :iterator/empty-cycle-rejected
    :class :iterator
    :source "(cycle [])"
@@ -299,7 +311,7 @@
    :expect {:value 7 :type :integer}}
   {:id :iterator/core-composition
    :class :iterator
-   :source "(load-resource \"std/foundation.hal\") (+ (first (interpose 0 [1 2])) (first (interleave [1 2] [3 4])) (iter-next (iter-drop 1 (interleave [1 2] [3 4]))))"
+   :source "(load-resource \"std/foundation.hal\") (+ (first (interpose 0 [1 2])) (first (interleave [1 2] [3 4])) (iter-next (Iter/iter-drop 1 (interleave [1 2] [3 4]))))"
    :expect {:value 5 :type :integer}}
   {:id :iterator/reduce
    :class :iterator

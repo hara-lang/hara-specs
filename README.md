@@ -16,11 +16,12 @@ The specification repository is organised into numbered architectural layers.
    defines the root `std.foundation` bootstrap namespace.
 - [`01-lang/005-foundation-annex/draft/foundation-annex.edn`](01-lang/005-foundation-annex/draft/foundation-annex.edn)
    defines the public `std.foundation.*` library annex.
+- [`01-lang/006-host-and-kernel/draft/host-kernel-spec.edn`](01-lang/006-host-and-kernel/draft/host-kernel-spec.edn)
+   defines the host/kernel authority boundary: sessions, grants, provider
+   dispatch, settlement, and the ownership map to the surrounding layers.
 - [`02-platform/000100-lsp-base/draft/hara-lsp-base.edn`](02-platform/000100-lsp-base/draft/hara-lsp-base.edn)
    defines the portable Language Server Protocol profile, shared analysis
    facts, namespace resolution, IDE capabilities, and safety boundary.
-- [`02-platform/000200-chip-base/draft/chip-base.edn`](02-platform/000200-chip-base/draft/chip-base.edn)
-   defines the bounded compact-AST matching coprocessor contract.
 - [`02-platform/000001-cli/metaspec/cli-app-metaspec.edn`](02-platform/000001-cli/metaspec/cli-app-metaspec.edn)
    defines the reusable document model for deterministic CLI applications.
 - [`02-platform/000001-cli/draft/hara-cli.edn`](02-platform/000001-cli/draft/hara-cli.edn)
