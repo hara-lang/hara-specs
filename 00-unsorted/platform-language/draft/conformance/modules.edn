@@ -66,6 +66,11 @@
    :setup "(ns conformance.current-alias-missing)"
    :source "-/missing"
    :expect {:error-contains "unbound symbol"}}
+  {:id :namespace/current-alias-reserved
+   :area :namespace
+   :scenario :current-alias
+   :source "(ns conformance.current-alias-reserved (:require [std.foundation.string :as -]))"
+   :expect {:error-contains "Namespace alias is reserved: -"}}
   {:id :namespace/referred-var-protected
    :area :namespace
    :scenario :ownership

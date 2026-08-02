@@ -11,14 +11,14 @@
  :vm/ownership
  {:owner :rust-runtime
   :portable-input "Decoded HAL forms, including forms loaded from HALC."
-  :private-artifacts #{:HBC1 :Program :Instruction :numeric-slots :handler-table :call-frames}
+  :private-artifacts #{:HBC1 :HBC2 :HBC3 :HBC4 :Program :Instruction :numeric-slots :handler-table :call-frames}
   :halc-boundary "HALC contains portable forms and metadata only. VM Program and Instructions are compiled after HALC decoding and are never embedded in HALC."
   :journal-boundary "Evaluation Journal events are portable diagnostics, not VM instructions and not an input to execution or future JIT tracing. VM instruction details may appear only in optional runtime extensions."
   :java-obligation "None beyond the shared HAL language, HALC, and Evaluation Journal contracts. Java remains free to use Truffle ASTs and Graal."}
 
  :vm/stage
  {:milestone 5
-  :pipeline [:parse :compile :validate :encode :decode :validate :execute :display]
+  :pipeline [:parse-or-decode-halc :configure-namespace :normalize-schemas :infer :compile :validate :encode :decode :validate :execute :display]
   :execution-model :synchronous-stack-machine
   :entry-arity 0
   :closures true
@@ -27,7 +27,7 @@
   :globals :registry-direct
   :suspension false
   :rule
-  "Source is parsed into forms, compiled into a typed instruction program, and validated by abstract interpretation. A program may execute directly or be encoded as an HBC1 artifact; decoded artifacts pass checksum verification and the same structural validation before execution. Execution is fully synchronous; unsupported forms are compile errors, never silent fallback into the tree-walking evaluator."
+  "Source or decoded HALC forms are compiled into a typed instruction program and validated by abstract interpretation. HALC module namespace configuration is applied before lowering. Declared schema contracts and conservative body-derived inference facts remain distinct. HBC4 persists both with the executable program; HBC1-HBC3 remain readable legacy inputs with empty type tables. Decoded artifacts pass checksum verification and the same structural validation before execution. Execution is fully synchronous; unsupported forms are compile errors, never silent fallback into the tree-walking evaluator."
   :reference-implementation
   {:module rust/src/vm
    :feature "bytecode-vm"
@@ -97,6 +97,10 @@
  :vm/program
  {:model
   {:constants "vector of core::Value; the VM reuses the Hara value model and never duplicates it"
+   :namespace "optional owning namespace; present for HALC-lowered modules and selected before execution"
+   :schema-types "map of fully qualified named-schema Vars to normalized semantic schema types"
+   :function-types "map of fully qualified function Vars to normalized annotations; named edges refer into schema-types"
+   :inferred-function-types "map of fully qualified function Vars to conservative body-derived signatures; declarations take precedence when both exist"
    :functions "vector of function prototypes; the entry prototype is one of them, fn/defn forms contribute the rest"
    :entry :u16-function-index}
   :function-prototype
@@ -118,13 +122,21 @@
    :max-call-arguments 255
    :max-captures-per-closure 255}
   :persistence
-  {:format :HBC1
-   :header "four-byte HBC1 magic followed by a big-endian u32 payload length"
+  {:format :HBC4
+   :header "four-byte HBC4 magic followed by a big-endian u32 payload length"
    :integrity "SHA-256 of the complete payload"
-   :payload "entry index, HTA-encoded constant pool, var metadata, prototypes, typed instructions, source positions, and exception handlers"
+   :payload "entry index, optional owning namespace, HTA-encoded constant pool, var metadata, normalized named-schema table, normalized declared function-type table, inferred function-type table, prototypes, typed instructions, source positions, and exception handlers"
    :decode-rule "reject bad magic, length, checksum, tags, UTF-8, or trailing bytes, then run normal VM validation before returning a Program"
    :constant-rule "constants use the portable HTA value codec; runtime-only values unsupported by HTA are rejected during encoding"
-   :compatibility "the version is carried by the magic; incompatible encodings use a new magic rather than guessing"}}
+   :compatibility "the version is carried by the magic; HBC1-HBC3 decode with empty schema tables, and incompatible future encodings use a new magic rather than guessing"}}
+
+ :vm/type-inference
+ {:contract "Declared :schema values are user contracts. Inferred types are compiler facts and never rewrite or silently strengthen those contracts."
+  :initial-domain [:literal-scalars :declared-parameter-types :locals :let :do :if-unions :vectors :maps :numeric-primitives :comparisons]
+  :unknown "Unsupported expressions produce an explicit unknown type; inference failure is not a compile failure."
+  :joins "Control-flow joins retain equal types or form a deduplicated union."
+  :consumer-order [:declared-function-type :inferred-function-type :dynamic]
+  :optimization-rule "A lowering tier may specialize only from a declared or inferred fact it understands and must retain a generic or guarded path when the fact is not proven. The Rust tracing JIT may record an all-:int parameter function on its first loop backedge but retains trace entry tag guards. Truffle may allocate primitive parameter frame slots for :int and :bool and falls back to Object slots when the incoming value does not match."}
 
  :vm/validation
  {:timing :before-execution
@@ -164,6 +176,7 @@
    :global-name-constant-not-a-string
    :defstruct-fields-constant-not-a-string-vector
    :defglobal-metadata-constant-not-a-map
+   :declared-function-schema-has-no-compatible-prototype-arity
    :make-multi-arity-with-empty-stack]
   :join-rule
   "Every control-flow join must be reached with exactly one operand-stack height; the validator computes the unique height per instruction and rejects disagreement."}

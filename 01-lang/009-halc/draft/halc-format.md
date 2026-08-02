@@ -89,6 +89,20 @@ Metadata is a one-byte flag (`0` absent, `1` present). When present, exactly one
 
 Metadata is portable descriptive data. Runtime caches, resolved Vars, Java classes, Rust types, AST nodes, bytecode offsets, journal state, and source objects are forbidden.
 
+### Schema Var references
+
+When a function's `:schema` metadata is a Var reference, a HALC encoder resolves it in the module's namespace environment before writing the artifact. Unqualified references such as `#'Customer` and current-namespace references such as `#'-/Customer` are encoded as the fully qualified symbol in `(var module.namespace/Customer)`. A namespace alias from the module's `ns :require` declarations is likewise replaced by its target namespace.
+
+The referenced Var must exist in the compilation environment. At minimum, an encoder must reject a missing Var in the module being encoded; a compiler with loaded dependencies must also reject a missing external Var. Inline schema values remain ordinary metadata values and are not subject to Var lookup.
+
+A local `def` reached through a function's named schema reference is a named schema definition. Var references nested anywhere in that schema value are resolved by the same rules, recursively. Local nested references must name an existing Var and are followed transitively; cycles, including a schema referring to itself, are valid and terminate by Var identity. Only definitions reachable from a function's `:schema` participate in this schema-graph pass, so an unrelated ordinary `def` containing a Var value is not reclassified as a schema.
+
+This normalization changes form content only. It adds no opcode, capability bit, or host-specific resolved-Var object to the version 1 wire format.
+
+After decoding, a compiler may materialize a semantic schema index from these canonical forms. The index maps fully qualified function Vars to their schema annotations and fully qualified named-schema Vars to the transitively reachable schema values. It is derived data rather than a second wire representation. A runtime that retains compiled modules must make the same index available to later lowering and optimization tiers instead of rediscovering schema references from source text.
+
+A compiler may additionally derive conservative function types from the decoded executable forms. Declared schemas and inferred facts are separate: annotations remain user contracts, while inference records only what the compiler can prove and uses an explicit unknown type elsewhere. Java and Rust must derive equivalent facts for the shared initial inference domain (literals, schema-seeded parameters, lexical locals, `let`, `do`, `if` joins, collection literals, arithmetic, comparisons, and `count`). These facts are downstream compiler data and do not alter HALC version 1 bytes.
+
 ## Collection ordering
 
 Plain map entries sort by unsigned lexicographic order of each canonical encoded key. Plain set elements sort by unsigned lexicographic order of each canonical encoded element. Duplicate canonical keys or elements are invalid.

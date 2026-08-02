@@ -417,7 +417,8 @@
        :cases [:namespace/current-alias-value
                :namespace/current-alias-var
                :namespace/current-alias-quoted
-               :namespace/current-alias-missing]}]}
+               :namespace/current-alias-missing
+               :namespace/current-alias-reserved]}]}
     {:requirement/id :namespace/referred-var-ownership
      :requirement/level :must
      :requirement/text
