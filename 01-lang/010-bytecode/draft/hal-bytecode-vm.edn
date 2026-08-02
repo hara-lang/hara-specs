@@ -2,7 +2,7 @@
  :document/type :runtime-implementation-spec
  :runtime :rust
  :feature "bytecode-vm"
- :document/version "0.6.0-draft"
+ :document/version "0.7.0-draft"
  :document/status :draft
  :document/title "Rust HAL staged bytecode VM (milestones 1-5: synchronous core through persistent artifacts)"
  :document/summary
@@ -11,7 +11,7 @@
  :vm/ownership
  {:owner :rust-runtime
   :portable-input "Decoded HAL forms, including forms loaded from HALC."
-  :private-artifacts #{:HBC1 :HBC2 :HBC3 :HBC4 :Program :Instruction :numeric-slots :handler-table :call-frames}
+  :private-artifacts #{:HBC1 :HBC2 :HBC3 :HBC4 :HNW1 :Program :Instruction :whole-function-mir :numeric-slots :handler-table :call-frames}
   :halc-boundary "HALC contains portable forms and metadata only. VM Program and Instructions are compiled after HALC decoding and are never embedded in HALC."
   :journal-boundary "Evaluation Journal events are portable diagnostics, not VM instructions and not an input to execution or future JIT tracing. VM instruction details may appear only in optional runtime extensions."
   :java-obligation "None beyond the shared HAL language, HALC, and Evaluation Journal contracts. Java remains free to use Truffle ASTs and Graal."}
@@ -432,6 +432,49 @@
    "thrown" "throw arity"]
   :rule
   "Display expectations pin exact rendered values on both paths. Error-category expectations pin the failure class on both paths while allowing phrasing to differ. Compile-error expectations pin VM-only compile-time behavior (recur misuse, unbound symbols, unsupported forms, and lowering boundaries). Namespace and callable-Var edge cases are owned by the shared platform-language modules corpus and run on Java, the Rust evaluator, and the Rust VM."}
+
+ :vm/whole-function-wasm
+ {:status :experimental-first-vertical
+  :feature-gate "whole-wasm"
+  :goal "Compile complete eligible function control-flow graphs to portable WebAssembly rather than recording and replaying one hot loop trace. The same Wasm payload is consumable by Wasmtime and browser WebAssembly engines."
+  :pipeline [:validated-HBC4 :basic-block-discovery :typed-MIR :MIR-verification :deterministic-Wasm :HNW1 :engine-validation :direct-function-call]
+  :distinction-from-tracing
+  {:whole-function "Every block and control-flow edge of an eligible function is lowered before execution; direct static calls become Wasm calls."
+   :tracing "The tracing-jit feature remains a separate narrow experiment and is not evidence that a general whole-function compiler exists."
+   :dispatch "The initial backend may use a block-id loop for arbitrary CFG shape. It dispatches basic blocks, not bytecode instructions; structured CFG emission is a later code-generation optimization."}
+  :representations
+  {:initial #{:i64 :bool-as-zero-or-one}
+   :future #{:f64 :scoped-runtime-handle :unboxed-array :shape-specialized-object}
+   :specialization-rule "A representation may be selected from a declared schema or conservative inferred fact only when the generated entry retains the guards needed to preserve dynamic Hara semantics. Unsupported representations make that function ineligible; they never silently reinterpret a value."}
+  :semantics
+  {:integers "Signed i64 with Hara checked-overflow behavior."
+   :truthiness "The scalar first vertical accepts booleans encoded as zero or one at proven condition sites. General Hara truthiness requires the dynamic representation path."
+   :errors {1 "integer overflow" 2 "division by zero"}
+   :calls "Capture-free fixed-arity CallStatic instructions lower to Wasm direct calls."
+   :unsupported "Async, variadic, captured, dynamic-value, collection, closure/global-bootstrap, and exception operations remain explicit eligibility failures until their representation or runtime boundary is implemented."}
+  :artifact
+  {:format :HNW1
+   :abi-version 1
+   :header "four-byte HNW1 magic followed by a big-endian u32 payload length"
+   :integrity "SHA-256 of the complete payload"
+   :payload "ABI version, canonical function id/arity table, complete authenticated HBC4 fallback, and deterministic Wasm module"
+   :decode-rule "Reject bad magic, length, checksum, ABI, non-canonical function metadata, HBC mismatch, invalid Wasm magic, or trailing bytes before engine instantiation."
+   :fallback-rule "The HBC4 program is retained so an explicit caller or future tier manager can choose semantic fallback. A native call never falls back after entering generated code."}
+  :execution
+  {:native "Wasmtime validates and instantiates the module once; prepared calls resolve an exported hara_fn_N and cross only the typed value boundary."
+   :browser "The HNW1 decoder and Wasm bytes are target-independent; browser loader integration remains an implementation milestone."
+   :error-channel "Generated code stores a stable ABI error code in mutable exported global hara_error and then traps. The host resets it before each call and translates known codes to exact Hara messages."}
+  :benchmark-gate
+  {:corpus "lib/bench/lisp-hara/workloads.json"
+   :features [:numeric-control :mutable-array :mutable-object :recursive-functions :persistent-nested-transform]
+   :rule "Report every feature independently, including unsupported eligibility. Do not extrapolate scalar results to general-language performance."
+   :promotion "A mature backend targets no worse than 2x the best semantically matched prepared SBCL, Chez, or LuaJIT lane for each supported feature on native and browser engines."}
+  :reference-implementation
+  {:module rust/src/whole_wasm
+   :artifact rust/src/whole_wasm/artifact.rs
+   :lowering rust/src/whole_wasm/ir.rs
+   :backend rust/src/whole_wasm/codegen.rs
+   :native-loader rust/src/whole_wasm/runtime.rs}}
 
  :vm/coexistence
  {:feature-gate "non-default Cargo feature bytecode-vm"
