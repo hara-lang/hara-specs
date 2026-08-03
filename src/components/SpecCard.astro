@@ -1,8 +1,14 @@
 ---
-const { spec, repository = "hara-lang/hara-specs" } = Astro.props;
+import { githubBlobUrl, materializationLabel, sourceLocation } from "../lib/registry-links.mjs";
+
+const { spec, registrySource } = Astro.props;
 const statusLabel = spec.status === "ready" ? "Ready" : spec.status === "draft" ? "Draft" : "Unclassified";
+const location = sourceLocation(spec, registrySource);
+const sourceUrl = githubBlobUrl(location);
+const sourceState = materializationLabel(spec);
+const aliases = [...(spec.aliases || []), ...(spec.legacySlugs || [])].join(" ");
 ---
-<article class="spec-card" data-status={spec.status} data-layer={spec.layer} data-search={`${spec.packageName} ${spec.title} ${spec.summary}`.toLowerCase()}>
+<article class="spec-card" data-status={spec.status} data-layer={spec.layer} data-search={`${spec.id} ${aliases} ${spec.packageName} ${spec.title} ${spec.summary} ${sourceState}`.toLowerCase()}>
   <div class="spec-card-topline">
     <span class:list={["status-pill", `status-${spec.status}`]}>{statusLabel}</span>
     <span class="version">{spec.version}</span>
@@ -15,10 +21,10 @@ const statusLabel = spec.status === "ready" ? "Ready" : spec.status === "draft" 
   <dl class="spec-meta">
     <div><dt>Layer</dt><dd>{spec.layer}</dd></div>
     <div><dt>Rules</dt><dd>{spec.requirements}</dd></div>
-    <div><dt>Owner</dt><dd>{spec.owner}</dd></div>
+    <div><dt>Source</dt><dd>{sourceState}</dd></div>
   </dl>
   <div class="spec-card-actions">
     <a href={`/specs/${spec.slug}`}>Inspect</a>
-    <a href={`https://github.com/${repository}/blob/main/${spec.sourcePath}`}>Source</a>
+    {sourceUrl && <a href={sourceUrl}>Source</a>}
   </div>
 </article>

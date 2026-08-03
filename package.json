@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "The Hara specification registry, conformance workbench, and publishing surface.",
+  "description": "The Netlify management, publishing, and conformance service for the Hara specifications registry.",
   "engines": {
     "node": ">=20"
   },

@@ -5,22 +5,26 @@ on:
     paths:
       - "src/**"
       - "scripts/**"
+      - "test/**"
       - "netlify/**"
-      - "registry/**"
+      - "public/**"
       - "package.json"
       - "astro.config.mjs"
       - "netlify.toml"
+      - "README.md"
       - ".github/workflows/specs-service.yml"
   push:
     branches: [main]
     paths:
       - "src/**"
       - "scripts/**"
+      - "test/**"
       - "netlify/**"
-      - "registry/**"
+      - "public/**"
       - "package.json"
       - "astro.config.mjs"
       - "netlify.toml"
+      - "README.md"
 
 permissions:
   contents: read
@@ -28,6 +32,12 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    env:
+      HARA_REGISTRY_REPOSITORY: hara-lang/hara-specs-registry
+      HARA_REGISTRY_REF: main
+      HARA_REGISTRY_INDEX_PATH: registry-index.json
+      HARA_REGISTRY_REQUIRED: "true"
+      HARA_GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

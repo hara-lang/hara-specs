@@ -52,7 +52,7 @@ import AppLayout from "../layouts/AppLayout.astro";
       </div>
       <div class="publishing-gate">
         <strong>Registry submission transport</strong>
-        <p>The UI and validation API are active. Creating the signed GitHub pull request is deliberately gated until the new registry repository and publisher identity flow are provisioned.</p>
+        <p>The canonical registry repository is active. Signed pull-request submission remains gated on publisher identity, namespace ownership, immutable-version enforcement, conformance fixtures, and path-scoped GitHub write credentials.</p>
         <button class="button" type="button" disabled>Submit signed release</button>
       </div>
     </aside>
