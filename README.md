@@ -2,18 +2,18 @@
 
 `hara-lang/hara-specs` is the Netlify-deployable management and conformance service for `specs.hara-lang.io`.
 
-The canonical specification documents and package releases live in [`hara-lang/hara-specs-registry`](https://github.com/hara-lang/hara-specs-registry). This repository owns the UI, API, publishing workflow, document checker, reports, and browser/server Hara kernel adapters. It no longer owns a duplicated numbered specification corpus.
+The canonical specification documents and package releases live in [`hara-lang/hara-specs-registry`](https://github.com/hara-lang/hara-specs-registry). This repository owns the UI, API, publishing workflow, document checker, reports, and browser/server Hara kernel adapters. It does not own or commit a duplicate specification catalogue.
 
 ## Registry source
 
-Every build resolves the configured registry ref to an exact Git commit, downloads `registry-index.json` at that commit, validates the catalogue, and writes the build snapshot to:
+Before development or production builds, the service resolves the configured registry ref to an exact Git commit, downloads `registry-index.json` from that revision, validates the catalogue, and generates:
 
 ```text
 src/generated/registry.json
 public/registry/index.json
 ```
 
-Source and documentation links use per-spec repository, exact ref, and path metadata. A spec may therefore be fully materialized in the registry or temporarily address an immutable migration origin without the service confusing the two.
+Both files are untracked build outputs. Source and documentation links use per-spec repository, exact ref, and path metadata, so every rendered result identifies the immutable specification revision it used.
 
 Configuration:
 
@@ -21,10 +21,11 @@ Configuration:
 HARA_REGISTRY_REPOSITORY=hara-lang/hara-specs-registry
 HARA_REGISTRY_REF=main
 HARA_REGISTRY_INDEX_PATH=registry-index.json
-HARA_REGISTRY_REQUIRED=true
 ```
 
-`HARA_GITHUB_TOKEN` is optional for public registry builds and is supplied by GitHub Actions to avoid unauthenticated API limits. Netlify builds fail closed when the required external registry cannot be resolved. Local development may use the committed exact-ref snapshot when offline.
+`HARA_GITHUB_TOKEN` is optional for public registry builds and is supplied by GitHub Actions to avoid unauthenticated API limits. Development, CI, and Netlify builds fail closed when the canonical registry cannot be resolved or validated; the service never falls back to stale committed registry data.
+
+For a fully reproducible release build, set `HARA_REGISTRY_REF` to an exact 40-character commit SHA. Branch names such as `main` are resolved and pinned before Astro generates pages or Netlify bundles the API functions.
 
 ## Development
 

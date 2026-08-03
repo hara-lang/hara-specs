@@ -5,7 +5,6 @@ export const DEFAULT_REGISTRY_REPOSITORY = "hara-lang/hara-specs-registry";
 export const DEFAULT_REGISTRY_REF = "main";
 export const DEFAULT_REGISTRY_INDEX_PATH = "registry-index.json";
 
-const booleanValue = (value) => value === true || String(value || "").toLowerCase() === "true";
 const encodePath = (value) => String(value).split("/").map(encodeURIComponent).join("/");
 
 export function registryConfig(environment = process.env) {
@@ -19,7 +18,6 @@ export function registryConfig(environment = process.env) {
     repository,
     ref,
     indexPath,
-    required: booleanValue(environment.HARA_REGISTRY_REQUIRED) || booleanValue(environment.CI) || booleanValue(environment.NETLIFY),
     token: environment.HARA_GITHUB_TOKEN || environment.GITHUB_TOKEN || null
   };
 }
