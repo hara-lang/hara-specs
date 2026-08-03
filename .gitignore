@@ -4,3 +4,7 @@ dist/
 .netlify/
 .astro/
 *.log
+
+# Generated from the canonical external registry before dev/build.
+src/generated/registry.json
+public/registry/index.json

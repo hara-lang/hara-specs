@@ -27,7 +27,7 @@ on:
       - "README.md"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: specs-service-${{ github.event.pull_request.number || github.ref }}
@@ -40,14 +40,9 @@ jobs:
       HARA_REGISTRY_REPOSITORY: hara-lang/hara-specs-registry
       HARA_REGISTRY_REF: main
       HARA_REGISTRY_INDEX_PATH: registry-index.json
-      HARA_REGISTRY_REQUIRED: "true"
       HARA_GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
-          fetch-depth: 0
-          token: ${{ github.token }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -56,15 +51,3 @@ jobs:
       - run: npm run registry:check
       - run: npm test
       - run: npm run build
-      - name: Commit a refreshed external registry snapshot
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        run: |
-          if git diff --quiet -- src/generated/registry.json public/registry/index.json; then
-            echo "Registry snapshot is current."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/generated/registry.json public/registry/index.json
-          git commit -m "Refresh the external specifications registry snapshot"
-          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"

@@ -45,7 +45,6 @@ test("registry configuration defaults to the split registry", () => {
   assert.equal(config.repository, canonicalRepository);
   assert.equal(config.ref, "main");
   assert.equal(config.indexPath, "registry-index.json");
-  assert.equal(config.required, false);
 });
 
 test("validation rejects transitional or duplicate catalogues", () => {
