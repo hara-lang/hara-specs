@@ -57,3 +57,30 @@ values, structural identity, metadata, and canonical readable representations.
 Evaluation and runtime behaviour are explicitly outside its scope.
 
 Historical material remains under [`99-archive/`](99-archive/).
+
+## Registry service
+
+This repository now also contains the Netlify-deployable `specs.hara-lang.io` application. It uses `@hara-lang/visual-language` and provides the registry explorer, package publishing preparation, a browser conformity workbench, and matching Netlify API endpoints.
+
+The target split is:
+
+- `hara-lang/hara-specs-registry` — canonical specification packages and generated index.
+- `hara-lang/hara-specs` — the UI, API, package-management surface, and Hara kernel adapters.
+
+The current corpus remains in this repository during the transition so its history and existing explorer are not disrupted. See [`docs/repository-split.md`](docs/repository-split.md).
+
+### Local service
+
+```sh
+npm install
+npm run dev
+```
+
+### Validation
+
+```sh
+npm test
+npm run build
+```
+
+The initial reference checker implements the bootstrap `@hara/spec-package@0.1.0` manifest contract. It intentionally reports malformed input and unsupported media types as execution errors rather than as failed conformity decisions.

@@ -1,0 +1,24 @@
+---
+const { spec, repository = "hara-lang/hara-specs" } = Astro.props;
+const statusLabel = spec.status === "ready" ? "Ready" : spec.status === "draft" ? "Draft" : "Unclassified";
+---
+<article class="spec-card" data-status={spec.status} data-layer={spec.layer} data-search={`${spec.packageName} ${spec.title} ${spec.summary}`.toLowerCase()}>
+  <div class="spec-card-topline">
+    <span class:list={["status-pill", `status-${spec.status}`]}>{statusLabel}</span>
+    <span class="version">{spec.version}</span>
+  </div>
+  <div>
+    <p class="package-name">{spec.packageName}</p>
+    <h3><a href={`/specs/${spec.slug}`}>{spec.title}</a></h3>
+    <p>{spec.summary}</p>
+  </div>
+  <dl class="spec-meta">
+    <div><dt>Layer</dt><dd>{spec.layer}</dd></div>
+    <div><dt>Rules</dt><dd>{spec.requirements}</dd></div>
+    <div><dt>Owner</dt><dd>{spec.owner}</dd></div>
+  </dl>
+  <div class="spec-card-actions">
+    <a href={`/specs/${spec.slug}`}>Inspect</a>
+    <a href={`https://github.com/${repository}/blob/main/${spec.sourcePath}`}>Source</a>
+  </div>
+</article>

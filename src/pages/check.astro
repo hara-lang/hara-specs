@@ -1,0 +1,181 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+---
+<AppLayout title="Check a document — Hara Specs" description="Inspect a document locally or through the Hara conformity API.">
+  <section class="page-heading section-shell">
+    <p class="hara-kicker">Conformance workbench</p>
+    <h1>Inspect a document against an exact spec.</h1>
+    <p>The reference path below already shares one result contract between browser and server execution. The Hara kernel adapter will replace the reference evaluator without changing the UI or API shape.</p>
+  </section>
+
+  <section class="workbench section-shell">
+    <form class="checker-form hara-surface" data-check-form>
+      <div class="form-row two-column">
+        <label>
+          <span>Specification</span>
+          <select name="spec">
+            <option value="@hara/spec-package@0.1.0">@hara/spec-package@0.1.0</option>
+          </select>
+        </label>
+        <label>
+          <span>Profile</span>
+          <select name="profile">
+            <option value="core">core</option>
+            <option value="strict">strict</option>
+          </select>
+        </label>
+      </div>
+
+      <fieldset class="execution-choice">
+        <legend>Execution</legend>
+        <label><input type="radio" name="execution" value="browser" checked /><span><strong>Browser</strong><small>Document remains on this device</small></span></label>
+        <label><input type="radio" name="execution" value="server" /><span><strong>Server API</strong><small>Uses the Netlify function endpoint</small></span></label>
+      </fieldset>
+
+      <label class="file-drop">
+        <input type="file" accept="application/json,.json" data-document-file />
+        <span><strong>Drop a JSON document here</strong><small>or choose a file from this device</small></span>
+      </label>
+
+      <label>
+        <span>Document</span>
+        <textarea name="document" rows="16" spellcheck="false" data-document-text>{`{
+  "name": "@greenways/invoice-au",
+  "version": "1.0.0",
+  "kind": "hara/spec",
+  "entry": "spec/main.hal",
+  "accepts": ["application/json"],
+  "description": "Australian invoice conformance profile.",
+  "license": "Apache-2.0",
+  "capabilities": []
+}`}</textarea>
+      </label>
+
+      <div class="form-actions">
+        <button class="button button-primary" type="submit">Run conformity check</button>
+        <button class="button" type="button" data-load-invalid>Load failing example</button>
+      </div>
+    </form>
+
+    <aside class="result-panel hara-surface" data-result aria-live="polite">
+      <div class="result-idle">
+        <span class="result-glyph" aria-hidden="true">◎</span>
+        <h2>Ready to inspect</h2>
+        <p>The verdict distinguishes genuine non-conformity from parse, adapter, and execution failures.</p>
+      </div>
+    </aside>
+  </section>
+
+  <section class="api-contract section-shell">
+    <div>
+      <p class="hara-kicker">API version</p>
+      <h2>The same operation over HTTP.</h2>
+      <p>Send the document, exact spec reference, and profile to <code>POST /api/check</code>. A completed run returns <code>conforms: true|false</code>; execution errors return <code>conforms: null</code>.</p>
+    </div>
+    <pre><code>{`curl -X POST https://specs.hara-lang.io/api/check \
+  -H 'content-type: application/json' \
+  -d '{"spec":"@hara/spec-package@0.1.0","profile":"core","document":"{...}"}'`}</code></pre>
+  </section>
+
+  <script>
+    import { runReferenceCheck } from "../lib/checker.mjs";
+
+    const form = document.querySelector("[data-check-form]");
+    const file = document.querySelector("[data-document-file]");
+    const text = document.querySelector("[data-document-text]");
+    const result = document.querySelector("[data-result]");
+    const invalid = document.querySelector("[data-load-invalid]");
+
+    const failingExample = JSON.stringify({
+      name: "Invoice spec",
+      version: "latest",
+      kind: "document",
+      accepts: []
+    }, null, 2);
+
+    const render = (report) => {
+      if (!(result instanceof HTMLElement)) return;
+      result.replaceChildren();
+      const wrapper = document.createElement("div");
+      wrapper.className = `result-report result-${report.status === "completed" ? report.verdict : "error"}`;
+      const eyebrow = document.createElement("p");
+      eyebrow.className = "hara-kicker";
+      eyebrow.textContent = report.status === "completed" ? "Conformity decision" : "Could not check";
+      const heading = document.createElement("h2");
+      heading.textContent = report.status === "completed" ? `${report.verdict.toUpperCase()} — ${report.conforms ? "CONFORMS" : "DOES NOT CONFORM"}` : "EXECUTION ERROR";
+      const summary = document.createElement("p");
+      summary.textContent = report.status === "completed"
+        ? `${report.summary.errors} errors, ${report.summary.warnings} warnings, ${report.summary.rulesEvaluated} rules evaluated.`
+        : report.error?.message || "The checker could not complete.";
+      wrapper.append(eyebrow, heading, summary);
+
+      if (Array.isArray(report.findings) && report.findings.length) {
+        const list = document.createElement("ol");
+        list.className = "finding-list";
+        report.findings.forEach((finding) => {
+          const item = document.createElement("li");
+          item.dataset.severity = finding.severity;
+          const title = document.createElement("strong");
+          title.textContent = finding.rule;
+          const message = document.createElement("span");
+          message.textContent = finding.message;
+          const path = document.createElement("code");
+          path.textContent = finding.path;
+          item.append(title, message, path);
+          list.append(item);
+        });
+        wrapper.append(list);
+      }
+
+      const engine = document.createElement("small");
+      engine.className = "engine-note";
+      engine.textContent = `${report.engine?.name || "checker"} · ${report.engine?.execution || "unknown"} · ${report.durationMs ?? 0} ms`;
+      wrapper.append(engine);
+      result.append(wrapper);
+    };
+
+    file?.addEventListener("change", async () => {
+      if (!(file instanceof HTMLInputElement) || !(text instanceof HTMLTextAreaElement)) return;
+      const selected = file.files?.[0];
+      if (selected) text.value = await selected.text();
+    });
+
+    invalid?.addEventListener("click", () => {
+      if (text instanceof HTMLTextAreaElement) text.value = failingExample;
+    });
+
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!(form instanceof HTMLFormElement) || !(text instanceof HTMLTextAreaElement)) return;
+      const data = new FormData(form);
+      const payload = {
+        spec: String(data.get("spec")),
+        profile: String(data.get("profile")),
+        document: text.value,
+        mediaType: "application/json",
+        execution: String(data.get("execution"))
+      };
+      if (result instanceof HTMLElement) result.innerHTML = '<div class="result-idle"><span class="result-glyph">◌</span><h2>Inspecting…</h2></div>';
+      try {
+        if (payload.execution === "server") {
+          const response = await fetch("/api/check", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          render(await response.json());
+        } else {
+          render(runReferenceCheck(payload));
+        }
+      } catch (error) {
+        render({
+          status: "execution-error",
+          conforms: null,
+          error: { message: error instanceof Error ? error.message : "Unexpected client error." },
+          engine: { name: "browser-client", execution: "browser" },
+          durationMs: 0
+        });
+      }
+    });
+  </script>
+</AppLayout>
