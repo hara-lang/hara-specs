@@ -1,17 +1,6 @@
-# Local desktop metadata
 .DS_Store
-
-# Nested vendor checkout metadata
-vendor/.DS_Store
-
-# Generated Hara UI assets copied during site builds
-vendor/hara-ui/
-
-# Astro / Netlify application
 node_modules/
 dist/
-.astro/
 .netlify/
-
-# Generated registry API artefact
-public/registry/index.json
+.astro/
+*.log

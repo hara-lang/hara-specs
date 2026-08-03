@@ -1,14 +1,16 @@
 ---
 import AppLayout from "../layouts/AppLayout.astro";
 import SpecCard from "../components/SpecCard.astro";
-import registry from "../generated/registry.mjs";
+import registry from "../generated/registry.json";
 const layers = [...new Set(registry.specs.map(({ layer }) => layer))];
+const registryRef = /^[0-9a-f]{40}$/i.test(registry.source.ref || "") ? registry.source.ref.slice(0, 12) : registry.source.ref;
 ---
 <AppLayout title="Registry — Hara Specs" description="Browse the signed, versioned Hara specification catalogue.">
   <section class="page-heading section-shell">
     <p class="hara-kicker">Specification registry</p>
     <h1>Discover executable standards.</h1>
-    <p>Search the current catalogue by package, title, layer, or maturity. Every item resolves to an immutable source document and, eventually, a signed package digest.</p>
+    <p>Search the current catalogue by package, title, layer, or maturity. Every source link resolves to a repository, exact commit, and path.</p>
+    <p><code>{registry.source.repository}@{registryRef}</code> · {registry.summary.materialized ?? registry.specs.length} materialized · {registry.summary.pinnedSource ?? 0} pinned source</p>
   </section>
 
   <section class="registry-toolbar section-shell hara-surface" aria-label="Registry filters">
@@ -37,7 +39,7 @@ const layers = [...new Set(registry.specs.map(({ layer }) => layer))];
 
   <section class="section-shell">
     <div class="spec-grid" data-registry-grid>
-      {registry.specs.map((spec) => <SpecCard spec={spec} repository={registry.source.repository} />)}
+      {registry.specs.map((spec) => <SpecCard spec={spec} registrySource={registry.source} />)}
     </div>
     <div class="empty-state hara-surface" data-registry-empty hidden>
       <strong>No specifications match these filters.</strong>

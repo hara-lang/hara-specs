@@ -3,7 +3,7 @@ import AppLayout from "../layouts/AppLayout.astro";
 import SpecCard from "../components/SpecCard.astro";
 import Motif from "@hara-lang/visual-language/astro/Motif.astro";
 import Surface from "@hara-lang/visual-language/astro/Surface.astro";
-import registry from "../generated/registry.mjs";
+import registry from "../generated/registry.json";
 
 const featured = registry.specs.slice(0, 6);
 ---
@@ -27,7 +27,7 @@ const featured = registry.specs.slice(0, 6);
   <section class="metric-grid" aria-label="Registry summary">
     <Surface class="metric"><strong>{registry.summary.specifications}</strong><span>specifications indexed</span></Surface>
     <Surface class="metric"><strong>{registry.summary.requirements}</strong><span>normative rules found</span></Surface>
-    <Surface class="metric"><strong>{registry.summary.executable}</strong><span>machine-addressable specs</span></Surface>
+    <Surface class="metric"><strong>{registry.summary.materialized ?? registry.summary.executable}</strong><span>registry sources materialized</span></Surface>
     <Surface class="metric"><strong>2</strong><span>execution surfaces</span></Surface>
   </section>
 
@@ -35,7 +35,7 @@ const featured = registry.specs.slice(0, 6);
     <div>
       <p class="hara-kicker">Repository separation</p>
       <h2>One source of truth. One service surface.</h2>
-      <p>The corpus moves to <code>hara-lang/hara-specs-registry</code>. This application remains in <code>hara-lang/hara-specs</code> and can be deployed independently to Netlify.</p>
+      <p>The canonical corpus and package index live in <code>hara-lang/hara-specs-registry</code>. This Netlify application remains in <code>hara-lang/hara-specs</code> and resolves every build to an exact registry commit.</p>
     </div>
     <div class="architecture-flow" aria-label="Repository architecture">
       <div><span>01</span><strong>Registry</strong><small>immutable spec packages</small></div>
@@ -52,7 +52,7 @@ const featured = registry.specs.slice(0, 6);
       <a href="/registry">Browse all</a>
     </div>
     <div class="spec-grid">
-      {featured.map((spec) => <SpecCard spec={spec} repository={registry.source.repository} />)}
+      {featured.map((spec) => <SpecCard spec={spec} registrySource={registry.source} />)}
     </div>
   </section>
 

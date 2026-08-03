@@ -1,4 +1,4 @@
-import registry from "../../src/generated/registry.mjs";
+import registry from "../../src/generated/registry.json";
 
 export default async (request: Request) => {
   if (request.method !== "GET") {
@@ -10,7 +10,8 @@ export default async (request: Request) => {
   const status = url.searchParams.get("status");
   const layer = url.searchParams.get("layer");
   const specs = registry.specs.filter((spec) => {
-    const haystack = `${spec.packageName} ${spec.title} ${spec.summary} ${spec.owner}`.toLowerCase();
+    const aliases = [...(spec.aliases || []), ...(spec.legacySlugs || [])].join(" ");
+    const haystack = `${spec.id} ${aliases} ${spec.packageName} ${spec.title} ${spec.summary} ${spec.owner}`.toLowerCase();
     return (!query || haystack.includes(query)) && (!status || status === "all" || spec.status === status) && (!layer || layer === "all" || spec.layer === layer);
   });
 
