@@ -9,7 +9,7 @@ The canonical specification documents and package releases live in [`hara-lang/h
 Every build resolves the configured registry ref to an exact Git commit, downloads `registry-index.json` at that commit, validates the catalogue, and writes the build snapshot to:
 
 ```text
-src/generated/registry.mjs
+src/generated/registry.json
 public/registry/index.json
 ```
 
