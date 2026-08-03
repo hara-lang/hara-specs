@@ -3,7 +3,7 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "24"
   HARA_REGISTRY_REPOSITORY = "hara-lang/hara-specs-registry"
   HARA_REGISTRY_REF = "main"
   HARA_REGISTRY_INDEX_PATH = "registry-index.json"
