@@ -29,9 +29,13 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: specs-service-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
-    runs-on: macos-latest
+    runs-on: ubuntu-24.04
     env:
       HARA_REGISTRY_REPOSITORY: hara-lang/hara-specs-registry
       HARA_REGISTRY_REF: main
