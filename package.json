@@ -18,7 +18,7 @@
     "registry:check": "node scripts/build-registry-index.mjs --check"
   },
   "dependencies": {
-    "@hara-lang/visual-language": "github:hara-lang/visual-language#v1.0.0",
+    "@hara-lang/visual-language": "github:hara-lang/visual-language#6bb000c3fe5d69887efbcf1501d66e1660b25fea",
     "astro": "^5.16.0"
   }
 }
