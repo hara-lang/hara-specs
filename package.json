@@ -1,0 +1,24 @@
+{
+  "name": "@hara-lang/specs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The Hara specification registry, conformance workbench, and publishing surface.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "predev": "node scripts/build-registry-index.mjs",
+    "dev": "astro dev",
+    "prebuild": "node scripts/build-registry-index.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "node --test test/*.test.mjs",
+    "registry:build": "node scripts/build-registry-index.mjs",
+    "registry:check": "node scripts/build-registry-index.mjs --check"
+  },
+  "dependencies": {
+    "@hara-lang/visual-language": "github:hara-lang/visual-language#v1.0.0",
+    "astro": "^5.16.0"
+  }
+}

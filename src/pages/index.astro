@@ -1,0 +1,76 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import SpecCard from "../components/SpecCard.astro";
+import Motif from "@hara-lang/visual-language/astro/Motif.astro";
+import Surface from "@hara-lang/visual-language/astro/Surface.astro";
+import registry from "../generated/registry.mjs";
+
+const featured = registry.specs.slice(0, 6);
+---
+<AppLayout title="Hara Specs — executable standards" description="A registry, publishing surface, and conformance service for executable Hara specifications.">
+  <Motif kind="edge" class="hero">
+    <div class="hero-copy">
+      <p class="hara-kicker">Registry · checker · attestations</p>
+      <h1>Specifications that can answer <em>yes</em> or <em>no</em>.</h1>
+      <p class="hero-lede">Publish signed, versioned specifications as packages. Inspect a document in the browser or through the API and receive an explainable conformity result.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="/check">Check a document</a>
+        <a class="button" href="/publish">Publish a spec</a>
+      </div>
+      <div class="command" aria-label="Example Hara command">
+        <span aria-hidden="true">$</span>
+        <code>hara spec check document.json --against @hara/spec-package@0.1.0</code>
+      </div>
+    </div>
+  </Motif>
+
+  <section class="metric-grid" aria-label="Registry summary">
+    <Surface class="metric"><strong>{registry.summary.specifications}</strong><span>specifications indexed</span></Surface>
+    <Surface class="metric"><strong>{registry.summary.requirements}</strong><span>normative rules found</span></Surface>
+    <Surface class="metric"><strong>{registry.summary.executable}</strong><span>machine-addressable specs</span></Surface>
+    <Surface class="metric"><strong>2</strong><span>execution surfaces</span></Surface>
+  </section>
+
+  <section class="section-shell split-intro">
+    <div>
+      <p class="hara-kicker">Repository separation</p>
+      <h2>One source of truth. One service surface.</h2>
+      <p>The corpus moves to <code>hara-lang/hara-specs-registry</code>. This application remains in <code>hara-lang/hara-specs</code> and can be deployed independently to Netlify.</p>
+    </div>
+    <div class="architecture-flow" aria-label="Repository architecture">
+      <div><span>01</span><strong>Registry</strong><small>immutable spec packages</small></div>
+      <i aria-hidden="true">→</i>
+      <div><span>02</span><strong>Hara kernel</strong><small>deterministic inspection</small></div>
+      <i aria-hidden="true">→</i>
+      <div><span>03</span><strong>Service</strong><small>UI, API, reports</small></div>
+    </div>
+  </section>
+
+  <section class="section-shell">
+    <div class="section-heading">
+      <div><p class="hara-kicker">From the registry</p><h2>Current specifications</h2></div>
+      <a href="/registry">Browse all</a>
+    </div>
+    <div class="spec-grid">
+      {featured.map((spec) => <SpecCard spec={spec} repository={registry.source.repository} />)}
+    </div>
+  </section>
+
+  <section class="capability-grid section-shell">
+    <article>
+      <span class="capability-index">A</span>
+      <h3>Browser privacy</h3>
+      <p>Run compatible checks locally. The document stays on the device while the signed specification bundle is verified and executed.</p>
+    </article>
+    <article>
+      <span class="capability-index">B</span>
+      <h3>API parity</h3>
+      <p>The browser workbench and Netlify API share one result contract: completed checks return a yes/no verdict; execution failures remain separate.</p>
+    </article>
+    <article>
+      <span class="capability-index">C</span>
+      <h3>Package publishing</h3>
+      <p>Names, versions, dependencies, profiles, fixtures, signatures, and immutable digests use the same mental model as Hara packages.</p>
+    </article>
+  </section>
+</AppLayout>

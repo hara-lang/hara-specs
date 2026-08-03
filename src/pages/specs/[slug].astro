@@ -1,0 +1,60 @@
+---
+import AppLayout from "../../layouts/AppLayout.astro";
+import registry from "../../generated/registry.mjs";
+
+export function getStaticPaths() {
+  return registry.specs.map((spec) => ({ params: { slug: spec.slug }, props: { spec } }));
+}
+
+const { spec } = Astro.props;
+const sourceUrl = `https://github.com/${registry.source.repository}/blob/${registry.source.ref}/${spec.sourcePath}`;
+const documentationUrl = `https://github.com/${registry.source.repository}/blob/${registry.source.ref}/${spec.documentationPath}`;
+---
+<AppLayout title={`${spec.title} — Hara Specs`} description={spec.summary} canonicalPath={`/specs/${spec.slug}`}>
+  <section class="spec-detail-heading section-shell">
+    <div>
+      <p class="package-name">{spec.packageName}</p>
+      <h1>{spec.title}</h1>
+      <p>{spec.summary}</p>
+    </div>
+    <div class="spec-detail-state hara-surface">
+      <span class:list={["status-pill", `status-${spec.status}`]}>{spec.status}</span>
+      <strong>{spec.version}</strong>
+      <small>{spec.requirements} indexed rules</small>
+    </div>
+  </section>
+
+  <section class="spec-detail-grid section-shell">
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Package coordinates</p>
+      <dl class="detail-list">
+        <div><dt>Identifier</dt><dd><code>{spec.id}</code></dd></div>
+        <div><dt>Type</dt><dd>{spec.type}</dd></div>
+        <div><dt>Layer</dt><dd>{spec.layer}</dd></div>
+        <div><dt>Owner</dt><dd>{spec.owner}</dd></div>
+        <div><dt>Classification</dt><dd>{spec.classification}</dd></div>
+        <div><dt>Accepted form</dt><dd>{spec.formats.join(", ")}</dd></div>
+      </dl>
+    </article>
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Conformance state</p>
+      <h2>{spec.executable ? "Machine-addressable" : "Reference only"}</h2>
+      <p>{spec.executable ? "The source contains normative requirement identifiers that can be connected to the Hara conformity checker." : "No executable requirement identifiers were detected in this source."}</p>
+      <div class="detail-actions">
+        <a class="button button-primary" href={`/check?spec=${encodeURIComponent(spec.packageName)}`}>Check a document</a>
+        <a class="button" href={sourceUrl}>Open source</a>
+      </div>
+    </article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Registry provenance</p>
+      <h2>Exact source locations</h2>
+    </div>
+    <div class="source-links">
+      <a href={sourceUrl}><span>Specification</span><code>{spec.sourcePath}</code></a>
+      <a href={documentationUrl}><span>Documentation</span><code>{spec.documentationPath}</code></a>
+    </div>
+  </section>
+</AppLayout>

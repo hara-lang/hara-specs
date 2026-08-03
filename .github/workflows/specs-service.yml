@@ -1,0 +1,38 @@
+name: Validate specs service
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "scripts/**"
+      - "netlify/**"
+      - "registry/**"
+      - "package.json"
+      - "astro.config.mjs"
+      - "netlify.toml"
+      - ".github/workflows/specs-service.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "scripts/**"
+      - "netlify/**"
+      - "registry/**"
+      - "package.json"
+      - "astro.config.mjs"
+      - "netlify.toml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm test
+      - run: npm run build

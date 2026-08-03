@@ -1,0 +1,68 @@
+---
+import HaraMark from "@hara-lang/visual-language/astro/HaraMark.astro";
+import ThemeToggle from "@hara-lang/visual-language/astro/ThemeToggle.astro";
+import "@hara-lang/visual-language/theme.css";
+import "@hara-lang/visual-language/motifs.css";
+import "../styles/app.css";
+
+const {
+  title = "Hara Specs",
+  description = "Publish, inspect, and verify executable Hara specifications.",
+  canonicalPath = Astro.url.pathname
+} = Astro.props;
+const canonical = new URL(canonicalPath, Astro.site);
+const activePath = Astro.url.pathname;
+const nav = [
+  ["/", "Overview"],
+  ["/registry", "Registry"],
+  ["/check", "Check"],
+  ["/publish", "Publish"]
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#080a0d" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="app-header">
+      <a class="brand" href="/" aria-label="Hara Specs home">
+        <HaraMark size={34} title="Hara Specs" />
+        <span><strong>Hara</strong><small>Specs</small></span>
+      </a>
+      <nav aria-label="Primary navigation">
+        {nav.map(([href, label]) => (
+          <a href={href} aria-current={activePath === href || (href !== "/" && activePath.startsWith(href)) ? "page" : undefined}>{label}</a>
+        ))}
+      </nav>
+      <div class="header-actions">
+        <a class="api-link" href="/api/registry">API</a>
+        <ThemeToggle label="Change colour theme" />
+      </div>
+    </header>
+    <main id="content">
+      <slot />
+    </main>
+    <footer class="app-footer">
+      <div>
+        <HaraMark size={26} title="Hara" />
+        <span>Executable standards for the Hara ecosystem.</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/hara-lang/hara-specs">Source</a>
+        <a href="/registry/index.json">Registry JSON</a>
+        <a href="/check">Conformance API</a>
+      </div>
+    </footer>
+    <script>
+      import "@hara-lang/visual-language/theme.js";
+    </script>
+  </body>
+</html>
