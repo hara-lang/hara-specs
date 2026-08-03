@@ -59,12 +59,24 @@ body {
 
 body {
   background-image:
+    linear-gradient(90deg, var(--spec-bg) 0%, color-mix(in srgb, var(--spec-bg) 90%, transparent) 62%, transparent),
+    url("assets/motifs/rack-dark.avif"),
     linear-gradient(var(--spec-grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--spec-grid) 1px, transparent 1px),
     radial-gradient(circle at 80% 0, color-mix(in srgb, var(--spec-cyan) 12%, transparent), transparent 34rem);
-  background-size: 36px 36px, 36px 36px, auto;
+  background-size: cover, min(72vw, 980px) auto, 36px 36px, 36px 36px, auto;
+  background-position: center, right top, center, center, center;
+  background-repeat: no-repeat, no-repeat, repeat, repeat, no-repeat;
   color: var(--spec-text);
   transition: background-color .2s ease, color .2s ease;
+}
+
+:root[data-theme="light"] body {
+  background-image:
+    linear-gradient(90deg, var(--spec-bg) 0%, color-mix(in srgb, var(--spec-bg) 90%, transparent) 62%, transparent),
+    url("assets/motifs/rack-light.avif"),
+    linear-gradient(var(--spec-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--spec-grid) 1px, transparent 1px);
 }
 
 #spec-explorer {
