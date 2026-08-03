@@ -5,7 +5,7 @@
   "type": "module",
   "description": "The Netlify management, publishing, and conformance service for the Hara specifications registry.",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "scripts": {
     "predev": "node scripts/build-registry-index.mjs",
