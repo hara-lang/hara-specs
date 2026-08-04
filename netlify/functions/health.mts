@@ -1,5 +1,11 @@
 import registry from "../../src/generated/registry.json";
-import { API_VERSION, guardMethods, sendJson } from "../../src/lib/api.mjs";
+import {
+  API_VERSION,
+  ApiProblem,
+  guardMethods,
+  problemResponse,
+  sendJson
+} from "../../src/lib/api.mjs";
 import { registryMetadata } from "../../src/lib/registry-api.mjs";
 
 const METHODS = ["GET", "HEAD"];
@@ -9,14 +15,24 @@ export default async (request: Request, context = {}) => {
   const early = guardMethods(request, context, METHODS, { registryRef: registry.source.ref });
   if (early) return early;
 
+  const registryState = registryMetadata(registry);
   const ready = SHA_PATTERN.test(registry.source.ref || "") && registry.summary.specifications > 0;
+  if (!ready) {
+    return problemResponse(request, new ApiProblem({
+      status: 503,
+      code: "REGISTRY_UNAVAILABLE",
+      message: "The service does not have a resolved specifications registry.",
+      details: { registry: registryState }
+    }), { context, methods: METHODS, registryRef: registry.source.ref });
+  }
+
   return sendJson(request, {
     apiVersion: API_VERSION,
     data: {
-      status: ready ? "ok" : "degraded",
+      status: "ok",
       checkedAt: new Date().toISOString(),
       service: "hara-specs",
-      registry: registryMetadata(registry),
+      registry: registryState,
       deploy: {
         id: context?.deploy?.id || null,
         context: context?.deploy?.context || null,
@@ -26,7 +42,6 @@ export default async (request: Request, context = {}) => {
     }
   }, {
     context,
-    status: ready ? 200 : 503,
     methods: METHODS,
     cacheControl: "no-store",
     registryRef: registry.source.ref
