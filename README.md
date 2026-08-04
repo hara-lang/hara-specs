@@ -67,7 +67,9 @@ POST /api/v1/checks
 POST /api/v1/packages/validate
 ```
 
-Specification listing supports filters, stable sorting, cursor pagination, `HEAD`, CORS, and conditional requests with `ETag`. Source and documentation endpoints either proxy bytes from the exact pinned revision or return an immutable `307` redirect with `?redirect=true`.
+Specification listing supports filters, stable sorting, cursor pagination, `HEAD`, and conditional requests with `ETag`. Source and documentation endpoints either proxy bytes from the exact pinned revision or return an immutable `307` redirect with `?redirect=true`.
+
+The service does not enable wildcard cross-origin access by default. A deployment that needs browser clients on other origins must define and review an explicit origin policy rather than inheriting an unconditional `*` rule.
 
 The original `/api/registry`, `/api/check`, and `/api/packages/validate` routes remain compatible and advertise their version-one successors. See [`docs/api.md`](docs/api.md) for request and response examples.
 
