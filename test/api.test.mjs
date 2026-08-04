@@ -147,14 +147,14 @@ test("pagination links preserve filters", () => {
   assert.equal(links.previous, null);
 });
 
-test("JSON responses support CORS, request IDs, HEAD, and conditional GET", async () => {
+test("JSON responses support request IDs, HEAD, and conditional GET without implicit wildcard CORS", async () => {
   const request = new Request("https://specs.hara-lang.io/api/v1", {
     headers: { "x-request-id": "request-1" }
   });
   const value = { apiVersion: "1", data: { status: "ok" } };
   const response = sendJson(request, value, { etag: true, cacheControl: "public, max-age=60" });
   assert.equal(response.status, 200);
-  assert.equal(response.headers.get("access-control-allow-origin"), "*");
+  assert.equal(response.headers.get("access-control-allow-origin"), null);
   assert.equal(response.headers.get("x-request-id"), "request-1");
   assert.equal(await response.json().then((body) => body.data.status), "ok");
 
@@ -171,6 +171,11 @@ test("method guards and JSON body limits return predictable results", async () =
   const guarded = guardMethods(new Request("https://example.test/api", { method: "DELETE" }), {}, ["GET", "HEAD"]);
   assert.equal(guarded.status, 405);
   assert.equal(guarded.headers.get("allow"), "GET, HEAD");
+
+  const options = guardMethods(new Request("https://example.test/api", { method: "OPTIONS" }), {}, ["GET", "HEAD"]);
+  assert.equal(options.status, 204);
+  assert.equal(options.headers.get("allow"), "GET, HEAD");
+  assert.equal(options.headers.get("access-control-allow-origin"), null);
 
   const parsed = await readJsonBody(new Request("https://example.test/api", {
     method: "POST",
