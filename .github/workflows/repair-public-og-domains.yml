@@ -1,0 +1,76 @@
+name: Repair public Hara OG domains
+
+on:
+  push:
+    branches: [production]
+    paths: [.github/workflows/repair-public-og-domains.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repair-public-og-domains
+  cancel-in-progress: false
+
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reconcile missing public hostnames
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ROOT_DOMAIN: hara-lang.org
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+
+          auth=(
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+            -H "Content-Type: application/json"
+          )
+          curl --fail-with-body --silent --show-error "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/zones?name=$ROOT_DOMAIN&status=active" \
+            > zones.json
+          zone_id="$(jq -r '.result[0].id // empty' zones.json)"
+          test -n "$zone_id"
+
+          while read -r hostname target; do
+            curl --fail-with-body --silent --show-error "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records?name=$hostname" \
+              > records.json
+
+            if jq -e --arg target "$target" '
+              [.result[] | select(.type == "A" or .type == "AAAA" or .type == "CNAME")] as $records
+              | ($records | length) == 1
+              and $records[0].type == "CNAME"
+              and $records[0].content == $target
+              and $records[0].proxied == false
+            ' records.json >/dev/null; then
+              echo "$hostname already points to $target."
+              continue
+            fi
+
+            mapfile -t record_ids < <(jq -r '
+              .result[]
+              | select(.type == "A" or .type == "AAAA" or .type == "CNAME")
+              | .id
+            ' records.json)
+            for record_id in "${record_ids[@]}"; do
+              curl --fail-with-body --silent --show-error -X DELETE "${auth[@]}" \
+                "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records/$record_id" \
+                >/dev/null
+            done
+
+            curl --fail-with-body --silent --show-error -X POST "${auth[@]}" \
+              --data "$(jq -nc --arg name "$hostname" --arg content "$target" \
+                '{type:"CNAME",name:$name,content:$content,ttl:1,proxied:false}')" \
+              "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records" \
+              > created.json
+            test "$(jq -r '.success' created.json)" = true
+            echo "$hostname now points to $target."
+          done <<'DOMAINS'
+          api.hara-lang.org api-hara-lang-org.netlify.app
+          benchmarks.hara-lang.org hara-lang.github.io
+          docs.hara-lang.org www-hara-lang-org.netlify.app
+          DOMAINS
