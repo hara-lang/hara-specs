@@ -4,6 +4,7 @@ import ThemeToggle from "@hara-lang/visual-language/astro/ThemeToggle.astro";
 import "@hara-lang/visual-language/theme.css";
 import "@hara-lang/visual-language/motifs.css";
 import "../styles/app.css";
+import "../styles/shell.css";
 
 const {
   title = "Hara Specs",
@@ -12,7 +13,7 @@ const {
 } = Astro.props;
 const canonical = new URL(canonicalPath, Astro.site);
 const activePath = Astro.url.pathname;
-const nav = [
+const localNav = [
   ["/", "Overview"],
   ["/registry", "Registry"],
   ["/check", "Check"],
@@ -33,20 +34,28 @@ const nav = [
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
     <header class="app-header">
-      <a class="brand" href="/" aria-label="Hara Specs home">
-        <HaraMark size={34} title="Hara Specs" />
-        <span><strong>Hara</strong><small>Specs</small></span>
+      <a class="brand" href="https://www.hara-lang.org/" aria-label="Hara home">
+        <HaraMark size={30} title="Hara" />
+        <span><strong>Hara</strong></span>
       </a>
-      <nav aria-label="Primary navigation">
-        {nav.map(([href, label]) => (
-          <a href={href} aria-current={activePath === href || (href !== "/" && activePath.startsWith(href)) ? "page" : undefined}>{label}</a>
-        ))}
+      <nav class="ecosystem-nav" aria-label="Hara ecosystem navigation">
+        <a href="https://www.hara-lang.org/benchmarks/">Benchmarks</a>
+        <a href="https://www.hara-lang.org/docs/start/orientation/">Docs</a>
+        <span aria-current="page" aria-disabled="true">Specs</span>
       </nav>
       <div class="header-actions">
-        <a class="api-link" href="/developers">API</a>
+        <a class="sign-in" href="https://id.hara-lang.org/">Sign in</a>
         <ThemeToggle label="Change colour theme" />
       </div>
     </header>
+    <nav class="context-nav" aria-label="Specifications navigation">
+      <div>
+        {localNav.map(([href, label]) => (
+          <a href={href} aria-current={activePath === href || (href !== "/" && activePath.startsWith(href)) ? "page" : undefined}>{label}</a>
+        ))}
+        <a href="/developers" aria-current={activePath.startsWith("/developers") ? "page" : undefined}>API</a>
+      </div>
+    </nav>
     <main id="content">
       <slot />
     </main>
