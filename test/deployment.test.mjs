@@ -1,0 +1,19 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+
+const workflow = await readFile(new URL("../.github/workflows/pages-specs.yml", import.meta.url), "utf8");
+
+test("builds the Astro service before deploying Netlify output", () => {
+  assert.match(workflow, /node-version: 24/);
+  assert.match(workflow, /npm install/);
+  assert.match(workflow, /npm run build/);
+  assert.equal((workflow.match(/--dir dist/g) ?? []).length, 2);
+  assert.doesNotMatch(workflow, /--dir \.(?:\s|$)/);
+});
+
+test("deploys testing and production from their intended branches", () => {
+  assert.match(workflow, /branches: \[main, production\]/);
+  assert.match(workflow, /github\.ref_name == 'main'[\s\S]*NETLIFY_TESTING_SITE_ID/);
+  assert.match(workflow, /github\.ref_name == 'production'[\s\S]*NETLIFY_PRODUCTION_SITE_ID/);
+});

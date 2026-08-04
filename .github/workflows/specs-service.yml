@@ -1,0 +1,53 @@
+name: Validate specs service
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "scripts/**"
+      - "test/**"
+      - "netlify/**"
+      - "public/**"
+      - "package.json"
+      - "astro.config.mjs"
+      - "netlify.toml"
+      - "README.md"
+      - ".github/workflows/specs-service.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "scripts/**"
+      - "test/**"
+      - "netlify/**"
+      - "public/**"
+      - "package.json"
+      - "astro.config.mjs"
+      - "netlify.toml"
+      - "README.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: specs-service-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    env:
+      HARA_REGISTRY_REPOSITORY: hara-lang/hara-specs-registry
+      HARA_REGISTRY_REF: main
+      HARA_REGISTRY_INDEX_PATH: registry-index.json
+      HARA_GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - run: npm run registry:build
+      - run: npm run registry:check
+      - run: npm test
+      - run: npm run build

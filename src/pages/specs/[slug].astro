@@ -1,0 +1,92 @@
+---
+import AppLayout from "../../layouts/AppLayout.astro";
+import registry from "../../generated/registry.json";
+import {
+  documentationLocation,
+  githubBlobUrl,
+  locationLabel,
+  materializationLabel,
+  sourceLocation
+} from "../../lib/registry-links.mjs";
+
+export function getStaticPaths() {
+  return registry.specs.flatMap((spec) => [
+    { params: { slug: spec.slug }, props: { spec, canonicalSlug: spec.slug } },
+    ...(spec.legacySlugs || []).map((slug) => ({ params: { slug }, props: { spec, canonicalSlug: spec.slug } }))
+  ]);
+}
+
+const { spec, canonicalSlug } = Astro.props;
+const source = sourceLocation(spec, registry.source);
+const documentation = documentationLocation(spec, registry.source);
+const sourceUrl = githubBlobUrl(source);
+const documentationUrl = githubBlobUrl(documentation);
+const originUrl = githubBlobUrl(spec.origin ? {
+  repository: spec.origin.repository,
+  ref: spec.origin.commit,
+  path: spec.origin.path
+} : null);
+const migrationUrl = spec.migrationPath ? githubBlobUrl({
+  repository: registry.source.repository,
+  ref: registry.source.ref,
+  path: spec.migrationPath
+}) : null;
+const sourceState = materializationLabel(spec);
+const pinned = spec.materialization === "pinned-source";
+---
+<AppLayout title={`${spec.title} — Hara Specs`} description={spec.summary} canonicalPath={`/specs/${canonicalSlug}`}>
+  <section class="spec-detail-heading section-shell">
+    <div>
+      <p class="package-name">{spec.packageName}</p>
+      <h1>{spec.title}</h1>
+      <p>{spec.summary}</p>
+    </div>
+    <div class="spec-detail-state hara-surface">
+      <span class:list={["status-pill", `status-${spec.status}`]}>{spec.status}</span>
+      <strong>{spec.version}</strong>
+      <small>{spec.requirements} indexed rules</small>
+    </div>
+  </section>
+
+  <section class="spec-detail-grid section-shell">
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Package coordinates</p>
+      <dl class="detail-list">
+        <div><dt>Identifier</dt><dd><code>{spec.id}</code></dd></div>
+        <div><dt>Type</dt><dd>{spec.type}</dd></div>
+        <div><dt>Layer</dt><dd>{spec.layer}</dd></div>
+        <div><dt>Owner</dt><dd>{spec.owner}</dd></div>
+        <div><dt>Classification</dt><dd>{spec.classification}</dd></div>
+        <div><dt>Accepted form</dt><dd>{spec.formats.join(", ")}</dd></div>
+        <div><dt>Materialization</dt><dd>{sourceState}</dd></div>
+      </dl>
+    </article>
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Conformance state</p>
+      <h2>{spec.executable ? "Machine-addressable" : "Reference only"}</h2>
+      <p>{pinned
+        ? "The normative document is held at an immutable source commit and blob while its registry materialization remains explicit and provisional."
+        : spec.executable
+          ? "The canonical registry source contains normative requirement identifiers that can be connected to the Hara conformity checker."
+          : "No executable requirement identifiers were declared for this source."}</p>
+      <div class="detail-actions">
+        <a class="button button-primary" href={`/check?spec=${encodeURIComponent(spec.packageName)}`}>Check a document</a>
+        {sourceUrl && <a class="button" href={sourceUrl}>Open source</a>}
+      </div>
+    </article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Registry provenance</p>
+      <h2>Exact source locations</h2>
+      <p>The service catalogue was resolved from <code>{locationLabel(registry.source)}</code>.</p>
+    </div>
+    <div class="source-links">
+      {sourceUrl && <a href={sourceUrl}><span>Specification · {locationLabel(source)}</span><code>{source.path}</code></a>}
+      {documentationUrl && <a href={documentationUrl}><span>Documentation · {locationLabel(documentation)}</span><code>{documentation.path}</code></a>}
+      {originUrl && <a href={originUrl}><span>Migration origin</span><code>{spec.origin.path}</code></a>}
+      {migrationUrl && <a href={migrationUrl}><span>Materialization record</span><code>{spec.migrationPath}</code></a>}
+    </div>
+  </section>
+</AppLayout>

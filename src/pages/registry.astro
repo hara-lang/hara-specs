@@ -1,0 +1,79 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import SpecCard from "../components/SpecCard.astro";
+import registry from "../generated/registry.json";
+const layers = [...new Set(registry.specs.map(({ layer }) => layer))];
+const registryRef = /^[0-9a-f]{40}$/i.test(registry.source.ref || "") ? registry.source.ref.slice(0, 12) : registry.source.ref;
+---
+<AppLayout title="Registry — Hara Specs" description="Browse the signed, versioned Hara specification catalogue.">
+  <section class="page-heading section-shell">
+    <p class="hara-kicker">Specification registry</p>
+    <h1>Discover executable standards.</h1>
+    <p>Search the current catalogue by package, title, layer, or maturity. Every source link resolves to a repository, exact commit, and path.</p>
+    <p><code>{registry.source.repository}@{registryRef}</code> · {registry.summary.materialized ?? registry.specs.length} materialized · {registry.summary.pinnedSource ?? 0} pinned source</p>
+  </section>
+
+  <section class="registry-toolbar section-shell hara-surface" aria-label="Registry filters">
+    <label class="search-field">
+      <span>Search</span>
+      <input type="search" placeholder="Package, title, rule or owner" data-registry-search />
+    </label>
+    <label>
+      <span>Status</span>
+      <select data-registry-status>
+        <option value="all">All statuses</option>
+        <option value="ready">Ready</option>
+        <option value="draft">Draft</option>
+        <option value="unclassified">Unclassified</option>
+      </select>
+    </label>
+    <label>
+      <span>Layer</span>
+      <select data-registry-layer>
+        <option value="all">All layers</option>
+        {layers.map((layer) => <option value={layer}>{layer}</option>)}
+      </select>
+    </label>
+    <output data-registry-count>{registry.specs.length} specifications</output>
+  </section>
+
+  <section class="section-shell">
+    <div class="spec-grid" data-registry-grid>
+      {registry.specs.map((spec) => <SpecCard spec={spec} registrySource={registry.source} />)}
+    </div>
+    <div class="empty-state hara-surface" data-registry-empty hidden>
+      <strong>No specifications match these filters.</strong>
+      <span>Try a broader search or select all layers.</span>
+    </div>
+  </section>
+
+  <script>
+    const search = document.querySelector("[data-registry-search]");
+    const status = document.querySelector("[data-registry-status]");
+    const layer = document.querySelector("[data-registry-layer]");
+    const count = document.querySelector("[data-registry-count]");
+    const empty = document.querySelector("[data-registry-empty]");
+    const cards = [...document.querySelectorAll(".spec-card")];
+
+    const filter = () => {
+      const query = search instanceof HTMLInputElement ? search.value.trim().toLowerCase() : "";
+      const statusValue = status instanceof HTMLSelectElement ? status.value : "all";
+      const layerValue = layer instanceof HTMLSelectElement ? layer.value : "all";
+      let visible = 0;
+      cards.forEach((card) => {
+        const matchesQuery = !query || card.dataset.search?.includes(query);
+        const matchesStatus = statusValue === "all" || card.dataset.status === statusValue;
+        const matchesLayer = layerValue === "all" || card.dataset.layer === layerValue;
+        const show = Boolean(matchesQuery && matchesStatus && matchesLayer);
+        card.toggleAttribute("hidden", !show);
+        if (show) visible += 1;
+      });
+      if (count) count.textContent = `${visible} specification${visible === 1 ? "" : "s"}`;
+      if (empty instanceof HTMLElement) empty.hidden = visible !== 0;
+    };
+
+    search?.addEventListener("input", filter);
+    status?.addEventListener("change", filter);
+    layer?.addEventListener("change", filter);
+  </script>
+</AppLayout>

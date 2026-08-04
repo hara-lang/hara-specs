@@ -1,8 +1,10 @@
-# Local desktop metadata
 .DS_Store
+node_modules/
+dist/
+.netlify/
+.astro/
+*.log
 
-# Nested vendor checkout metadata
-vendor/.DS_Store
-
-# Generated Hara UI assets copied during site builds
-vendor/hara-ui/
+# Generated from the canonical external registry before dev/build.
+src/generated/registry.json
+public/registry/index.json
