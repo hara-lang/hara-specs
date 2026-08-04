@@ -5,7 +5,17 @@ export const DEFAULT_MAX_BODY_BYTES = 1_000_000;
 
 const JSON_CONTENT_TYPE = "application/json; charset=utf-8";
 const DEFAULT_ALLOW_HEADERS = "Accept, Content-Type, If-None-Match, X-Request-Id";
-const DEFAULT_EXPOSE_HEADERS = "ETag, Link, X-Request-Id, X-Hara-API-Version, X-Hara-Registry-Ref";
+const DEFAULT_EXPOSE_HEADERS = [
+  "Deprecation",
+  "ETag",
+  "Link",
+  "X-Hara-API-Version",
+  "X-Hara-Registry-Ref",
+  "X-Hara-Source-Path",
+  "X-Hara-Source-Ref",
+  "X-Hara-Source-Repository",
+  "X-Request-Id"
+].join(", ");
 
 export class ApiProblem extends Error {
   constructor({ status = 400, code = "INVALID_REQUEST", message, details = null, headers = {} }) {
