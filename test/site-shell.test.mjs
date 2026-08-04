@@ -14,6 +14,12 @@ test("uses the canonical specs domain", () => {
   assert.doesNotMatch(readme, /specs\.hara-lang\.io/);
 });
 
+test("publishes a dedicated maximum-resolution specifications card", () => {
+  assert.match(layout, /og-hara-specs\.jpg/);
+  assert.match(layout, /og:image:width" content="3840"/);
+  assert.match(layout, /og:image:height" content="2016"/);
+});
+
 test("conforms to the Hara ecosystem shell", () => {
   assert.match(layout, /Benchmarks[\s\S]*Docs[\s\S]*aria-current="page" aria-disabled="true">Specs/);
   assert.doesNotMatch(layout, />Source<\/a>/);
