@@ -1,0 +1,45 @@
+name: Report specs domain cutover
+
+on:
+  workflow_run:
+    workflows: ["Deploy specs.hara-lang.org"]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+
+jobs:
+  report:
+    if: github.event.workflow_run.head_branch == 'production'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Report the production cutover result
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs?per_page=100")"
+          failed="$(jq -r '[.jobs[] | select(.conclusion != "success" and .conclusion != "skipped") | {name,conclusion}]' <<< "$jobs")"
+          body="$RUNNER_TEMP/report.md"
+          {
+            echo '## Production domain cutover result'
+            echo
+            echo "- conclusion: \`$CONCLUSION\`"
+            echo "- workflow run: [$RUN_ID]($RUN_URL)"
+            echo "- production revision: \`$HEAD_SHA\`"
+            echo '- target: `https://specs.hara-lang.org`'
+            if [[ "$failed" != '[]' ]]; then
+              echo
+              echo 'Failed jobs:'
+              echo '```json'
+              printf '%s\n' "$failed"
+              echo '```'
+            fi
+          } > "$body"
+          gh api "repos/$GITHUB_REPOSITORY/issues/8/comments" -F "body=@$body" > /dev/null
