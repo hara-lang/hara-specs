@@ -1,0 +1,85 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import registry from "../generated/registry.json";
+
+const registryRef = registry.source.ref.slice(0, 12);
+---
+<AppLayout title="API — Hara Specs" description="Versioned HTTP access to the Hara specifications registry and conformity checker.">
+  <section class="page-heading section-shell">
+    <p class="hara-kicker">HTTP API · version 1</p>
+    <h1>Inspect exact specifications from code.</h1>
+    <p>The API resolves the canonical registry to an immutable commit, exposes searchable specification metadata and source bytes, and returns explicit <code>yes</code>, <code>no</code>, or <code>execution-error</code> check results.</p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="/api">Discover the API</a>
+      <a class="button" href="/api/openapi.json">OpenAPI 3.1</a>
+    </div>
+    <div class="command" aria-label="API discovery example">
+      <span aria-hidden="true">$</span>
+      <code>curl https://specs.hara-lang.io/api/v1/specs?executable=true&amp;limit=20</code>
+    </div>
+  </section>
+
+  <section class="metric-grid section-shell" aria-label="API summary">
+    <article class="hara-surface metric"><strong>v1</strong><span>current API version</span></article>
+    <article class="hara-surface metric"><strong>{registry.summary.specifications}</strong><span>specifications available</span></article>
+    <article class="hara-surface metric"><strong>{registry.summary.requirements}</strong><span>requirements indexed</span></article>
+    <article class="hara-surface metric"><strong>{registryRef}</strong><span>registry revision</span></article>
+  </section>
+
+  <section class="spec-detail-grid section-shell">
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Discovery</p>
+      <h2>Start without prior configuration.</h2>
+      <dl class="detail-list">
+        <div><dt>Service</dt><dd><code>GET /api</code></dd></div>
+        <div><dt>Current version</dt><dd><code>GET /api/v1</code></dd></div>
+        <div><dt>Health</dt><dd><code>GET /api/v1/health</code></dd></div>
+        <div><dt>Capabilities</dt><dd><code>GET /api/v1/capabilities</code></dd></div>
+        <div><dt>Schema</dt><dd><code>GET /api/openapi.json</code></dd></div>
+      </dl>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Specifications</p>
+      <h2>Search, inspect, and retrieve exact bytes.</h2>
+      <dl class="detail-list">
+        <div><dt>List</dt><dd><code>GET /api/v1/specs</code></dd></div>
+        <div><dt>Inspect</dt><dd><code>GET /api/v1/specs/:identifier</code></dd></div>
+        <div><dt>Normative source</dt><dd><code>GET /api/v1/specs/:identifier/source</code></dd></div>
+        <div><dt>Documentation</dt><dd><code>GET /api/v1/specs/:identifier/documentation</code></dd></div>
+      </dl>
+      <p>Use the URL-safe slug when possible. Every resource reports the registry repository, exact commit, and path used to produce it.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Conformance</p>
+      <h2>Use the same result contract as the browser.</h2>
+      <dl class="detail-list">
+        <div><dt>Document check</dt><dd><code>POST /api/v1/checks</code></dd></div>
+        <div><dt>Package manifest</dt><dd><code>POST /api/v1/packages/validate</code></dd></div>
+        <div><dt>Request type</dt><dd><code>application/json</code></dd></div>
+        <div><dt>Payload limit</dt><dd>1 MB for document checks</dd></div>
+      </dl>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Authority boundary</p>
+      <h2>Specifications do not mint identities.</h2>
+      <p><code>hara-specs</code> validates publication material, but publisher enrollment, namespace grants, key possession, and revocation belong to the external Hara identity authority at <code>id.hara-lang.org</code>.</p>
+      <p>Canonical registry writes remain disabled until that authority supplies verified, path-scoped authorization.</p>
+    </article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Compatibility</p>
+      <h2>Existing integrations continue to work.</h2>
+      <p>The original endpoints remain available and return a successor-version link. New integrations should use the version-one resources.</p>
+    </div>
+    <div class="source-links">
+      <a href="/api/registry"><span>Legacy registry</span><code>GET /api/registry</code></a>
+      <a href="/api/check"><span>Legacy checker</span><code>POST /api/check</code></a>
+      <a href="/api/packages/validate"><span>Legacy package validation</span><code>POST /api/packages/validate</code></a>
+    </div>
+  </section>
+</AppLayout>
