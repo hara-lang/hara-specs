@@ -1,0 +1,132 @@
+name: Publish Hara Specs to GitHub Pages
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/pages-fallback.yml"
+      - "src/**"
+      - "public/**"
+      - "scripts/**"
+      - "test/**"
+      - "package.json"
+      - "package-lock.json"
+      - "astro.config.mjs"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/pages-fallback.yml"
+      - "src/**"
+      - "public/**"
+      - "scripts/**"
+      - "test/**"
+      - "package.json"
+      - "package-lock.json"
+      - "astro.config.mjs"
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: hara-specs-pages-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.event_name != 'issue_comment' || (github.event.issue.number == 8 && github.event.comment.body == '/deploy-pages-fallback')
+    runs-on: ubuntu-24.04
+    env:
+      HARA_REGISTRY_REPOSITORY: hara-lang/hara-specs-registry
+      HARA_REGISTRY_REF: main
+      HARA_REGISTRY_INDEX_PATH: registry-index.json
+      HARA_GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: Announce explicit fallback deployment
+        if: github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/issues/8/comments" \
+            -f body="Pages fallback deployment started: run $GITHUB_RUN_ID." > /dev/null
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install
+      - name: Verify registry and service contracts
+        run: |
+          npm run registry:build
+          npm run registry:check
+          npm test
+      - name: Build static application
+        run: npm run build
+      - name: Verify the public fallback artifact
+        run: |
+          test -f dist/index.html
+          test -f dist/registry/index.html
+          test -f dist/developers/index.html
+          test -f dist/check/index.html
+          test -f dist/registry/index.json
+          grep -q 'Specifications that can answer' dist/index.html
+          grep -q 'Discover executable standards' dist/registry/index.html
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          const registry = JSON.parse(fs.readFileSync("dist/registry/index.json", "utf8"));
+          if (registry.summary?.specifications !== 50) throw new Error("Expected 50 specifications");
+          if (registry.summary?.requirements !== 275) throw new Error("Expected 275 requirements");
+          if (!/^[0-9a-f]{40}$/.test(registry.source?.ref || "")) throw new Error("Registry source is not pinned");
+          NODE
+      - name: Configure Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy current Hara Specs application
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  verify:
+    if: github.event_name != 'pull_request'
+    needs: deploy
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Verify the canonical hostname and record the result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          url="https://specs.hara-lang.org/"
+          body="$RUNNER_TEMP/specs.html"
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --location --max-time 20 "$url" > "$body" && \
+               grep -q 'Specifications that can answer' "$body"; then
+              gh api "repos/$GITHUB_REPOSITORY/issues/8/comments" \
+                -f body="Pages fallback deployment verified on the canonical hostname. Run: $GITHUB_RUN_ID." > /dev/null
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'The canonical hostname did not serve the new artifact within the verification window.' >&2
+          sed -n '1,80p' "$body" >&2 || true
+          exit 1
