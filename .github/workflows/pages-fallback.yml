@@ -22,10 +22,13 @@ on:
       - "package.json"
       - "package-lock.json"
       - "astro.config.mjs"
+  issue_comment:
+    types: [created]
   workflow_dispatch:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: hara-specs-pages-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
@@ -33,6 +36,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name != 'issue_comment' || (github.event.issue.number == 8 && github.event.comment.body == '/deploy-pages-fallback')
     runs-on: ubuntu-24.04
     env:
       HARA_REGISTRY_REPOSITORY: hara-lang/hara-specs-registry
@@ -40,7 +44,16 @@ jobs:
       HARA_REGISTRY_INDEX_PATH: registry-index.json
       HARA_GITHUB_TOKEN: ${{ github.token }}
     steps:
+      - name: Announce explicit fallback deployment
+        if: github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/issues/8/comments" \
+            -f body="Pages fallback deployment started: run $GITHUB_RUN_ID." > /dev/null
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -92,3 +105,28 @@ jobs:
       - name: Deploy current Hara Specs application
         id: deployment
         uses: actions/deploy-pages@v4
+
+  verify:
+    if: github.event_name != 'pull_request'
+    needs: deploy
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Verify the canonical hostname and record the result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          url="https://specs.hara-lang.org/"
+          body="$RUNNER_TEMP/specs.html"
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --location --max-time 20 "$url" > "$body" && \
+               grep -q 'Specifications that can answer' "$body"; then
+              gh api "repos/$GITHUB_REPOSITORY/issues/8/comments" \
+                -f body="Pages fallback deployment verified on the canonical hostname. Run: $GITHUB_RUN_ID." > /dev/null
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'The canonical hostname did not serve the new artifact within the verification window.' >&2
+          sed -n '1,80p' "$body" >&2 || true
+          exit 1
