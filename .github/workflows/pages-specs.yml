@@ -14,23 +14,36 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    env:
+      HARA_REGISTRY_REPOSITORY: hara-lang/hara-specs-registry
+      HARA_REGISTRY_REF: main
+      HARA_REGISTRY_INDEX_PATH: registry-index.json
+      HARA_GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
-          submodules: recursive
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the specifications service
+        run: npm run build
 
       - name: Deploy main to specs.testing.hara-lang.org
         if: github.ref_name == 'main'
-        run: npx --yes netlify-cli deploy --prod --dir . --message "main ${GITHUB_SHA}"
+        run: npx --yes netlify-cli deploy --prod --dir dist --message "main ${GITHUB_SHA}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTING_SITE_ID }}
 
       - name: Deploy production to specs.hara-lang.org
         if: github.ref_name == 'production'
-        run: npx --yes netlify-cli deploy --prod --dir . --message "production ${GITHUB_SHA}"
+        run: npx --yes netlify-cli deploy --prod --dir dist --message "production ${GITHUB_SHA}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
