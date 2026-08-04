@@ -1,6 +1,6 @@
 # Hara specifications service
 
-`hara-lang/hara-specs` is the Netlify-deployable management and conformance service for `specs.hara-lang.io`.
+`hara-lang/hara-specs` is the Netlify-deployable management and conformance service for `specs.hara-lang.org`.
 
 The canonical specification documents and package releases live in [`hara-lang/hara-specs-registry`](https://github.com/hara-lang/hara-specs-registry). This repository owns the UI, versioned API, publishing workflow, document checker, reports, and browser/server Hara kernel adapters. It does not own or commit a duplicate specification catalogue.
 
