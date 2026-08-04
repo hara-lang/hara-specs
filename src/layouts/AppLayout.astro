@@ -12,6 +12,7 @@ const {
   canonicalPath = Astro.url.pathname
 } = Astro.props;
 const canonical = new URL(canonicalPath, Astro.site);
+const socialImage = new URL("/og-hara-specs.jpg", Astro.site);
 const activePath = Astro.url.pathname;
 const localNav = [
   ["/", "Overview"],
@@ -27,6 +28,22 @@ const localNav = [
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#080a0d" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hara Specifications" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:secure_url" content={socialImage} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="3840" />
+    <meta property="og:image:height" content="2016" />
+    <meta property="og:image:alt" content="Hara Specifications — executable standards" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content="Hara Specifications — executable standards" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
