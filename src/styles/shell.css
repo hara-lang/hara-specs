@@ -1,0 +1,114 @@
+:root {
+  --app-context-height: 48px;
+}
+
+.app-header {
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+}
+
+.ecosystem-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+}
+
+.app-header .ecosystem-nav a,
+.app-header .ecosystem-nav span,
+.sign-in {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: .48rem .7rem;
+  color: var(--hara-muted);
+  border-radius: 999px;
+  font-size: .82rem;
+  font-weight: 620;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.app-header .ecosystem-nav a:hover,
+.sign-in:hover {
+  color: var(--hara-text);
+  background: var(--hara-surface-raised);
+}
+
+.app-header .ecosystem-nav span[aria-current="page"] {
+  color: var(--hara-text);
+  background: var(--hara-surface-raised);
+  cursor: default;
+}
+
+.sign-in {
+  color: var(--hara-text);
+  background: var(--hara-surface);
+  border: 1px solid var(--hara-line);
+}
+
+.context-nav {
+  position: sticky;
+  top: var(--app-header-height);
+  z-index: 35;
+  min-height: var(--app-context-height);
+  border-bottom: 1px solid var(--hara-line);
+  background: color-mix(in srgb, var(--hara-bg) 92%, transparent);
+  backdrop-filter: blur(18px) saturate(130%);
+}
+.context-nav > div {
+  display: flex;
+  justify-content: center;
+  gap: .25rem;
+  min-height: var(--app-context-height);
+  padding: .35rem var(--hara-space-page);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.context-nav > div::-webkit-scrollbar { display: none; }
+.context-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: .4rem .68rem;
+  color: var(--hara-muted);
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 620;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.context-nav a:hover,
+.context-nav a[aria-current="page"] {
+  color: var(--hara-text);
+  background: var(--hara-surface-raised);
+}
+
+main { min-height: calc(100vh - var(--app-header-height) - var(--app-context-height)); }
+.hero { min-height: min(760px, calc(100vh - var(--app-header-height) - var(--app-context-height))); }
+
+@media (max-width: 780px) {
+  :root { --app-header-height: 64px; }
+  .app-header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: .45rem;
+    padding-inline: 14px;
+  }
+  .brand > span { display: none; }
+  .app-header .ecosystem-nav {
+    display: flex;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .app-header .ecosystem-nav::-webkit-scrollbar { display: none; }
+  .app-header .ecosystem-nav a,
+  .app-header .ecosystem-nav span,
+  .sign-in { min-height: 34px; padding-inline: .55rem; font-size: .76rem; }
+  .context-nav > div { justify-content: flex-start; padding-inline: 14px; }
+}
+
+@media (max-width: 560px) {
+  .app-header .hara-theme-toggle { min-height: 34px; padding-inline: .55rem; }
+  .app-header .hara-theme-toggle [data-hara-theme-label] { display: none; }
+}
