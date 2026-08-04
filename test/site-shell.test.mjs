@@ -33,3 +33,9 @@ test("includes a sign-in button without coupling to an identity implementation",
   assert.ok(layout.includes('href="https://id.hara-lang.org/">Sign in</a>'));
   assert.doesNotMatch(layout, /api\/session|auth\/github|return_to/);
 });
+
+test("identifies Greenways stewardship and the repository licence", () => {
+  assert.match(layout, /A Greenways Open Source Project/);
+  assert.match(layout, /opensource\.greenways\.ai\/open-source/);
+  assert.match(layout, /hara-specs\/blob\/main\/LICENSE">Apache-2\.0/);
+});
