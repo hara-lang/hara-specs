@@ -17,3 +17,11 @@ test("deploys testing and production from their intended branches", () => {
   assert.match(workflow, /github\.ref_name == 'main'[\s\S]*NETLIFY_TESTING_SITE_ID/);
   assert.match(workflow, /github\.ref_name == 'production'[\s\S]*NETLIFY_PRODUCTION_SITE_ID/);
 });
+
+test("corrects the production project domain before publishing", () => {
+  assert.match(workflow, /--request PATCH/);
+  assert.match(workflow, /api\.netlify\.com\/api\/v1\/sites\/\$\{NETLIFY_SITE_ID\}/);
+  assert.match(workflow, /"custom_domain":"specs\.hara-lang\.org"/);
+  assert.match(workflow, /"force_ssl":true/);
+  assert.doesNotMatch(workflow, /specs\.hara-long\.org/);
+});
