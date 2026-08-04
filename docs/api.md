@@ -19,10 +19,11 @@ All JSON responses include:
 X-Hara-API-Version: 1
 X-Hara-Registry-Ref: <40-character Git commit>
 X-Request-Id: <request identifier>
-Access-Control-Allow-Origin: *
 ```
 
-Cacheable reads support `ETag` and `If-None-Match`. `GET` resources also support `HEAD`, and all endpoints answer CORS preflight requests.
+Cacheable reads support `ETag` and `If-None-Match`. `GET` resources also support `HEAD`; `OPTIONS` reports the allowed resource methods.
+
+Wildcard cross-origin access is not enabled. A deployment that needs browser clients from another origin must add an explicit, reviewed origin allowlist.
 
 ## Search specifications
 
