@@ -4,6 +4,9 @@ on:
   push:
     branches: [production]
     paths: [.github/workflows/repair-public-og-domains.yml]
+  pull_request:
+    branches: [production]
+    types: [closed]
   workflow_dispatch:
 
 permissions:
@@ -15,6 +18,10 @@ concurrency:
 
 jobs:
   dns:
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.title, '[deploy]'))
     runs-on: ubuntu-latest
     steps:
       - name: Reconcile missing public hostnames
@@ -69,6 +76,29 @@ jobs:
               > created.json
             test "$(jq -r '.success' created.json)" = true
             echo "$hostname now points to $target."
+          done <<'DOMAINS'
+          api.hara-lang.org api-hara-lang-org.netlify.app
+          benchmarks.hara-lang.org hara-lang.github.io
+          docs.hara-lang.org www-hara-lang-org.netlify.app
+          DOMAINS
+      - name: Verify authoritative CNAMEs
+        run: |
+          set -euo pipefail
+          while read -r hostname target; do
+            matched=false
+            for attempt in {1..20}; do
+              resolved="$(dig +short CNAME "$hostname" | sed 's/\.$//' | head -1)"
+              if [[ "$resolved" == "$target" ]]; then
+                matched=true
+                echo "$hostname resolves to $target."
+                break
+              fi
+              [[ "$attempt" -lt 20 ]] && sleep 15
+            done
+            if [[ "$matched" != true ]]; then
+              echo "$hostname did not resolve to $target." >&2
+              exit 1
+            fi
           done <<'DOMAINS'
           api.hara-lang.org api-hara-lang-org.netlify.app
           benchmarks.hara-lang.org hara-lang.github.io
