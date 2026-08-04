@@ -15,6 +15,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
     env:
       HARA_REGISTRY_REPOSITORY: hara-lang/hara-specs-registry
       HARA_REGISTRY_REF: main
@@ -31,8 +32,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build the specifications service
-        run: npm run build
+      - name: Build and verify the specifications service
+        run: |
+          npm run registry:build
+          npm run registry:check
+          npm test
+          npm run build
 
       - name: Deploy main to specs.testing.hara-lang.org
         if: github.ref_name == 'main'
@@ -41,23 +46,184 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTING_SITE_ID }}
 
-      - name: Deploy production to specs.hara-lang.org
+      - name: Deploy production to Netlify
         if: github.ref_name == 'production'
         run: npx --yes netlify-cli deploy --prod --dir dist --message "production ${GITHUB_SHA}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
 
-      - name: Correct the production domain
+      - name: Assign the canonical production domain and reconcile DNS
         if: github.ref_name == 'production'
-        continue-on-error: true
-        run: |
-          curl --fail-with-body --silent --show-error \
-            --request PATCH \
-            --header "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" \
-            --header "Content-Type: application/json" \
-            --data '{"custom_domain":"specs.hara-lang.org","force_ssl":true}' \
-            "https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CANONICAL_DOMAIN: specs.hara-lang.org
+          ROOT_DOMAIN: hara-lang.org
+        run: |
+          set -euo pipefail
+
+          test -n "$NETLIFY_AUTH_TOKEN"
+          test -n "$NETLIFY_SITE_ID"
+          auth=(-H "Authorization: Bearer $NETLIFY_AUTH_TOKEN")
+          json=(-H "Content-Type: application/json")
+
+          command -v dig >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq dnsutils; }
+
+          curl --fail-with-body --silent --show-error "${auth[@]}" \
+            "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID" > site-before.json
+          test "$(jq -r .id site-before.json)" = "$NETLIFY_SITE_ID"
+
+          site_name="$(jq -r .name site-before.json)"
+          account_slug="$(jq -r .account_slug site-before.json)"
+          netlify_target="${site_name}.netlify.app"
+
+          curl --fail-with-body --silent --show-error "${auth[@]}" \
+            "https://api.netlify.com/api/v1/sites?per_page=1000" > sites.json
+          conflict="$(jq -r --arg domain "$CANONICAL_DOMAIN" --arg site "$NETLIFY_SITE_ID" '
+            [.[] | select(.id != $site and (.custom_domain == $domain or ((.domain_aliases // []) | index($domain)))) | .id] | first // empty
+          ' sites.json)"
+          if [[ -n "$conflict" ]]; then
+            echo "The canonical domain is already assigned to another Netlify project: $conflict" >&2
+            exit 1
+          fi
+
+          curl --fail-with-body --silent --show-error \
+            --request PATCH \
+            "${auth[@]}" \
+            "${json[@]}" \
+            --data "$(jq -nc --arg domain "$CANONICAL_DOMAIN" '{custom_domain:$domain,force_ssl:false}')" \
+            "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID" > site-assigned.json
+          test "$(jq -r .custom_domain site-assigned.json)" = "$CANONICAL_DOMAIN"
+
+          authoritative_ns="$(dig +short "$ROOT_DOMAIN" NS | tr '[:upper:]' '[:lower:]' | sed 's/\.$//' | sort -u)"
+          curl --fail-with-body --silent --show-error "${auth[@]}" \
+            "https://api.netlify.com/api/v1/dns_zones?account_slug=${account_slug}" > netlify-zones.json
+          netlify_zone_id="$(jq -r --arg domain "$ROOT_DOMAIN" '[.[] | select((.name // .domain) == $domain) | .id] | first // empty' netlify-zones.json)"
+          netlify_dns=false
+          if [[ -n "$netlify_zone_id" ]]; then
+            mapfile -t netlify_ns < <(jq -r --arg id "$netlify_zone_id" '.[] | select(.id == $id) | .dns_servers[]?' netlify-zones.json | tr '[:upper:]' '[:lower:]' | sed 's/\.$//' | sort -u)
+            for nameserver in "${netlify_ns[@]}"; do
+              if grep -Fxq "$nameserver" <<< "$authoritative_ns"; then
+                netlify_dns=true
+                break
+              fi
+            done
+          fi
+
+          if [[ "$netlify_dns" == true ]]; then
+            echo "Reconciling the canonical hostname through authoritative Netlify DNS."
+            curl --fail-with-body --silent --show-error --request PUT "${auth[@]}" \
+              "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID/dns" > /dev/null
+
+            curl --fail-with-body --silent --show-error "${auth[@]}" \
+              "https://api.netlify.com/api/v1/dns_zones/$netlify_zone_id/dns_records" > records.json
+            mapfile -t stale_records < <(jq -r --arg host "$CANONICAL_DOMAIN" --arg target "$netlify_target" '
+              .[] | select(.hostname == $host and (.type == "A" or .type == "AAAA" or .type == "CNAME") and (.managed != true) and (.value != $target)) | .id
+            ' records.json)
+            for record_id in "${stale_records[@]}"; do
+              curl --fail-with-body --silent --show-error --request DELETE "${auth[@]}" \
+                "https://api.netlify.com/api/v1/dns_zones/$netlify_zone_id/dns_records/$record_id" > /dev/null
+            done
+
+            curl --fail-with-body --silent --show-error --request PUT "${auth[@]}" \
+              "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID/dns" > /dev/null
+            curl --fail-with-body --silent --show-error "${auth[@]}" \
+              "https://api.netlify.com/api/v1/dns_zones/$netlify_zone_id/dns_records" > records-after.json
+
+            if ! jq -e --arg host "$CANONICAL_DOMAIN" --arg site "$NETLIFY_SITE_ID" --arg target "$netlify_target" '
+              any(.[]; .hostname == $host and ((.managed == true and .site_id == $site) or (.type == "CNAME" and .value == $target)))
+            ' records-after.json > /dev/null; then
+              curl --fail-with-body --silent --show-error --request POST \
+                "${auth[@]}" "${json[@]}" \
+                --data "$(jq -nc --arg host "$CANONICAL_DOMAIN" --arg target "$netlify_target" '{type:"CNAME",hostname:$host,value:$target,ttl:300}')" \
+                "https://api.netlify.com/api/v1/dns_zones/$netlify_zone_id/dns_records" > /dev/null
+            fi
+          elif grep -qi 'cloudflare\.com' <<< "$authoritative_ns"; then
+            echo "The domain is authoritative on Cloudflare."
+            if [[ -z "$CLOUDFLARE_API_TOKEN" ]]; then
+              echo "CLOUDFLARE_API_TOKEN is required to complete the DNS cutover." >&2
+              exit 1
+            fi
+            cf_auth=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json")
+            curl --fail-with-body --silent --show-error "${cf_auth[@]}" \
+              "https://api.cloudflare.com/client/v4/zones?name=$ROOT_DOMAIN&status=active" > cf-zones.json
+            cf_zone_id="$(jq -r '.result[0].id // empty' cf-zones.json)"
+            test -n "$cf_zone_id"
+
+            curl --fail-with-body --silent --show-error "${cf_auth[@]}" \
+              "https://api.cloudflare.com/client/v4/zones/$cf_zone_id/dns_records?name=$CANONICAL_DOMAIN" > cf-records.json
+            mapfile -t conflicting_records < <(jq -r '.result[] | select(.type == "A" or .type == "AAAA" or .type == "CNAME") | .id' cf-records.json)
+            for record_id in "${conflicting_records[@]}"; do
+              curl --fail-with-body --silent --show-error --request DELETE "${cf_auth[@]}" \
+                "https://api.cloudflare.com/client/v4/zones/$cf_zone_id/dns_records/$record_id" > /dev/null
+            done
+            curl --fail-with-body --silent --show-error --request POST "${cf_auth[@]}" \
+              --data "$(jq -nc --arg name "$CANONICAL_DOMAIN" --arg content "$netlify_target" '{type:"CNAME",name:$name,content:$content,ttl:1,proxied:false}')" \
+              "https://api.cloudflare.com/client/v4/zones/$cf_zone_id/dns_records" > cf-created.json
+            test "$(jq -r .success cf-created.json)" = true
+          else
+            echo "Unsupported authoritative DNS provider:" >&2
+            printf '%s\n' "$authoritative_ns" >&2
+            exit 1
+          fi
+
+          echo "Waiting for the canonical hostname to resolve to $netlify_target."
+          dns_ready=false
+          for attempt in $(seq 1 60); do
+            cname="$(dig +short "$CANONICAL_DOMAIN" CNAME @1.1.1.1 | sed 's/\.$//' | head -n1)"
+            if [[ "$cname" == "$netlify_target" ]]; then
+              dns_ready=true
+              break
+            fi
+            sleep 10
+          done
+          if [[ "$dns_ready" != true ]]; then
+            echo "DNS did not converge within the verification window." >&2
+            dig "$CANONICAL_DOMAIN" CNAME @1.1.1.1 >&2 || true
+            exit 1
+          fi
+
+          ssl_ready=false
+          for attempt in $(seq 1 30); do
+            curl --silent --show-error --request POST "${auth[@]}" \
+              "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID/ssl" > ssl.json || true
+            state="$(jq -r '.state // empty' ssl.json 2>/dev/null || true)"
+            domains="$(jq -r '.domains[]? // empty' ssl.json 2>/dev/null || true)"
+            if [[ "$state" == "ready" ]] && grep -Fxq "$CANONICAL_DOMAIN" <<< "$domains"; then
+              ssl_ready=true
+              break
+            fi
+            sleep 10
+          done
+          if [[ "$ssl_ready" != true ]]; then
+            echo "Netlify did not provision TLS within the verification window." >&2
+            cat ssl.json >&2 || true
+            exit 1
+          fi
+
+          curl --fail-with-body --silent --show-error \
+            --request PATCH "${auth[@]}" "${json[@]}" \
+            --data "$(jq -nc --arg domain "$CANONICAL_DOMAIN" '{custom_domain:$domain,force_ssl:true}')" \
+            "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID" > site-final.json
+          test "$(jq -r .custom_domain site-final.json)" = "$CANONICAL_DOMAIN"
+          test "$(jq -r .force_ssl site-final.json)" = true
+
+      - name: Verify the canonical production UI and API
+        if: github.ref_name == 'production'
+        env:
+          CANONICAL_URL: https://specs.hara-lang.org
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 30); do
+            home="$(curl --fail --silent --show-error --location --max-time 20 "$CANONICAL_URL/" || true)"
+            health="$(curl --fail --silent --show-error --location --max-time 20 "$CANONICAL_URL/api/v1/health" || true)"
+            if grep -q 'Specifications that can answer' <<< "$home" && \
+               jq -e '.data.status == "ok" and .data.registry.summary.specifications == 50 and .data.registry.summary.requirements == 275' <<< "$health" > /dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "The canonical production UI or API did not become healthy." >&2
+          exit 1
