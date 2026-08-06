@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/hara-lang/hara-ui",
+  "commit": "145a9acc728f71f9aa215868a22774ea07d466d4",
+  "files": [
+    "tokens.css",
+    "components.css",
+    "spec-explorer.css",
+    "spec-explorer.js",
+    "logo-white.svg",
+    "LICENSE"
+  ]
+}
