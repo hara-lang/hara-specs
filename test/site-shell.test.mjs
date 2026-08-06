@@ -21,7 +21,8 @@ test("publishes a dedicated maximum-resolution specifications card", () => {
 });
 
 test("keeps the Hara brand and actions at the edges with ecosystem links centred", () => {
-  assert.match(layout, /Benchmarks[\s\S]*Docs[\s\S]*aria-current="page" aria-disabled="true">Specs/);
+  assert.match(layout, /Benchmarks[\s\S]*Docs[\s\S]*aria-current="page" aria-disabled="true">Specs[\s\S]*World/);
+  assert.match(layout, /https:\/\/world\.hara-lang\.org\//);
   assert.doesNotMatch(layout, />Source<\/a>/);
   assert.match(shell, /grid-template-columns: minmax\(0, 1fr\) auto minmax\(0, 1fr\)/);
   assert.match(shell, /\.app-header \.brand \{ justify-self: start; \}/);
