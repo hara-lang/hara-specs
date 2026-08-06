@@ -1,17 +1,26 @@
 :root {
   --app-context-height: 48px;
+  --app-context-width: clamp(168px, 11vw, 196px);
 }
 
 .app-header {
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   gap: 1rem;
 }
 
-.ecosystem-nav {
+.app-header .brand { justify-self: start; }
+
+.app-header .ecosystem-nav {
   display: flex;
   align-items: center;
   justify-content: center;
+  justify-self: center;
   gap: .35rem;
+}
+
+.header-actions {
+  justify-self: end;
+  min-width: 0;
 }
 
 .app-header .ecosystem-nav a,
@@ -37,14 +46,87 @@
 
 .app-header .ecosystem-nav span[aria-current="page"] {
   color: var(--hara-text);
-  background: var(--hara-surface-raised);
+  background: transparent;
   cursor: default;
 }
 
 .sign-in {
+  gap: .45rem;
   color: var(--hara-text);
   background: var(--hara-surface);
   border: 1px solid var(--hara-line);
+}
+
+.sign-in.is-authenticated {
+  color: var(--hara-text);
+  background: transparent;
+}
+
+.github-mark {
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+
+.sign-out { margin: 0; }
+.sign-out button,
+.app-header .hara-theme-toggle {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0;
+  color: var(--hara-text);
+  background: var(--hara-surface);
+  border: 1px solid var(--hara-line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.sign-out button:hover,
+.app-header .hara-theme-toggle:hover {
+  color: var(--hara-text);
+  background: var(--hara-surface-raised);
+  border-color: var(--hara-line-strong);
+}
+
+.sign-out svg,
+.app-header .hara-theme-toggle [data-hara-theme-icon] svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.app-header .hara-theme-toggle {
+  gap: 0;
+  font-size: 0;
+}
+
+.app-header .hara-theme-toggle [data-hara-theme-icon] {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  line-height: 0;
+}
+
+.app-header .hara-theme-toggle [data-hara-theme-label] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .context-nav {
@@ -56,6 +138,7 @@
   background: color-mix(in srgb, var(--hara-bg) 92%, transparent);
   backdrop-filter: blur(18px) saturate(130%);
 }
+
 .context-nav > div {
   display: flex;
   justify-content: center;
@@ -65,8 +148,11 @@
   overflow-x: auto;
   scrollbar-width: none;
 }
+
 .context-nav > div::-webkit-scrollbar { display: none; }
+
 .context-nav a {
+  position: relative;
   display: inline-flex;
   align-items: center;
   min-height: 34px;
@@ -78,6 +164,7 @@
   text-decoration: none;
   white-space: nowrap;
 }
+
 .context-nav a:hover,
 .context-nav a[aria-current="page"] {
   color: var(--hara-text);
@@ -87,28 +174,99 @@
 main { min-height: calc(100vh - var(--app-header-height) - var(--app-context-height)); }
 .hero { min-height: min(760px, calc(100vh - var(--app-header-height) - var(--app-context-height))); }
 
+@media (min-width: 981px) {
+  .context-nav {
+    position: fixed;
+    top: var(--app-header-height);
+    right: 0;
+    bottom: 0;
+    width: var(--app-context-width);
+    min-height: 0;
+    border-bottom: 0;
+    border-left: 1px solid var(--hara-line);
+    background: color-mix(in srgb, var(--hara-bg) 94%, transparent);
+  }
+
+  .context-nav > div {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: .35rem;
+    height: 100%;
+    min-height: 0;
+    padding: clamp(28px, 5vh, 58px) clamp(14px, 1.5vw, 22px);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .context-nav a {
+    justify-content: flex-end;
+    min-height: 42px;
+    padding: .62rem .78rem;
+    text-align: right;
+  }
+
+  .context-nav a[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    left: .72rem;
+    width: 3px;
+    height: 16px;
+    background: var(--hara-signal);
+    border-radius: 999px;
+  }
+
+  main,
+  .app-footer {
+    margin-right: var(--app-context-width);
+  }
+
+  main { min-height: calc(100vh - var(--app-header-height)); }
+  .hero { min-height: min(760px, calc(100vh - var(--app-header-height))); }
+}
+
 @media (max-width: 780px) {
   :root { --app-header-height: 64px; }
+
   .app-header {
     grid-template-columns: auto minmax(0, 1fr) auto;
     gap: .45rem;
     padding-inline: 14px;
   }
+
   .brand > span { display: none; }
+
   .app-header .ecosystem-nav {
-    display: flex;
     justify-content: flex-start;
+    min-width: 0;
     overflow-x: auto;
     scrollbar-width: none;
   }
+
   .app-header .ecosystem-nav::-webkit-scrollbar { display: none; }
+
   .app-header .ecosystem-nav a,
   .app-header .ecosystem-nav span,
-  .sign-in { min-height: 34px; padding-inline: .55rem; font-size: .76rem; }
-  .context-nav > div { justify-content: flex-start; padding-inline: 14px; }
+  .sign-in {
+    min-height: 34px;
+    padding-inline: .55rem;
+    font-size: .76rem;
+  }
+
+  .context-nav > div {
+    justify-content: flex-start;
+    padding-inline: 14px;
+  }
 }
 
 @media (max-width: 560px) {
-  .app-header .hara-theme-toggle { min-height: 34px; padding-inline: .55rem; }
-  .app-header .hara-theme-toggle [data-hara-theme-label] { display: none; }
+  .header-actions { gap: .3rem; }
+  .sign-in { padding-inline: .5rem; }
+  .app-header .hara-theme-toggle,
+  .sign-out button {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    min-height: 34px;
+  }
 }

@@ -27,6 +27,20 @@ HARA_REGISTRY_INDEX_PATH=registry-index.json
 
 For a fully reproducible release build, set `HARA_REGISTRY_REF` to an exact 40-character commit SHA. Branch names such as `main` are resolved and pinned before Astro generates pages or Netlify bundles the API functions.
 
+## GitHub sign-in
+
+The site header starts a server-side GitHub OAuth authorization-code flow at `/auth/github`. It uses state validation, S256 PKCE, an exact callback URI, and a signed `HttpOnly` session cookie. The temporary GitHub access token is used only to read the account identity and is not retained.
+
+Required Netlify function/runtime environment variables:
+
+```text
+HARA_GITHUB_OAUTH_CLIENT_ID
+HARA_GITHUB_OAUTH_CLIENT_SECRET
+HARA_AUTH_SESSION_SECRET
+```
+
+The website session is UI authentication only. It does not enroll publishers or confer package, namespace, or registry authority. Registration URLs, testing setup, route contracts, and security details are documented in [`docs/github-oauth.md`](docs/github-oauth.md).
+
 ## Development
 
 ```sh
