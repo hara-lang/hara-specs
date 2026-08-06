@@ -43,6 +43,6 @@ test("invalid EDN is an execution error, not non-conformity", () => {
 });
 
 test("unknown project keys are rejected", () => {
-  const project = parseEdn(validProject.replace("}", " :project/unknown true}"));
+  const project = parseEdn(validProject.trim().replace(/}$/, " :project/unknown true}"));
   assert.ok(validateProjectManifest(project).some(({ rule }) => rule === "project/unknown-key"));
 });
