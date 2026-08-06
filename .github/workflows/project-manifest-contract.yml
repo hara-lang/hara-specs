@@ -1,0 +1,42 @@
+name: Project manifest contract
+
+on:
+  push:
+    branches:
+      - agent/project-edn-single-manifest
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - run: npm test
+      - run: npm run build
+      - name: Reject superseded package contracts
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          forbidden = [
+              "project.hal", "hara.extension.edn", "hara.build.edn",
+              "hara.recipe.edn", "hara.install.edn", "hara.package.json",
+              "@hara/spec-package", "@scope/name", "/api/packages/validate",
+              "packageName", "legacySlugs"
+          ]
+          bad = []
+          for p in Path('.').rglob('*'):
+              if not p.is_file() or '.git' in p.parts or 'node_modules' in p.parts or 'dist' in p.parts:
+                  continue
+              try: text = p.read_text()
+              except UnicodeDecodeError: continue
+              for token in forbidden:
+                  if token in text: bad.append(f"{p}: {token}")
+          if bad: raise SystemExit("\n".join(bad))
+          PY
