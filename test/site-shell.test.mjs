@@ -14,16 +14,51 @@ test("uses the canonical specs domain", () => {
   assert.doesNotMatch(readme, /specs\.hara-lang\.io/);
 });
 
-test("conforms to the Hara ecosystem shell", () => {
+test("publishes a dedicated maximum-resolution specifications card", () => {
+  assert.match(layout, /og-hara-specs\.jpg/);
+  assert.match(layout, /og:image:width" content="3840"/);
+  assert.match(layout, /og:image:height" content="2016"/);
+});
+
+test("keeps the Hara brand and actions at the edges with ecosystem links centred", () => {
   assert.match(layout, /Benchmarks[\s\S]*Docs[\s\S]*aria-current="page" aria-disabled="true">Specs/);
   assert.doesNotMatch(layout, />Source<\/a>/);
+  assert.match(shell, /grid-template-columns: minmax\(0, 1fr\) auto minmax\(0, 1fr\)/);
+  assert.match(shell, /\.app-header \.brand \{ justify-self: start; \}/);
+  assert.match(shell, /\.header-actions[\s\S]*justify-self: end/);
+  assert.match(shell, /\.app-header \.ecosystem-nav[\s\S]*justify-self: center/);
+});
+
+test("places specifications navigation in a fixed right rail on desktop", () => {
   assert.match(layout, /class="context-nav"/);
   assert.match(layout, /Overview[\s\S]*Registry[\s\S]*Check[\s\S]*Publish[\s\S]*API/);
   assert.match(layout, /href="\/developers"/);
-  assert.match(shell, /grid-template-columns: 1fr auto 1fr/);
+  assert.match(shell, /@media \(min-width: 981px\)/);
+  assert.match(shell, /\.context-nav[\s\S]*position: fixed[\s\S]*right: 0[\s\S]*bottom: 0/);
+  assert.match(shell, /\.context-nav > div[\s\S]*flex-direction: column/);
+  assert.match(shell, /main,[\s\S]*\.app-footer[\s\S]*margin-right: var\(--app-context-width\)/);
 });
 
-test("includes a sign-in button without coupling to an identity implementation", () => {
-  assert.ok(layout.includes('href="https://id.hara-lang.org/">Sign in</a>'));
-  assert.doesNotMatch(layout, /api\/session|auth\/github|return_to/);
+test("uses the central Hara GitHub identity instead of a local OAuth session", () => {
+  assert.match(layout, /data-hara-identity/);
+  assert.match(layout, /https:\/\/id\.hara-lang\.org/);
+  assert.match(layout, /https:\/\/id\.testing\.hara-lang\.org/);
+  assert.match(layout, /identity-client\.js/);
+  assert.doesNotMatch(layout, /\/auth\/github\?return_to=/);
+  assert.doesNotMatch(layout, /fetch\("\/api\/auth\/session"/);
+  assert.doesNotMatch(layout, /action="\/auth\/logout"/);
+  assert.match(readme, /shared GitHub identity/);
+});
+
+test("uses icons only for system, light, and dark theme states", () => {
+  assert.match(layout, /const themeIcons = \{[\s\S]*system:[\s\S]*light:[\s\S]*dark:/);
+  assert.match(layout, /data-hara-theme-icon/);
+  assert.match(shell, /\.app-header \.hara-theme-toggle \[data-hara-theme-label\][\s\S]*position: absolute/);
+  assert.match(shell, /\.app-header \.hara-theme-toggle \[data-hara-theme-icon\] svg/);
+});
+
+test("identifies Greenways stewardship and the repository licence", () => {
+  assert.match(layout, /A Greenways Open Source Project/);
+  assert.match(layout, /opensource\.greenways\.ai\/open-source/);
+  assert.match(layout, /hara-specs\/blob\/main\/LICENSE">Apache-2\.0/);
 });

@@ -12,12 +12,14 @@ const {
   canonicalPath = Astro.url.pathname
 } = Astro.props;
 const canonical = new URL(canonicalPath, Astro.site);
+const socialImage = new URL("/og-hara-specs.jpg", Astro.site);
 const activePath = Astro.url.pathname;
 const localNav = [
   ["/", "Overview"],
   ["/registry", "Registry"],
   ["/check", "Check"],
-  ["/publish", "Publish"]
+  ["/publish", "Publish"],
+  ["/developers", "API"]
 ];
 ---
 <!doctype html>
@@ -27,6 +29,22 @@ const localNav = [
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#080a0d" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hara Specifications" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:secure_url" content={socialImage} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="3840" />
+    <meta property="og:image:height" content="2016" />
+    <meta property="og:image:alt" content="Hara Specifications — executable standards" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content="Hara Specifications — executable standards" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
@@ -44,7 +62,7 @@ const localNav = [
         <span aria-current="page" aria-disabled="true">Specs</span>
       </nav>
       <div class="header-actions">
-        <a class="sign-in" href="https://id.hara-lang.org/">Sign in</a>
+        <div data-hara-identity></div>
         <ThemeToggle label="Change colour theme" />
       </div>
     </header>
@@ -53,7 +71,6 @@ const localNav = [
         {localNav.map(([href, label]) => (
           <a href={href} aria-current={activePath === href || (href !== "/" && activePath.startsWith(href)) ? "page" : undefined}>{label}</a>
         ))}
-        <a href="/developers" aria-current={activePath.startsWith("/developers") ? "page" : undefined}>API</a>
       </div>
     </nav>
     <main id="content">
@@ -65,6 +82,8 @@ const localNav = [
         <span>Executable standards for the Hara ecosystem.</span>
       </div>
       <div class="footer-links">
+        <a href="https://opensource.greenways.ai/open-source/">A Greenways Open Source Project</a>
+        <a href="https://github.com/hara-lang/hara-specs/blob/main/LICENSE">Apache-2.0</a>
         <a href="https://github.com/hara-lang/hara-specs">Service source</a>
         <a href="https://github.com/hara-lang/hara-specs-registry">Registry source</a>
         <a href="/developers">API</a>
@@ -73,7 +92,50 @@ const localNav = [
       </div>
     </footer>
     <script>
-      import "@hara-lang/visual-language/theme.js";
+      import { getThemePreference } from "@hara-lang/visual-language/theme.js";
+
+      const themeIcons = {
+        system: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>',
+        light: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>',
+        dark: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.5 8.5 0 1 0 20.2 15.4Z"></path></svg>'
+      };
+      const themeOrder = ["system", "light", "dark"];
+
+      const syncThemeIcon = () => {
+        const preference = getThemePreference();
+        const next = themeOrder[(themeOrder.indexOf(preference) + 1) % themeOrder.length];
+        document.querySelectorAll("[data-hara-theme-toggle]").forEach((button) => {
+          const icon = button.querySelector("[data-hara-theme-icon]");
+          if (icon) icon.innerHTML = themeIcons[preference] || themeIcons.system;
+          const currentLabel = preference.replace(/^./, (value) => value.toUpperCase());
+          const nextLabel = next.replace(/^./, (value) => value.toUpperCase());
+          button.setAttribute("aria-label", `${currentLabel} theme. Switch to ${nextLabel}.`);
+          button.setAttribute("title", `${currentLabel} theme`);
+        });
+      };
+
+      const loadIdentityClient = () => {
+        if (document.querySelector("script[data-hara-identity-client]")) return;
+        const testing = location.hostname === "specs.testing.hara-lang.org"
+          || location.hostname.endsWith(".testing.hara-lang.org");
+        const identityOrigin = testing
+          ? "https://id.testing.hara-lang.org"
+          : "https://id.hara-lang.org";
+        const script = document.createElement("script");
+        script.src = `${identityOrigin}/identity-client.js`;
+        script.defer = true;
+        script.dataset.haraIdentityClient = "";
+        document.head.append(script);
+      };
+
+      const initialiseShell = () => {
+        syncThemeIcon();
+        loadIdentityClient();
+      };
+
+      document.addEventListener("astro:page-load", initialiseShell);
+      addEventListener("hara:theme-change", syncThemeIcon);
+      initialiseShell();
     </script>
   </body>
 </html>
