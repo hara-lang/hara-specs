@@ -23,9 +23,13 @@
   min-width: 0;
 }
 
+.header-actions > [data-hara-identity] {
+  display: inline-flex;
+  align-items: center;
+}
+
 .app-header .ecosystem-nav a,
-.app-header .ecosystem-nav span,
-.sign-in {
+.app-header .ecosystem-nav span {
   display: inline-flex;
   align-items: center;
   min-height: 36px;
@@ -38,8 +42,7 @@
   white-space: nowrap;
 }
 
-.app-header .ecosystem-nav a:hover,
-.sign-in:hover {
+.app-header .ecosystem-nav a:hover {
   color: var(--hara-text);
   background: var(--hara-surface-raised);
 }
@@ -50,26 +53,6 @@
   cursor: default;
 }
 
-.sign-in {
-  gap: .45rem;
-  color: var(--hara-text);
-  background: var(--hara-surface);
-  border: 1px solid var(--hara-line);
-}
-
-.sign-in.is-authenticated {
-  color: var(--hara-text);
-  background: transparent;
-}
-
-.github-mark {
-  width: 17px;
-  height: 17px;
-  flex: none;
-}
-
-.sign-out { margin: 0; }
-.sign-out button,
 .app-header .hara-theme-toggle {
   position: relative;
   display: inline-grid;
@@ -86,14 +69,12 @@
   cursor: pointer;
 }
 
-.sign-out button:hover,
 .app-header .hara-theme-toggle:hover {
   color: var(--hara-text);
   background: var(--hara-surface-raised);
   border-color: var(--hara-line-strong);
 }
 
-.sign-out svg,
 .app-header .hara-theme-toggle [data-hara-theme-icon] svg {
   width: 17px;
   height: 17px;
@@ -246,8 +227,7 @@ main { min-height: calc(100vh - var(--app-header-height) - var(--app-context-hei
   .app-header .ecosystem-nav::-webkit-scrollbar { display: none; }
 
   .app-header .ecosystem-nav a,
-  .app-header .ecosystem-nav span,
-  .sign-in {
+  .app-header .ecosystem-nav span {
     min-height: 34px;
     padding-inline: .55rem;
     font-size: .76rem;
@@ -261,9 +241,7 @@ main { min-height: calc(100vh - var(--app-header-height) - var(--app-context-hei
 
 @media (max-width: 560px) {
   .header-actions { gap: .3rem; }
-  .sign-in { padding-inline: .5rem; }
-  .app-header .hara-theme-toggle,
-  .sign-out button {
+  .app-header .hara-theme-toggle {
     width: 34px;
     min-width: 34px;
     height: 34px;

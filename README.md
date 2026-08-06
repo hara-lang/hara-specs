@@ -27,19 +27,18 @@ HARA_REGISTRY_INDEX_PATH=registry-index.json
 
 For a fully reproducible release build, set `HARA_REGISTRY_REF` to an exact 40-character commit SHA. Branch names such as `main` are resolved and pinned before Astro generates pages or Netlify bundles the API functions.
 
-## GitHub sign-in
+## Shared GitHub identity
 
-The site header starts a server-side GitHub OAuth authorization-code flow at `/auth/github`. It uses state validation, S256 PKCE, an exact callback URI, and a signed `HttpOnly` session cookie. The temporary GitHub access token is used only to read the account identity and is not retained.
+The Specs header uses the shared GitHub identity issued by `id.hara-lang.org`; Specs does not run an independent OAuth client, retain a provider token, or sign a separate browser session. The common browser client reads the host-only identity session through a credentialed exact-origin request and presents the same stable GitHub account on www, Specs, Packages, and Identity.
 
-Required Netlify function/runtime environment variables:
+OAuth credentials and the session-signing secret are configured only on the Identity deployment. They must not be added to the Specs environment. Production and testing use the corresponding identity issuers:
 
 ```text
-HARA_GITHUB_OAUTH_CLIENT_ID
-HARA_GITHUB_OAUTH_CLIENT_SECRET
-HARA_AUTH_SESSION_SECRET
+https://id.hara-lang.org
+https://id.testing.hara-lang.org
 ```
 
-The website session is UI authentication only. It does not enroll publishers or confer package, namespace, or registry authority. Registration URLs, testing setup, route contracts, and security details are documented in [`docs/github-oauth.md`](docs/github-oauth.md).
+The website session is UI authentication only. It does not enroll publishers or confer package, namespace, or registry authority. The relying-site boundary is documented in [`docs/shared-github-identity.md`](docs/shared-github-identity.md).
 
 ## Development
 
