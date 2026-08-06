@@ -39,12 +39,15 @@ test("places specifications navigation in a fixed right rail on desktop", () => 
   assert.match(shell, /main,[\s\S]*\.app-footer[\s\S]*margin-right: var\(--app-context-width\)/);
 });
 
-test("starts a local GitHub OAuth flow and reflects the signed session", () => {
-  assert.match(layout, /\/auth\/github\?return_to=/);
-  assert.match(layout, /fetch\("\/api\/auth\/session"/);
-  assert.match(layout, /action="\/auth\/logout"/);
-  assert.match(layout, /aria-label="Sign in with GitHub"/);
-  assert.doesNotMatch(layout, /href="https:\/\/id\.hara-lang\.org\/">Sign in/);
+test("uses the central Hara GitHub identity instead of a local OAuth session", () => {
+  assert.match(layout, /data-hara-identity/);
+  assert.match(layout, /https:\/\/id\.hara-lang\.org/);
+  assert.match(layout, /https:\/\/id\.testing\.hara-lang\.org/);
+  assert.match(layout, /identity-client\.js/);
+  assert.doesNotMatch(layout, /\/auth\/github\?return_to=/);
+  assert.doesNotMatch(layout, /fetch\("\/api\/auth\/session"/);
+  assert.doesNotMatch(layout, /action="\/auth\/logout"/);
+  assert.match(readme, /shared GitHub identity/);
 });
 
 test("uses icons only for system, light, and dark theme states", () => {

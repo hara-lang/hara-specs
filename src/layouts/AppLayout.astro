@@ -14,8 +14,6 @@ const {
 const canonical = new URL(canonicalPath, Astro.site);
 const socialImage = new URL("/og-hara-specs.jpg", Astro.site);
 const activePath = Astro.url.pathname;
-const returnTo = `${Astro.url.pathname}${Astro.url.search}`;
-const signInHref = `/auth/github?return_to=${encodeURIComponent(returnTo)}`;
 const localNav = [
   ["/", "Overview"],
   ["/registry", "Registry"],
@@ -64,20 +62,7 @@ const localNav = [
         <span aria-current="page" aria-disabled="true">Specs</span>
       </nav>
       <div class="header-actions">
-        <a class="sign-in" href={signInHref} data-auth-link aria-label="Sign in with GitHub">
-          <svg class="github-mark" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="currentColor" d="M12 .75a11.25 11.25 0 0 0-3.56 21.92c.56.1.77-.24.77-.54v-2.1c-3.13.68-3.79-1.33-3.79-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.5-.28-5.13-1.25-5.13-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.15a10.7 10.7 0 0 1 5.64 0c2.15-1.46 3.1-1.15 3.1-1.15.61 1.55.23 2.7.11 2.98.72.79 1.16 1.79 1.16 3.02 0 4.32-2.64 5.27-5.15 5.55.4.35.76 1.04.76 2.1v3.11c0 .3.21.65.78.54A11.25 11.25 0 0 0 12 .75Z" />
-          </svg>
-          <span data-auth-label>Sign in</span>
-        </a>
-        <form class="sign-out" action="/auth/logout" method="post" data-auth-logout hidden>
-          <input type="hidden" name="return_to" value={returnTo} />
-          <button type="submit" aria-label="Sign out" title="Sign out">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M10 5H6.5A2.5 2.5 0 0 0 4 7.5v9A2.5 2.5 0 0 0 6.5 19H10M14 8l4 4-4 4M18 12H9" />
-            </svg>
-          </button>
-        </form>
+        <div data-hara-identity></div>
         <ThemeToggle label="Change colour theme" />
       </div>
     </header>
@@ -129,33 +114,23 @@ const localNav = [
         });
       };
 
-      const syncSession = async () => {
-        const authLink = document.querySelector("[data-auth-link]");
-        const authLabel = authLink?.querySelector("[data-auth-label]");
-        const logout = document.querySelector("[data-auth-logout]");
-        if (!(authLink instanceof HTMLAnchorElement) || !authLabel) return;
-
-        try {
-          const response = await fetch("/api/auth/session", {
-            credentials: "same-origin",
-            cache: "no-store",
-            headers: { Accept: "application/json" }
-          });
-          if (!response.ok) return;
-          const session = await response.json();
-          if (!session?.authenticated || !session?.user?.login) return;
-
-          authLabel.textContent = `@${session.user.login}`;
-          authLink.href = session.user.profileUrl || `https://github.com/${encodeURIComponent(session.user.login)}`;
-          authLink.classList.add("is-authenticated");
-          authLink.setAttribute("aria-label", `Signed in as ${session.user.login} on GitHub`);
-          if (logout instanceof HTMLFormElement) logout.hidden = false;
-        } catch {}
+      const loadIdentityClient = () => {
+        if (document.querySelector("script[data-hara-identity-client]")) return;
+        const testing = location.hostname === "specs.testing.hara-lang.org"
+          || location.hostname.endsWith(".testing.hara-lang.org");
+        const identityOrigin = testing
+          ? "https://id.testing.hara-lang.org"
+          : "https://id.hara-lang.org";
+        const script = document.createElement("script");
+        script.src = `${identityOrigin}/identity-client.js`;
+        script.defer = true;
+        script.dataset.haraIdentityClient = "";
+        document.head.append(script);
       };
 
       const initialiseShell = () => {
         syncThemeIcon();
-        syncSession();
+        loadIdentityClient();
       };
 
       document.addEventListener("astro:page-load", initialiseShell);
