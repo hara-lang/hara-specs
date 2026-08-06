@@ -25,10 +25,10 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           forbidden = [
-              "project.hal", "hara.extension.edn", "hara.build.edn",
-              "hara.recipe.edn", "hara.install.edn", "hara.package.json",
-              "@hara/spec-package", "@scope/name", "/api/packages/validate",
-              "packageName", "legacySlugs"
+              "project" + ".hal", "hara" + ".extension.edn", "hara" + ".build.edn",
+              "hara" + ".recipe.edn", "hara" + ".install.edn", "hara" + ".package.json",
+              "@hara/" + "spec-package", "@scope/" + "name", "/api/packages/" + "validate",
+              "package" + "Name", "legacy" + "Slugs"
           ]
           bad = []
           for p in Path('.').rglob('*'):
