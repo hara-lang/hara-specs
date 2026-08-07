@@ -1,54 +1,46 @@
 ---
 import AppLayout from "../layouts/AppLayout.astro";
 ---
-<AppLayout title="Publish a specification — Hara Specs" description="Prepare and validate a versioned Hara specification package for publication.">
+<AppLayout title="Publish a specification — Hara Specs" description="Prepare and validate a versioned Hara project declaration for specification publication.">
   <section class="page-heading section-shell">
-    <p class="hara-kicker">Package publishing</p>
+    <p class="hara-kicker">Project publishing</p>
     <h1>Prepare a specification release.</h1>
-    <p>Specification packages use the same namespace, version, dependency, fixture, and signature model as Hara packages. This first surface validates the release manifest and produces a portable submission bundle.</p>
+    <p>Specifications and packages use <code>project.edn</code> as their contributor-authored declaration. This surface validates the project coordinate, version, paths, capabilities, dependencies, and package options before a signed registry submission is prepared.</p>
   </section>
 
   <section class="publish-grid section-shell">
     <form class="publisher-form hara-surface" data-publish-form>
       <div class="form-row two-column">
-        <label><span>Package name</span><input name="name" value="@greenways/invoice-au" required /></label>
+        <label><span>Project coordinate</span><input name="coordinate" value="greenways/invoice-au" required /></label>
         <label><span>Version</span><input name="version" value="1.0.0" required /></label>
       </div>
       <div class="form-row two-column">
-        <label>
-          <span>Package kind</span>
-          <select name="kind">
-            <option value="hara/spec">hara/spec</option>
-            <option value="hara/profile">hara/profile</option>
-            <option value="hara/rules">hara/rules</option>
-            <option value="hara/adapter">hara/adapter</option>
-            <option value="hara/dataset">hara/dataset</option>
-          </select>
-        </label>
-        <label><span>Entry point</span><input name="entry" value="spec/main.hal" required /></label>
+        <label><span>Main file</span><input name="main" value="spec/main.hal" required /></label>
+        <label><span>Licence</span><input name="license" value="Apache-2.0" required /></label>
       </div>
-      <label><span>Accepted media types</span><input name="accepts" value="application/json, application/pdf" /></label>
+      <div class="form-row three-column">
+        <label><span>Source paths</span><input name="sourcePaths" value="spec" required /></label>
+        <label><span>Test paths</span><input name="testPaths" value="test" required /></label>
+        <label><span>Extension paths</span><input name="extensionPaths" value="extensions" required /></label>
+      </div>
+      <label><span>Capabilities</span><input name="capabilities" placeholder="document/read, fixture/read" /></label>
       <label><span>Description</span><textarea name="description" rows="3">Australian invoice conformance profile.</textarea></label>
-      <div class="form-row two-column">
-        <label><span>Licence</span><input name="license" value="Apache-2.0" /></label>
-        <label><span>Capabilities</span><input name="capabilities" placeholder="document/read" /></label>
-      </div>
       <label class="file-drop compact">
-        <input type="file" multiple data-package-files />
+        <input type="file" multiple data-project-files />
         <span><strong>Add source, fixtures, and normative documents</strong><small>Files are inventoried locally; they are not uploaded by this prototype.</small></span>
       </label>
-      <div class="file-inventory" data-file-inventory>No package files selected.</div>
+      <div class="file-inventory" data-file-inventory>No project files selected.</div>
       <div class="form-actions">
-        <button class="button button-primary" type="submit">Validate release</button>
-        <button class="button" type="button" data-download-manifest>Download manifest</button>
+        <button class="button button-primary" type="submit">Validate project</button>
+        <button class="button" type="button" data-download-project>Download project.edn</button>
       </div>
     </form>
 
     <aside class="publisher-preview hara-surface">
-      <div class="preview-heading"><div><p class="hara-kicker">Release preview</p><h2>hara.package.json</h2></div><span data-package-state>Not validated</span></div>
-      <pre><code data-manifest-preview></code></pre>
+      <div class="preview-heading"><div><p class="hara-kicker">Project preview</p><h2>project.edn</h2></div><span data-project-state>Not validated</span></div>
+      <pre><code data-project-preview></code></pre>
       <div class="validation-results" data-validation-results>
-        Complete the manifest and validate it against the registry package contract.
+        Complete the project declaration and validate it against the Hara project contract.
       </div>
       <div class="publishing-gate">
         <strong>Registry submission transport</strong>
@@ -59,46 +51,81 @@ import AppLayout from "../layouts/AppLayout.astro";
   </section>
 
   <script>
-    import { validatePackageManifest } from "../lib/checker.mjs";
-    const form = document.querySelector("[data-publish-form]");
-    const preview = document.querySelector("[data-manifest-preview]");
-    const results = document.querySelector("[data-validation-results]");
-    const state = document.querySelector("[data-package-state]");
-    const files = document.querySelector("[data-package-files]");
-    const inventory = document.querySelector("[data-file-inventory]");
-    const download = document.querySelector("[data-download-manifest]");
-    let currentManifest = {};
+    import { validateProjectManifest } from "../lib/checker.mjs";
 
-    const buildManifest = () => {
+    const form = document.querySelector("[data-publish-form]");
+    const preview = document.querySelector("[data-project-preview]");
+    const results = document.querySelector("[data-validation-results]");
+    const state = document.querySelector("[data-project-state]");
+    const files = document.querySelector("[data-project-files]");
+    const inventory = document.querySelector("[data-file-inventory]");
+    const download = document.querySelector("[data-download-project]");
+    let currentProject = {};
+    let currentSource = "";
+
+    const commaValues = (value) => String(value || "")
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+
+    const pathValues = (value) => commaValues(value);
+    const keywordValues = (value) => commaValues(value)
+      .map((entry) => `:${entry.replace(/^:/, "")}`);
+
+    const buildProject = () => {
       if (!(form instanceof HTMLFormElement)) return {};
       const data = new FormData(form);
       return {
-        name: String(data.get("name") || ""),
-        version: String(data.get("version") || ""),
-        kind: String(data.get("kind") || ""),
-        entry: String(data.get("entry") || ""),
-        accepts: String(data.get("accepts") || "").split(",").map((value) => value.trim()).filter(Boolean),
-        description: String(data.get("description") || ""),
-        license: String(data.get("license") || ""),
-        capabilities: String(data.get("capabilities") || "").split(",").map((value) => value.trim()).filter(Boolean),
-        profiles: ["core"],
-        dependencies: {}
+        "hara/type": ":project",
+        "hara/version": "1.0.0",
+        "project/id": String(data.get("coordinate") || ""),
+        "project/version": String(data.get("version") || ""),
+        "project/source-paths": pathValues(data.get("sourcePaths")),
+        "project/test-paths": pathValues(data.get("testPaths")),
+        "project/extension-paths": pathValues(data.get("extensionPaths")),
+        "project/capabilities": keywordValues(data.get("capabilities")),
+        "project/main": String(data.get("main") || ""),
+        "project/dependencies": {},
+        "project/package": {
+          license: String(data.get("license") || ""),
+          description: String(data.get("description") || "")
+        }
       };
     };
 
+    const quoted = (value) => JSON.stringify(String(value));
+    const stringVector = (values) => `[${values.map(quoted).join(" ")}]`;
+    const keywordSet = (values) => `#{${values.join(" ")}}`;
+
+    const renderEdn = (project) => [
+      "{:hara/type :project",
+      ` :hara/version ${quoted(project["hara/version"])}`,
+      ` :project/id ${project["project/id"] || "missing/project"}`,
+      ` :project/version ${quoted(project["project/version"])}`,
+      ` :project/source-paths ${stringVector(project["project/source-paths"] || [])}`,
+      ` :project/test-paths ${stringVector(project["project/test-paths"] || [])}`,
+      ` :project/extension-paths ${stringVector(project["project/extension-paths"] || [])}`,
+      ` :project/capabilities ${keywordSet(project["project/capabilities"] || [])}`,
+      ` :project/main ${quoted(project["project/main"])}`,
+      " :project/dependencies {}",
+      ` :project/package {:license ${quoted(project["project/package"]?.license || "")}`,
+      `                   :description ${quoted(project["project/package"]?.description || "")}}}`
+    ].join("\n");
+
     const renderPreview = () => {
-      currentManifest = buildManifest();
-      if (preview) preview.textContent = JSON.stringify(currentManifest, null, 2);
+      currentProject = buildProject();
+      currentSource = `${renderEdn(currentProject)}\n`;
+      if (preview) preview.textContent = currentSource;
     };
 
     form?.addEventListener("input", renderPreview);
-    form?.addEventListener("submit", async (event) => {
+    form?.addEventListener("submit", (event) => {
       event.preventDefault();
       renderPreview();
-      const findings = validatePackageManifest(currentManifest);
+      const findings = validateProjectManifest(currentProject);
       const errors = findings.filter(({ severity }) => severity === "error");
       if (state) {
-        state.textContent = errors.length ? `${errors.length} blocking error${errors.length === 1 ? "" : "s"}` : "Ready to package";
+        state.textContent = errors.length ? `${errors.length} blocking error${errors.length === 1 ? "" : "s"}` : "Ready to submit";
         state.className = errors.length ? "state-error" : "state-ready";
       }
       if (results instanceof HTMLElement) {
@@ -106,7 +133,7 @@ import AppLayout from "../layouts/AppLayout.astro";
         if (!findings.length) {
           const success = document.createElement("p");
           success.className = "validation-success";
-          success.textContent = "YES — the release manifest conforms to the registry package contract.";
+          success.textContent = "YES — project.edn conforms to the Hara project contract.";
           results.append(success);
         } else {
           findings.forEach((finding) => {
@@ -126,16 +153,18 @@ import AppLayout from "../layouts/AppLayout.astro";
     files?.addEventListener("change", () => {
       if (!(files instanceof HTMLInputElement) || !(inventory instanceof HTMLElement)) return;
       const selected = [...(files.files || [])];
-      inventory.textContent = selected.length ? selected.map((file) => `${file.name} · ${file.size.toLocaleString()} bytes`).join("\n") : "No package files selected.";
+      inventory.textContent = selected.length
+        ? selected.map((file) => `${file.name} · ${file.size.toLocaleString()} bytes`).join("\n")
+        : "No project files selected.";
     });
 
     download?.addEventListener("click", () => {
       renderPreview();
-      const blob = new Blob([`${JSON.stringify(currentManifest, null, 2)}\n`], { type: "application/json" });
+      const blob = new Blob([currentSource], { type: "application/edn" });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = "hara.package.json";
+      anchor.download = "project.edn";
       anchor.click();
       URL.revokeObjectURL(url);
     });

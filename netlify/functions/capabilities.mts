@@ -21,15 +21,17 @@ export default async (request: Request, context = {}) => {
       checks: {
         browser: true,
         server: true,
-        mediaTypes: ["application/json"],
+        mediaTypes: ["application/edn", "text/edn"],
         executableSpecifications: [
-          { ref: "@hara/spec-package@0.1.0", profiles: ["core"], engine: "hara-reference-checker" }
+          { ref: "hara/package@0.1.0", profiles: ["core"], engine: "hara-reference-checker" }
         ],
         resultStates: ["yes", "no", "execution-error"]
       },
       packages: {
         validation: true,
-        kinds: ["hara/spec", "hara/profile", "hara/rules", "hara/adapter", "hara/dataset"],
+        input: "project.edn",
+        mediaTypes: ["application/edn", "text/edn"],
+        generatedOutputs: ["project.lock.edn", "package.edn"],
         canonicalWrites: false
       },
       publishing: {
@@ -51,6 +53,7 @@ export default async (request: Request, context = {}) => {
       },
       limits: {
         requestBodyBytes: 1_000_000,
+        projectBodyBytes: 256_000,
         defaultPageSize: registryApiLimits.defaultPageSize,
         maximumPageSize: registryApiLimits.maximumPageSize,
         maximumSourceBytes: registryApiLimits.maximumSourceBytes
@@ -61,7 +64,7 @@ export default async (request: Request, context = {}) => {
       self: request.url,
       specifications: absoluteApiUrl(request, "/api/v1/specs"),
       checks: absoluteApiUrl(request, "/api/v1/checks"),
-      packageValidation: absoluteApiUrl(request, "/api/v1/packages/validate"),
+      projectValidation: absoluteApiUrl(request, "/api/v1/packages/validate"),
       openapi: absoluteApiUrl(request, "/api/openapi.json")
     }
   }, {

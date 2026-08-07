@@ -53,7 +53,7 @@ jobs:
             -f body="Pages fallback deployment started: run $GITHUB_RUN_ID." > /dev/null
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'pull_request' && github.ref || 'main' }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24

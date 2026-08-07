@@ -15,7 +15,7 @@ const registryRef = registry.source.ref.slice(0, 12);
     </div>
     <div class="command" aria-label="API discovery example">
       <span aria-hidden="true">$</span>
-      <code>curl https://specs.hara-lang.io/api/v1/specs?executable=true&amp;limit=20</code>
+      <code>curl https://specs.hara-lang.org/api/v1/specs?executable=true&amp;limit=20</code>
     </div>
   </section>
 
@@ -56,9 +56,9 @@ const registryRef = registry.source.ref.slice(0, 12);
       <h2>Use the same result contract as the browser.</h2>
       <dl class="detail-list">
         <div><dt>Document check</dt><dd><code>POST /api/v1/checks</code></dd></div>
-        <div><dt>Package manifest</dt><dd><code>POST /api/v1/packages/validate</code></dd></div>
-        <div><dt>Request type</dt><dd><code>application/json</code></dd></div>
-        <div><dt>Payload limit</dt><dd>1 MB for document checks</dd></div>
+        <div><dt>Project validation</dt><dd><code>POST /api/v1/packages/validate</code></dd></div>
+        <div><dt>Project request type</dt><dd><code>application/edn</code></dd></div>
+        <div><dt>Project payload limit</dt><dd>256 KB</dd></div>
       </dl>
     </article>
 
@@ -73,13 +73,13 @@ const registryRef = registry.source.ref.slice(0, 12);
   <section class="section-shell source-panel">
     <div>
       <p class="hara-kicker">Compatibility</p>
-      <h2>Existing integrations continue to work.</h2>
-      <p>The original endpoints remain available and return a successor-version link. New integrations should use the version-one resources.</p>
+      <h2>Read and check integrations continue to work.</h2>
+      <p>The original registry and document-check aliases remain available and return a successor-version link. New integrations and all project validation should use the version-one resources.</p>
     </div>
     <div class="source-links">
       <a href="/api/registry"><span>Legacy registry</span><code>GET /api/registry</code></a>
       <a href="/api/check"><span>Legacy checker</span><code>POST /api/check</code></a>
-      <a href="/api/packages/validate"><span>Legacy package validation</span><code>POST /api/packages/validate</code></a>
+      <a href="/publish"><span>Project authoring</span><code>project.edn</code></a>
     </div>
   </section>
 </AppLayout>

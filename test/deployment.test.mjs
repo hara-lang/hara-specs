@@ -3,6 +3,8 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const workflow = await readFile(new URL("../.github/workflows/pages-specs.yml", import.meta.url), "utf8");
+const fallback = await readFile(new URL("../.github/workflows/pages-fallback.yml", import.meta.url), "utf8");
+const projectContract = await readFile(new URL("../.github/workflows/project-manifest-contract.yml", import.meta.url), "utf8");
 
 test("builds the Astro service before deploying Netlify output", () => {
   assert.match(workflow, /node-version: 24/);
@@ -30,4 +32,20 @@ test("publishes production before non-blocking domain correction", () => {
   assert.match(workflow, /"custom_domain":"specs\.hara-lang\.org"/);
   assert.match(workflow, /"force_ssl":true/);
   assert.doesNotMatch(workflow, /specs\.hara-long\.org/);
+});
+
+test("builds pull-request Pages fallbacks from the proposed merge result", () => {
+  assert.match(fallback, /github\.event_name == 'pull_request'/);
+  assert.match(fallback, /github\.ref/);
+  assert.match(fallback, /\|\| 'main'/);
+  assert.doesNotMatch(fallback, /github\.event\.pull_request\.head\.sha/);
+  assert.doesNotMatch(fallback, /with:\s*\n\s*ref: main/);
+});
+
+test("guards project authoring sources without scanning generated registry snapshots", () => {
+  assert.match(projectContract, /branches: \[main, production\]/);
+  assert.match(projectContract, /src\/generated\//);
+  assert.match(projectContract, /public\/registry\//);
+  assert.match(projectContract, /deprecated_tokens/);
+  assert.match(projectContract, /Reject superseded project authoring contracts/);
 });
