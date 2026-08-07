@@ -34,12 +34,29 @@ jobs:
       - name: Build the specifications service
         run: npm run build
 
+      - name: Verify built shared identity shell
+        run: |
+          grep -Fq 'data-hara-identity' dist/index.html
+          grep -Fq 'data-hara-identity-fallback' dist/index.html
+          grep -Fq '/v1/identity-client.js' dist/index.html
+          if grep -R -E 'HARA_GITHUB_OAUTH_CLIENT_SECRET|HARA_AUTH_SESSION_SECRET|/auth/github/callback' dist; then
+            echo 'The Specs artifact must not contain Identity secrets or a local OAuth callback.' >&2
+            exit 1
+          fi
+
       - name: Deploy main to specs.testing.hara-lang.org
         if: github.ref_name == 'main'
         run: npx --yes netlify-cli deploy --prod --dir dist --message "main ${GITHUB_SHA}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTING_SITE_ID }}
+
+      - name: Verify testing shared identity
+        if: github.ref_name == 'main'
+        run: bash .github/scripts/verify-shared-identity.sh
+        env:
+          HARA_SITE_ORIGIN: https://specs.testing.hara-lang.org
+          HARA_IDENTITY_ORIGIN: https://id.testing.hara-lang.org
 
       - name: Deploy production to specs.hara-lang.org
         if: github.ref_name == 'production'
@@ -61,3 +78,10 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
+
+      - name: Verify production shared identity
+        if: github.ref_name == 'production'
+        run: bash .github/scripts/verify-shared-identity.sh
+        env:
+          HARA_SITE_ORIGIN: https://specs.hara-lang.org
+          HARA_IDENTITY_ORIGIN: https://id.hara-lang.org
