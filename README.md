@@ -80,11 +80,13 @@ POST /api/v1/checks
 POST /api/v1/packages/validate
 ```
 
+The project validator accepts the contributor-authored `project.edn` document as `application/edn`; it does not introduce a second package manifest representation.
+
 Specification listing supports filters, stable sorting, cursor pagination, `HEAD`, and conditional requests with `ETag`. Source and documentation endpoints either proxy bytes from the exact pinned revision or return an immutable `307` redirect with `?redirect=true`.
 
 The service does not enable wildcard cross-origin access by default. A deployment that needs browser clients on other origins must define and review an explicit origin policy rather than inheriting an unconditional `*` rule.
 
-The original `/api/registry`, `/api/check`, and `/api/packages/validate` routes remain compatible and advertise their version-one successors. See [`docs/api.md`](docs/api.md) for request and response examples.
+The original registry and document-check aliases remain compatible and advertise their version-one successors. New project validation uses only the versioned endpoint. See [`docs/api.md`](docs/api.md) for request and response examples.
 
 ## Product surfaces
 
@@ -92,7 +94,7 @@ The original `/api/registry`, `/api/check`, and `/api/packages/validate` routes 
 - Versioned, discoverable HTTP API with OpenAPI 3.1
 - Browser-side and server-side document checking
 - Explicit `yes`, `no`, and `execution-error` outcomes
-- Package manifest authoring and validation
+- `project.edn` authoring and validation
 - Exact source and documentation retrieval
 - Future path-scoped, signed pull-request publishing to the registry
 
