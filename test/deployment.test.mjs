@@ -34,10 +34,11 @@ test("publishes production before non-blocking domain correction", () => {
   assert.doesNotMatch(workflow, /specs\.hara-long\.org/);
 });
 
-test("builds pull-request Pages fallbacks from the proposed commit", () => {
+test("builds pull-request Pages fallbacks from the proposed merge result", () => {
   assert.match(fallback, /github\.event_name == 'pull_request'/);
-  assert.match(fallback, /github\.event\.pull_request\.head\.sha/);
+  assert.match(fallback, /github\.ref/);
   assert.match(fallback, /\|\| 'main'/);
+  assert.doesNotMatch(fallback, /github\.event\.pull_request\.head\.sha/);
   assert.doesNotMatch(fallback, /with:\s*\n\s*ref: main/);
 });
 
