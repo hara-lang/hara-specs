@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Deployed relying-party probe for the shared Hara identity contract v1.
 set -euo pipefail
 
 : "${HARA_SITE_ORIGIN:?HARA_SITE_ORIGIN is required}"
