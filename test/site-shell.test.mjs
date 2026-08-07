@@ -6,6 +6,8 @@ const layout = await readFile(new URL("../src/layouts/AppLayout.astro", import.m
 const shell = await readFile(new URL("../src/styles/shell.css", import.meta.url), "utf8");
 const config = await readFile(new URL("../astro.config.mjs", import.meta.url), "utf8");
 const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
+const verifier = await readFile(new URL("../.github/scripts/verify-shared-identity.sh", import.meta.url), "utf8");
+const workflow = await readFile(new URL("../.github/workflows/pages-specs.yml", import.meta.url), "utf8");
 
 test("uses the canonical specs domain", () => {
   assert.match(config, /https:\/\/specs\.hara-lang\.org/);
@@ -40,15 +42,36 @@ test("places specifications navigation in a fixed right rail on desktop", () => 
   assert.match(shell, /main,[\s\S]*\.app-footer[\s\S]*margin-right: var\(--app-context-width\)/);
 });
 
-test("uses the central Hara GitHub identity instead of a local OAuth session", () => {
+test("uses the central Hara GitHub identity with a local fallback", () => {
   assert.match(layout, /data-hara-identity/);
+  assert.match(layout, /data-hara-identity-fallback/);
+  assert.match(layout, /aria-label="Sign in with GitHub"/);
   assert.match(layout, /https:\/\/id\.hara-lang\.org/);
   assert.match(layout, /https:\/\/id\.testing\.hara-lang\.org/);
-  assert.match(layout, /identity-client\.js/);
+  assert.match(layout, /\/v1\/identity-client\.js/);
+  assert.match(layout, /new URL\("\/github\/start", identityOrigin\)/);
+  assert.match(layout, /signIn\.searchParams\.set\("returnTo", location\.href\)/);
   assert.doesNotMatch(layout, /\/auth\/github\?return_to=/);
   assert.doesNotMatch(layout, /fetch\("\/api\/auth\/session"/);
   assert.doesNotMatch(layout, /action="\/auth\/logout"/);
   assert.match(readme, /shared GitHub identity/);
+});
+
+test("gates testing and production deploys on identity contract v1", () => {
+  assert.match(verifier, /\.contractVersion == 1/);
+  assert.match(verifier, /\.clientVersion == 1/);
+  assert.match(verifier, /\.clientEndpoint == \(\$identity \+ "\/v1\/identity-client\.js"\)/);
+  assert.match(verifier, /Access-Control-Allow-Origin/);
+  assert.match(verifier, /https:\/\/untrusted\.example/);
+  assert.match(verifier, /v1\/identity-client\.js/);
+  assert.match(workflow, /Verify built shared identity shell/);
+  assert.match(workflow, /Verify testing shared identity/);
+  assert.match(workflow, /HARA_SITE_ORIGIN: https:\/\/specs\.testing\.hara-lang\.org/);
+  assert.match(workflow, /HARA_IDENTITY_ORIGIN: https:\/\/id\.testing\.hara-lang\.org/);
+  assert.match(workflow, /Verify production shared identity/);
+  assert.match(workflow, /HARA_SITE_ORIGIN: https:\/\/specs\.hara-lang\.org/);
+  assert.match(workflow, /HARA_IDENTITY_ORIGIN: https:\/\/id\.hara-lang\.org/);
+  assert.match(workflow, /HARA_GITHUB_OAUTH_CLIENT_SECRET\|HARA_AUTH_SESSION_SECRET\|\/auth\/github\/callback/);
 });
 
 test("uses icons only for system, light, and dark theme states", () => {
