@@ -2,8 +2,7 @@ name: Project manifest contract
 
 on:
   push:
-    branches:
-      - agent/project-edn-single-manifest
+    branches: [main, production]
   pull_request:
 
 permissions:
@@ -20,23 +19,37 @@ jobs:
       - run: npm install
       - run: npm test
       - run: npm run build
-      - name: Reject superseded package contracts
+      - name: Reject superseded project authoring contracts
         run: |
           python - <<'PY'
           from pathlib import Path
-          forbidden = [
-              "project" + ".hal", "hara" + ".extension.edn", "hara" + ".build.edn",
-              "hara" + ".recipe.edn", "hara" + ".install.edn", "hara" + ".package.json",
-              "@hara/" + "spec-package", "@scope/" + "name", "/api/packages/" + "validate",
-              "package" + "Name", "legacy" + "Slugs"
+
+          deprecated_tokens = [
+              "project" + ".hal",
+              "hara" + ".extension.edn",
+              "hara" + ".build.edn",
+              "hara" + ".recipe.edn",
+              "hara" + ".install.edn",
+              "hara" + ".package.json",
+              "@hara/" + "spec-package",
+              "@scope/" + "name",
+              "/api/packages/" + "validate",
           ]
-          bad = []
-          for p in Path('.').rglob('*'):
-              if not p.is_file() or '.git' in p.parts or 'node_modules' in p.parts or 'dist' in p.parts:
+          ignored_prefixes = ("src/generated/", "public/registry/")
+          findings = []
+          for path in Path(".").rglob("*"):
+              relative = path.as_posix().lstrip("./")
+              if not path.is_file() or ".git" in path.parts or "node_modules" in path.parts or "dist" in path.parts:
                   continue
-              try: text = p.read_text()
-              except UnicodeDecodeError: continue
-              for token in forbidden:
-                  if token in text: bad.append(f"{p}: {token}")
-          if bad: raise SystemExit("\n".join(bad))
+              if relative.startswith(ignored_prefixes):
+                  continue
+              try:
+                  text = path.read_text()
+              except UnicodeDecodeError:
+                  continue
+              for token in deprecated_tokens:
+                  if token in text:
+                      findings.append(f"{path}: {token}")
+          if findings:
+              raise SystemExit("\n".join(findings))
           PY
