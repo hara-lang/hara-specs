@@ -19,7 +19,7 @@ const featured = registry.specs.slice(0, 6);
       </div>
       <div class="command" aria-label="Example Hara command">
         <span aria-hidden="true">$</span>
-        <code>hara spec check document.json --against @hara/spec-package@0.1.0</code>
+        <code>hara spec check project.edn --against hara/package@0.1.0</code>
       </div>
     </div>
   </Motif>
@@ -69,8 +69,8 @@ const featured = registry.specs.slice(0, 6);
     </article>
     <article>
       <span class="capability-index">C</span>
-      <h3>Package publishing</h3>
-      <p>Names, versions, dependencies, profiles, fixtures, signatures, and immutable digests use the same mental model as Hara packages.</p>
+      <h3>Project publishing</h3>
+      <p>Coordinates, versions, paths, dependencies, capabilities, fixtures, signatures, and immutable digests are declared once in <code>project.edn</code>.</p>
     </article>
   </section>
 </AppLayout>
